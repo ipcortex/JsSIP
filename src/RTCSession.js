@@ -20,7 +20,6 @@ var C = {
  */
 RTCSession.C = C;
 
-
 /**
  * Dependencies.
  */
@@ -1652,6 +1651,7 @@ RTCSession.prototype.receiveInviteResponse = function(response) {
 
   switch(true) {
     case /^100$/.test(response.status_code):
+      trying.call(this, 'remote', response);
       break;
     case /^1[0-9]{2}$/.test(response.status_code):
       if(this.status !== C.STATUS_INVITE_SENT && this.status !== C.STATUS_1XX_RECEIVED) {
@@ -1896,6 +1896,13 @@ function newRTCSession(originator, request) {
 function connecting(request) {
   this.emit('connecting', {
     request: request
+  });
+}
+
+function trying(originator, response) {
+  this.emit('trying', {
+    originator: originator,
+    response: response || null
   });
 }
 
