@@ -6,13 +6,14 @@ var C = {
   STATUS_NULL:               0,
   STATUS_INVITE_SENT:        1,
   STATUS_1XX_RECEIVED:       2,
-  STATUS_INVITE_RECEIVED:    3,
-  STATUS_WAITING_FOR_ANSWER: 4,
-  STATUS_ANSWERED:           5,
-  STATUS_WAITING_FOR_ACK:    6,
-  STATUS_CANCELED:           7,
-  STATUS_TERMINATED:         8,
-  STATUS_CONFIRMED:          9
+  STATUS_1XX_SDP_RECEIVED:   3,
+  STATUS_INVITE_RECEIVED:    4,
+  STATUS_WAITING_FOR_ANSWER: 5,
+  STATUS_ANSWERED:           6,
+  STATUS_WAITING_FOR_ACK:    7,
+  STATUS_CANCELED:           8,
+  STATUS_TERMINATED:         9,
+  STATUS_CONFIRMED:         10
 };
 
 /**
@@ -214,7 +215,8 @@ RTCSession.prototype.terminate = function(options) {
     case C.STATUS_NULL:
     case C.STATUS_INVITE_SENT:
     case C.STATUS_1XX_RECEIVED:
-      debug('canceling sesssion');
+    case C.STATUS_1XX_SDP_RECEIVED:
+      debug('canceling session');
 
       if (status_code && (status_code < 200 || status_code >= 700)) {
         throw new TypeError('Invalid status_code: '+ status_code);
@@ -230,7 +232,7 @@ RTCSession.prototype.terminate = function(options) {
       } else if (this.status === C.STATUS_INVITE_SENT) {
         this.isCanceled = true;
         this.cancelReason = cancel_reason;
-      } else if(this.status === C.STATUS_1XX_RECEIVED) {
+      } else if(this.status === C.STATUS_1XX_RECEIVED || this.status === C.STATUS_1XX_SDP_RECEIVED) {
         this.request.cancel(cancel_reason);
       }
 
@@ -1645,7 +1647,9 @@ RTCSession.prototype.receiveInviteResponse = function(response) {
     return;
   }
 
-  if(this.status !== C.STATUS_INVITE_SENT && this.status !== C.STATUS_1XX_RECEIVED) {
+  if(this.status !== C.STATUS_INVITE_SENT &&
+     this.status !== C.STATUS_1XX_RECEIVED &&
+     this.status !== C.STATUS_1XX_SDP_RECEIVED) {
     return;
   }
 
@@ -1654,7 +1658,9 @@ RTCSession.prototype.receiveInviteResponse = function(response) {
       trying.call(this, 'remote', response);
       break;
     case /^1[0-9]{2}$/.test(response.status_code):
-      if(this.status !== C.STATUS_INVITE_SENT && this.status !== C.STATUS_1XX_RECEIVED) {
+      if(this.status !== C.STATUS_INVITE_SENT &&
+         this.status !== C.STATUS_1XX_RECEIVED &&
+         this.status !== C.STATUS_1XX_SDP_RECEIVED) {
         break;
       }
 
@@ -1672,21 +1678,22 @@ RTCSession.prototype.receiveInviteResponse = function(response) {
         }
       }
 
-      this.status = C.STATUS_1XX_RECEIVED;
-      progress.call(this, 'remote', response);
-
-      if (!response.body) {
+      if (!response.body || this.status === C.STATUS_1XX_SDP_RECEIVED) {
+        progress.call(this, 'remote', response);
         break;
       }
+      this.status = C.STATUS_1XX_SDP_RECEIVED;
 
       this.rtcMediaHandler.setRemoteDescription(
-        'pranswer',
+        'answer',	/* Browsers do not understand 'pranswer', so lie */
         response.body,
         /*
         * OnSuccess.
         * SDP Answer fits with Offer.
         */
-        function() { },
+        function() {
+          progress(self, 'remote', response);
+	},
         /*
         * OnFailure.
         * SDP Answer does not fit with Offer.
@@ -1698,9 +1705,8 @@ RTCSession.prototype.receiveInviteResponse = function(response) {
       );
       break;
     case /^2[0-9]{2}$/.test(response.status_code):
-      this.status = C.STATUS_CONFIRMED;
 
-      if(!response.body) {
+      if(!response.body && this.status !== C.STATUS_1XX_SDP_RECEIVED) {
         this.acceptAndTerminate(response, 400, JsSIP_C.causes.MISSING_SDP);
         failed.call(this, 'remote', response, JsSIP_C.causes.BAD_MEDIA_DESCRIPTION);
         break;
@@ -1710,6 +1716,18 @@ RTCSession.prototype.receiveInviteResponse = function(response) {
       if (!this.createDialog(response, 'UAC')) {
         break;
       }
+
+      if (this.status === C.STATUS_1XX_SDP_RECEIVED ) {
+        /* We have done an 'answer' in lieu of 'pranswer', so cannot repeat
+         * TODO: Look for any new ICE lines and submit them.
+         */
+        this.status = C.STATUS_CONFIRMED;
+        accepted.call(this, 'remote', response);
+        this.sendRequest(JsSIP_C.ACK);
+        confirmed.call(this, 'local', null);
+        break;
+      }
+      this.status = C.STATUS_CONFIRMED;
 
       this.rtcMediaHandler.setRemoteDescription(
         'answer',
