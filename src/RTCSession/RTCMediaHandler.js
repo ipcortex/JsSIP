@@ -228,12 +228,12 @@ RTCMediaHandler.prototype.addStream = function(stream, onSuccess, onFailure, con
   onSuccess();
 };
 
-RTCMediaHandler.prototype.addIceCandidates: function(offer) {
+RTCMediaHandler.prototype.addIceCandidates = function(offer) {
   var idx, length;
 
   length = this.iceCandidates.length;
   for (idx = 0; idx < length; idx++) {
-    if (offer.indexOf(this.iceCandidates[idx]) == -1) {
+    if (offer.indexOf(this.iceCandidates[idx]) === -1) {
       offer += 'a=' + this.iceCandidates[idx] + '\n';
     }
   }
