@@ -138,6 +138,8 @@ RTCMediaHandler.prototype.createOffer = function(onSuccess, onFailure, constrain
 
   this.peerConnection.createOffer(
     function(sessionDescription){
+      /* Disable attempts at rtcp-mux as this seems to break TURN */
+      sessionDescription.sdp = sessionDescription.sdp.replace(/a=rtcp-mux[\r\n]+/, '').replace(/a=group:BUNDLE.*?[\r\n]+/, '');
       setLocalDescription.call(self,
         sessionDescription,
         onSetLocalDescriptionSuccess,
