@@ -67,6 +67,7 @@ function RTCMediaHandler(session, options) {
 
   this.peerConnection.onicecandidate = function(e) {
     if (e.candidate) {
+      self.iceCandidates.push(e.candidate.candidate);
       debug('ICE candidate received: '+ e.candidate.candidate);
     } else if (self.onIceCompleted !== undefined) {
       self.onIceCompleted();
@@ -122,17 +123,18 @@ RTCMediaHandler.prototype.createOffer = function(onSuccess, onFailure, constrain
   function onSetLocalDescriptionSuccess() {
     if (self.peerConnection.iceGatheringState === 'complete') {
       self.ready = true;
-      onSuccess(self.peerConnection.localDescription.sdp);
+      onSuccess(self.addIceCandidates(self.peerConnection.localDescription.sdp));
     } else {
       self.onIceCompleted = function() {
         self.onIceCompleted = undefined;
         self.ready = true;
-        onSuccess(self.peerConnection.localDescription.sdp);
+        onSuccess(self.addIceCandidates(self.peerConnection.localDescription.sdp));
       };
     }
   }
 
   this.ready = false;
+  this.iceCandidates = [];
 
   this.peerConnection.createOffer(
     function(sessionDescription){
@@ -162,17 +164,18 @@ RTCMediaHandler.prototype.createAnswer = function(onSuccess, onFailure, constrai
   function onSetLocalDescriptionSuccess() {
     if (self.peerConnection.iceGatheringState === 'complete') {
       self.ready = true;
-      onSuccess(self.peerConnection.localDescription.sdp);
+      onSuccess(self.addIceCandidates(self.peerConnection.localDescription.sdp));
     } else {
       self.onIceCompleted = function() {
         self.onIceCompleted = undefined;
         self.ready = true;
-        onSuccess(self.peerConnection.localDescription.sdp);
+        onSuccess(self.addIceCandidates(self.peerConnection.localDescription.sdp));
       };
     }
   }
 
   this.ready = false;
+  this.iceCandidates = [];
 
   this.peerConnection.createAnswer(
     function(sessionDescription){
@@ -221,6 +224,18 @@ RTCMediaHandler.prototype.addStream = function(stream, onSuccess, onFailure, con
   }
 
   onSuccess();
+};
+
+RTCMediaHandler.prototype.addIceCandidates: function(offer) {
+  var idx, length;
+
+  length = this.iceCandidates.length;
+  for (idx = 0; idx < length; idx++) {
+    if (offer.indexOf(this.iceCandidates[idx]) == -1) {
+      offer += 'a=' + this.iceCandidates[idx] + '\n';
+    }
+  }
+  return offer;
 };
 
 
