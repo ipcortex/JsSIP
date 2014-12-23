@@ -1921,6 +1921,7 @@ function connecting(request) {
 function trying(originator, response) {
   this.emit('trying', {
     originator: originator,
+    session: this,
     response: response || null
   });
 }
@@ -1928,6 +1929,7 @@ function trying(originator, response) {
 function progress(originator, response) {
   this.emit('progress', {
     originator: originator,
+    session: this,
     response: response || null
   });
 }
@@ -1937,6 +1939,7 @@ function accepted(originator, message) {
 
   this.emit('accepted', {
     originator: originator,
+    session: this,
     response: message || null
   });
 }
@@ -1946,6 +1949,7 @@ function confirmed(originator, ack) {
 
   this.emit('confirmed', {
     originator: originator,
+    session: this,
     ack: ack || null
   });
 }

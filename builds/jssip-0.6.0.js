@@ -2022,29 +2022,13 @@ module.exports={
     "lib": "./lib"
   },
   "browser": "lib/browser.js",
-  "gitHead": "ee1c2ee1c333a1cbb122e3e385b60f051ea69706",
+  "readme": "WebSocket Client & Server Implementation for Node\n=================================================\n\n[![npm version](https://badge.fury.io/js/websocket.svg)](http://badge.fury.io/js/websocket)\n\n[![NPM](https://nodei.co/npm/websocket.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/websocket/)\n\n[![NPM](https://nodei.co/npm-dl/websocket.png?height=3)](https://nodei.co/npm/websocket/)\n\nOverview\n--------\nThis is a (mostly) pure JavaScript implementation of the WebSocket protocol versions 8 and 13 for Node.  There are some example client and server applications that implement various interoperability testing protocols in the \"test/scripts\" folder.\n\nFor a WebSocket client written in ActionScript 3, see my [AS3WebScocket](https://github.com/theturtle32/AS3WebSocket) project.\n\n\nDocumentation\n=============\n\n[You can read the full API documentation in the docs folder.](docs/index.md)\n\n\nChangelog\n---------\n\n***Current Version: 1.0.14*** — Released 2014-12-03\n\n***Version 1.0.14***\n\n* Resolves [issue #173](https://github.com/theturtle32/WebSocket-Node/issues/173) - To allow the W3CWebSocket interface to accept an optional non-standard configuration object as its third parameter, which will be ignored when running in a browser context.\n\n\n***Version 1.0.13***\n\n* Fixes [issue #171](https://github.com/theturtle32/WebSocket-Node/issues/171) - Code to prevent calling req.accept/req.reject multiple times breaks sanity checks in req.accept\n\n\n***Version 1.0.12***\n\n* Fixes [issue #170](https://github.com/theturtle32/WebSocket-Node/issues/170) - Non-native XOR implementation broken after making JSHint happy\n\n\n***Version 1.0.11***\n\n* Fixes some undefined behavior surrounding closing WebSocket connections and more reliably handles edge cases.\n* Adds an implementation of the W3C WebSocket API for browsers to facilitate sharing code between client and server via browserify. (Thanks, [@ibc](https://github.com/ibc)!)\n* `WebSocketConnection.prototype.close` now accepts optional `reasonCode` and `description` parameters.\n* Calling `accept` or `reject` more than once on a `WebSocketRequest` instance will now throw an error.  [Issue #149](https://github.com/theturtle32/WebSocket-Node/issues/149)\n* Handling connections dropped by client before accepted by server [Issue #167](https://github.com/theturtle32/WebSocket-Node/issues/167)\n* Integrating Gulp and JSHint (Thanks, [@ibc](https://github.com/ibc)!)\n* Starting to add individual unit tests (using substack's [tape](github.com/substack/tape) and [faucet](github.com/substack/faucet))\n\n[View the full changelog](CHANGELOG.md)\n\nBrowser Support\n---------------\n\nAll current browsers are fully supported.\n\n* Firefox 7-9 (Old) (Protocol Version 8)\n* Firefox 10+ (Protocol Version 13)\n* Chrome 14,15 (Old) (Protocol Version 8)\n* Chrome 16+ (Protocol Version 13)\n* Internet Explorer 10+ (Protocol Version 13)\n* Safari 6+ (Protocol Version 13)\n\n***Safari older than 6.0 is not supported since it uses a very old draft of WebSockets***\n\n***If you need to simultaneously support legacy browser versions that had implemented draft-75/draft-76/draft-00, take a look here: https://gist.github.com/1428579***\n\nBenchmarks\n----------\nThere are some basic benchmarking sections in the Autobahn test suite.  I've put up a [benchmark page](http://theturtle32.github.com/WebSocket-Node/benchmarks/) that shows the results from the Autobahn tests run against AutobahnServer 0.4.10, WebSocket-Node 1.0.2, WebSocket-Node 1.0.4, and ws 0.3.4.\n\nAutobahn Tests\n--------------\nThe very complete [Autobahn Test Suite](http://autobahn.ws/testsuite/) is used by most WebSocket implementations to test spec compliance and interoperability.\n\n- [View Server Test Results](http://theturtle32.github.com/WebSocket-Node/test-report/servers/)\n- [View Client Test Results](http://theturtle32.github.com/WebSocket-Node/test-report/clients/)\n\nNotes\n-----\nThis library has been used in production on [worlize.com](https://www.worlize.com) since April 2011 and seems to be stable.  Your mileage may vary.\n\n**Tested with the following node versions:**\n\n- 0.8.28\n- 0.10.33\n\nIt may work in earlier or later versions but I'm not actively testing it outside of the listed versions.  YMMV.\n\nInstallation\n------------\n\nA few users have reported difficulties building the native extensions without first manually installing node-gyp.  If you have trouble building the native extensions, make sure you've got a C++ compiler, and have done `npm install -g node-gyp` first. \n\nNative extensions are optional, however, and WebSocket-Node will work even if the extensions cannot be compiled.\n\nIn your project root:\n\n    $ npm install websocket\n  \nThen in your code:\n\n```javascript\nvar WebSocketServer = require('websocket').server;\nvar WebSocketClient = require('websocket').client;\nvar WebSocketFrame  = require('websocket').frame;\nvar WebSocketRouter = require('websocket').router;\nvar W3CWebSocket = require('websocket').w3cwebsocket;\n```\n\nNote for Windows Users\n----------------------\nBecause there is a small C++ component used for validating UTF-8 data, you will need to install a few other software packages in addition to Node to be able to build this module:\n\n- [Microsoft Visual C++](http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express)\n- [Python 2.7](http://www.python.org/download/) (NOT Python 3.x)\n\n\nCurrent Features:\n-----------------\n- Licensed under the Apache License, Version 2.0\n- Protocol version \"8\" and \"13\" (Draft-08 through the final RFC) framing and handshake\n- Can handle/aggregate received fragmented messages\n- Can fragment outgoing messages\n- Router to mount multiple applications to various path and protocol combinations\n- TLS supported for outbound connections via WebSocketClient\n- TLS supported for server connections (use https.createServer instead of http.createServer)\n  - Thanks to [pors](https://github.com/pors) for confirming this!\n- Cookie setting and parsing\n- Tunable settings\n  - Max Receivable Frame Size\n  - Max Aggregate ReceivedMessage Size\n  - Whether to fragment outgoing messages\n  - Fragmentation chunk size for outgoing messages\n  - Whether to automatically send ping frames for the purposes of keepalive\n  - Keep-alive ping interval\n  - Whether or not to automatically assemble received fragments (allows application to handle individual fragments directly)\n  - How long to wait after sending a close frame for acknowledgment before closing the socket.\n- [W3C WebSocket API](http://www.w3.org/TR/websockets/) for applications running on both Node and browsers (via the `W3CWebSocket` class). \n\n\nKnown Issues/Missing Features:\n------------------------------\n- No API for user-provided protocol extensions.\n\n\nUsage Examples\n==============\n\nServer Example\n--------------\n\nHere's a short example showing a server that echos back anything sent to it, whether utf-8 or binary.\n\n```javascript\n#!/usr/bin/env node\nvar WebSocketServer = require('websocket').server;\nvar http = require('http');\n\nvar server = http.createServer(function(request, response) {\n    console.log((new Date()) + ' Received request for ' + request.url);\n    response.writeHead(404);\n    response.end();\n});\nserver.listen(8080, function() {\n    console.log((new Date()) + ' Server is listening on port 8080');\n});\n\nwsServer = new WebSocketServer({\n    httpServer: server,\n    // You should not use autoAcceptConnections for production\n    // applications, as it defeats all standard cross-origin protection\n    // facilities built into the protocol and the browser.  You should\n    // *always* verify the connection's origin and decide whether or not\n    // to accept it.\n    autoAcceptConnections: false\n});\n\nfunction originIsAllowed(origin) {\n  // put logic here to detect whether the specified origin is allowed.\n  return true;\n}\n\nwsServer.on('request', function(request) {\n    if (!originIsAllowed(request.origin)) {\n      // Make sure we only accept requests from an allowed origin\n      request.reject();\n      console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');\n      return;\n    }\n    \n    var connection = request.accept('echo-protocol', request.origin);\n    console.log((new Date()) + ' Connection accepted.');\n    connection.on('message', function(message) {\n        if (message.type === 'utf8') {\n            console.log('Received Message: ' + message.utf8Data);\n            connection.sendUTF(message.utf8Data);\n        }\n        else if (message.type === 'binary') {\n            console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');\n            connection.sendBytes(message.binaryData);\n        }\n    });\n    connection.on('close', function(reasonCode, description) {\n        console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');\n    });\n});\n```\n\nClient Example\n--------------\n\nThis is a simple example client that will print out any utf-8 messages it receives on the console, and periodically sends a random number.\n\n*This code demonstrates a client in Node.js, not in the browser*\n\n```javascript\n#!/usr/bin/env node\nvar WebSocketClient = require('websocket').client;\n\nvar client = new WebSocketClient();\n\nclient.on('connectFailed', function(error) {\n    console.log('Connect Error: ' + error.toString());\n});\n\nclient.on('connect', function(connection) {\n    console.log('WebSocket Client Connected');\n    connection.on('error', function(error) {\n        console.log(\"Connection Error: \" + error.toString());\n    });\n    connection.on('close', function() {\n        console.log('echo-protocol Connection Closed');\n    });\n    connection.on('message', function(message) {\n        if (message.type === 'utf8') {\n            console.log(\"Received: '\" + message.utf8Data + \"'\");\n        }\n    });\n    \n    function sendNumber() {\n        if (connection.connected) {\n            var number = Math.round(Math.random() * 0xFFFFFF);\n            connection.sendUTF(number.toString());\n            setTimeout(sendNumber, 1000);\n        }\n    }\n    sendNumber();\n});\n\nclient.connect('ws://localhost:8080/', 'echo-protocol');\n```\n\nClient Example using the *W3C WebSocket API*\n--------------------------------------------\n\nSame example as above but using the [W3C WebSocket API](http://www.w3.org/TR/websockets/).\n\n```javascript\nvar W3CWebSocket = require('websocket').w3cwebsocket;\n\nvar client = new W3CWebSocket('ws://localhost:8080/', 'echo-protocol');\n\nclient.onerror = function() {\n    console.log('Connection Error');\n};\n\nclient.onopen = function() {\n    console.log('WebSocket Client Connected');\n\n    function sendNumber() {\n        if (client.readyState === client.OPEN) {\n            var number = Math.round(Math.random() * 0xFFFFFF);\n            client.send(number.toString());\n            setTimeout(sendNumber, 1000);\n        }\n    }\n    sendNumber();\n};\n\nclient.onclose = function() {\n    console.log('echo-protocol Client Closed');\n};\n\nclient.onmessage = function(e) {\n    if (typeof e.data === 'string') {\n        console.log(\"Received: '\" + e.data + \"'\");\n    }\n};\n```\n    \nRequest Router Example\n----------------------\n\nFor an example of using the request router, see `libwebsockets-test-server.js` in the `test` folder.\n\n\nResources\n---------\n\nA presentation on the state of the WebSockets protocol that I gave on July 23, 2011 at the LA Hacker News meetup.  [WebSockets: The Real-Time Web, Delivered](http://www.scribd.com/doc/60898569/WebSockets-The-Real-Time-Web-Delivered)\n",
+  "readmeFilename": "README.md",
   "bugs": {
     "url": "https://github.com/theturtle32/WebSocket-Node/issues"
   },
   "_id": "websocket@1.0.14",
-  "_shasum": "1ef1ab300d7ccc619557367ce172e9cb83bdad49",
-  "_from": "websocket@>=1.0.14 <2.0.0",
-  "_npmVersion": "1.4.28",
-  "_npmUser": {
-    "name": "theturtle32",
-    "email": "brian@worlize.com"
-  },
-  "maintainers": [
-    {
-      "name": "theturtle32",
-      "email": "brian@worlize.com"
-    }
-  ],
-  "dist": {
-    "shasum": "1ef1ab300d7ccc619557367ce172e9cb83bdad49",
-    "tarball": "http://registry.npmjs.org/websocket/-/websocket-1.0.14.tgz"
-  },
-  "_resolved": "https://registry.npmjs.org/websocket/-/websocket-1.0.14.tgz"
+  "_from": "websocket@^1.0.14"
 }
 
 },{}],16:[function(require,module,exports){
@@ -15936,20 +15920,20 @@ var C = {
   STATUS_NULL:               0,
   STATUS_INVITE_SENT:        1,
   STATUS_1XX_RECEIVED:       2,
-  STATUS_INVITE_RECEIVED:    3,
-  STATUS_WAITING_FOR_ANSWER: 4,
-  STATUS_ANSWERED:           5,
-  STATUS_WAITING_FOR_ACK:    6,
-  STATUS_CANCELED:           7,
-  STATUS_TERMINATED:         8,
-  STATUS_CONFIRMED:          9
+  STATUS_1XX_SDP_RECEIVED:   3,
+  STATUS_INVITE_RECEIVED:    4,
+  STATUS_WAITING_FOR_ANSWER: 5,
+  STATUS_ANSWERED:           6,
+  STATUS_WAITING_FOR_ACK:    7,
+  STATUS_CANCELED:           8,
+  STATUS_TERMINATED:         9,
+  STATUS_CONFIRMED:         10
 };
 
 /**
  * Expose C object.
  */
 RTCSession.C = C;
-
 
 /**
  * Dependencies.
@@ -16145,7 +16129,8 @@ RTCSession.prototype.terminate = function(options) {
     case C.STATUS_NULL:
     case C.STATUS_INVITE_SENT:
     case C.STATUS_1XX_RECEIVED:
-      debug('canceling sesssion');
+    case C.STATUS_1XX_SDP_RECEIVED:
+      debug('canceling session');
 
       if (status_code && (status_code < 200 || status_code >= 700)) {
         throw new TypeError('Invalid status_code: '+ status_code);
@@ -16161,7 +16146,7 @@ RTCSession.prototype.terminate = function(options) {
       } else if (this.status === C.STATUS_INVITE_SENT) {
         this.isCanceled = true;
         this.cancelReason = cancel_reason;
-      } else if(this.status === C.STATUS_1XX_RECEIVED) {
+      } else if(this.status === C.STATUS_1XX_RECEIVED || this.status === C.STATUS_1XX_SDP_RECEIVED) {
         this.request.cancel(cancel_reason);
       }
 
@@ -17576,15 +17561,20 @@ RTCSession.prototype.receiveInviteResponse = function(response) {
     return;
   }
 
-  if(this.status !== C.STATUS_INVITE_SENT && this.status !== C.STATUS_1XX_RECEIVED) {
+  if(this.status !== C.STATUS_INVITE_SENT &&
+     this.status !== C.STATUS_1XX_RECEIVED &&
+     this.status !== C.STATUS_1XX_SDP_RECEIVED) {
     return;
   }
 
   switch(true) {
     case /^100$/.test(response.status_code):
+      trying.call(this, 'remote', response);
       break;
     case /^1[0-9]{2}$/.test(response.status_code):
-      if(this.status !== C.STATUS_INVITE_SENT && this.status !== C.STATUS_1XX_RECEIVED) {
+      if(this.status !== C.STATUS_INVITE_SENT &&
+         this.status !== C.STATUS_1XX_RECEIVED &&
+         this.status !== C.STATUS_1XX_SDP_RECEIVED) {
         break;
       }
 
@@ -17602,21 +17592,23 @@ RTCSession.prototype.receiveInviteResponse = function(response) {
         }
       }
 
-      this.status = C.STATUS_1XX_RECEIVED;
-      progress.call(this, 'remote', response);
-
-      if (!response.body) {
+      if (!response.body || this.status === C.STATUS_1XX_SDP_RECEIVED) {
+        this.status = C.STATUS_1XX_RECEIVED;
+        progress.call(this, 'remote', response);
         break;
       }
+      this.status = C.STATUS_1XX_SDP_RECEIVED;
 
       this.rtcMediaHandler.setRemoteDescription(
-        'pranswer',
+        'answer',	/* Browsers do not understand 'pranswer', so lie */
         response.body,
         /*
         * OnSuccess.
         * SDP Answer fits with Offer.
         */
-        function() { },
+        function() {
+          progress(self, 'remote', response);
+	},
         /*
         * OnFailure.
         * SDP Answer does not fit with Offer.
@@ -17628,9 +17620,8 @@ RTCSession.prototype.receiveInviteResponse = function(response) {
       );
       break;
     case /^2[0-9]{2}$/.test(response.status_code):
-      this.status = C.STATUS_CONFIRMED;
 
-      if(!response.body) {
+      if(!response.body && this.status !== C.STATUS_1XX_SDP_RECEIVED) {
         this.acceptAndTerminate(response, 400, JsSIP_C.causes.MISSING_SDP);
         failed.call(this, 'remote', response, JsSIP_C.causes.BAD_MEDIA_DESCRIPTION);
         break;
@@ -17640,6 +17631,18 @@ RTCSession.prototype.receiveInviteResponse = function(response) {
       if (!this.createDialog(response, 'UAC')) {
         break;
       }
+
+      if (this.status === C.STATUS_1XX_SDP_RECEIVED ) {
+        /* We have done an 'answer' in lieu of 'pranswer', so cannot repeat
+         * TODO: Look for any new ICE lines and submit them.
+         */
+        this.status = C.STATUS_CONFIRMED;
+        accepted.call(this, 'remote', response);
+        this.sendRequest(JsSIP_C.ACK);
+        confirmed.call(this, 'local', null);
+        break;
+      }
+      this.status = C.STATUS_CONFIRMED;
 
       this.rtcMediaHandler.setRemoteDescription(
         'answer',
@@ -17826,6 +17829,13 @@ function newRTCSession(originator, request) {
 function connecting(request) {
   this.emit('connecting', {
     request: request
+  });
+}
+
+function trying(originator, response) {
+  this.emit('trying', {
+    originator: originator,
+    response: response || null
   });
 }
 
@@ -18420,6 +18430,7 @@ Request.prototype.send = function(method, options) {
 
   // Check RTCSession Status
   if (this.owner.status !== RTCSession.C.STATUS_1XX_RECEIVED &&
+    this.owner.status !== RTCSession.C.STATUS_1XX_SDP_RECEIVED &&
     this.owner.status !== RTCSession.C.STATUS_WAITING_FOR_ANSWER &&
     this.owner.status !== RTCSession.C.STATUS_WAITING_FOR_ACK &&
     this.owner.status !== RTCSession.C.STATUS_CONFIRMED &&

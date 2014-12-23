@@ -34,7 +34,7 @@ Request.prototype.send = function(method, options) {
 
   // Check RTCSession Status
   if (this.owner.status !== RTCSession.C.STATUS_1XX_RECEIVED &&
-    this.owner.status !== JsSIP.RTCSession.C.STATUS_1XX_SDP_RECEIVED &&
+    this.owner.status !== RTCSession.C.STATUS_1XX_SDP_RECEIVED &&
     this.owner.status !== RTCSession.C.STATUS_WAITING_FOR_ANSWER &&
     this.owner.status !== RTCSession.C.STATUS_WAITING_FOR_ACK &&
     this.owner.status !== RTCSession.C.STATUS_CONFIRMED &&
