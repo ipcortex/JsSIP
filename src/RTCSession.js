@@ -1679,6 +1679,7 @@ RTCSession.prototype.receiveInviteResponse = function(response) {
       }
 
       if (!response.body || this.status === C.STATUS_1XX_SDP_RECEIVED) {
+        this.status = C.STATUS_1XX_RECEIVED;
         progress.call(this, 'remote', response);
         break;
       }
