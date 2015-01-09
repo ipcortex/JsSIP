@@ -1,6 +1,6 @@
 /*
  * JsSIP 0.6.0
- * Copyright (c) 2012-2014 José Luis Millán - Versatica <http://www.versatica.com>
+ * Copyright (c) 2012-2015 José Luis Millán - Versatica <http://www.versatica.com>
  * Homepage: http://jssip.net
  * License: http://jssip.net/license
  */
@@ -17835,6 +17835,7 @@ function connecting(request) {
 function trying(originator, response) {
   this.emit('trying', {
     originator: originator,
+    session: this,
     response: response || null
   });
 }
@@ -17842,6 +17843,7 @@ function trying(originator, response) {
 function progress(originator, response) {
   this.emit('progress', {
     originator: originator,
+    session: this,
     response: response || null
   });
 }
@@ -17851,6 +17853,7 @@ function accepted(originator, message) {
 
   this.emit('accepted', {
     originator: originator,
+    session: this,
     response: message || null
   });
 }
@@ -17860,6 +17863,7 @@ function confirmed(originator, ack) {
 
   this.emit('confirmed', {
     originator: originator,
+    session: this,
     ack: ack || null
   });
 }
@@ -18198,6 +18202,7 @@ function RTCMediaHandler(session, options) {
 
   this.peerConnection.onicecandidate = function(e) {
     if (e.candidate) {
+      self.iceCandidates.push(e.candidate.candidate);
       debug('ICE candidate received: '+ e.candidate.candidate);
     } else if (self.onIceCompleted !== undefined) {
       self.onIceCompleted();
@@ -18253,20 +18258,23 @@ RTCMediaHandler.prototype.createOffer = function(onSuccess, onFailure, constrain
   function onSetLocalDescriptionSuccess() {
     if (self.peerConnection.iceGatheringState === 'complete') {
       self.ready = true;
-      onSuccess(self.peerConnection.localDescription.sdp);
+      onSuccess(self.addIceCandidates(self.peerConnection.localDescription.sdp));
     } else {
       self.onIceCompleted = function() {
         self.onIceCompleted = undefined;
         self.ready = true;
-        onSuccess(self.peerConnection.localDescription.sdp);
+        onSuccess(self.addIceCandidates(self.peerConnection.localDescription.sdp));
       };
     }
   }
 
   this.ready = false;
+  this.iceCandidates = [];
 
   this.peerConnection.createOffer(
     function(sessionDescription){
+      /* Disable attempts at rtcp-mux as this seems to break TURN */
+      sessionDescription.sdp = sessionDescription.sdp.replace(/a=rtcp-mux[\r\n]+/, '').replace(/a=group:BUNDLE.*?[\r\n]+/, '');
       setLocalDescription.call(self,
         sessionDescription,
         onSetLocalDescriptionSuccess,
@@ -18293,17 +18301,18 @@ RTCMediaHandler.prototype.createAnswer = function(onSuccess, onFailure, constrai
   function onSetLocalDescriptionSuccess() {
     if (self.peerConnection.iceGatheringState === 'complete') {
       self.ready = true;
-      onSuccess(self.peerConnection.localDescription.sdp);
+      onSuccess(self.addIceCandidates(self.peerConnection.localDescription.sdp));
     } else {
       self.onIceCompleted = function() {
         self.onIceCompleted = undefined;
         self.ready = true;
-        onSuccess(self.peerConnection.localDescription.sdp);
+        onSuccess(self.addIceCandidates(self.peerConnection.localDescription.sdp));
       };
     }
   }
 
   this.ready = false;
+  this.iceCandidates = [];
 
   this.peerConnection.createAnswer(
     function(sessionDescription){
@@ -18352,6 +18361,18 @@ RTCMediaHandler.prototype.addStream = function(stream, onSuccess, onFailure, con
   }
 
   onSuccess();
+};
+
+RTCMediaHandler.prototype.addIceCandidates = function(offer) {
+  var idx, length;
+
+  length = this.iceCandidates.length;
+  for (idx = 0; idx < length; idx++) {
+    if (offer.indexOf(this.iceCandidates[idx]) === -1) {
+      offer += 'a=' + this.iceCandidates[idx] + '\n';
+    }
+  }
+  return offer;
 };
 
 
