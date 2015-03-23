@@ -17607,7 +17607,7 @@ RTCSession.prototype.receiveInviteResponse = function(response) {
         * SDP Answer fits with Offer.
         */
         function() {
-          progress(self, 'remote', response);
+          progress.call(self, 'remote', response);
 	},
         /*
         * OnFailure.
