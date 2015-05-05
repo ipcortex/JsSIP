@@ -1,6 +1,37 @@
 CHANGELOG
 =========
 
+Version 0.6.26 (released in 2015-04-17)
+---------------------------------------
+
+* Update "rtcninja" dependency.
+
+
+Version 0.6.25 (released in 2015-04-16)
+---------------------------------------
+
+* Update "rtcninja" dependency.
+
+
+Version 0.6.24 (released in 2015-04-14)
+---------------------------------------
+
+* RTCSession: Fix Invite Server transaction destruction.
+
+
+Version 0.6.23 (released in 2015-04-14)
+---------------------------------------
+
+* RTCSession: Handle session timers before emitting "accepted".
+* Fix issue with latest version of browserify.
+
+
+Version 0.6.22 (released in 2015-04-13)
+---------------------------------------
+
+* Fix double "disconnected" event in some cases.
+
+
 Version 0.6.21 (released in 2015-03-11)
 ---------------------------------------
 
