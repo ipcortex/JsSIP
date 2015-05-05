@@ -13481,20 +13481,20 @@ var C = {
   STATUS_NULL:               0,
   STATUS_INVITE_SENT:        1,
   STATUS_1XX_RECEIVED:       2,
-  STATUS_INVITE_RECEIVED:    3,
-  STATUS_WAITING_FOR_ANSWER: 4,
-  STATUS_ANSWERED:           5,
-  STATUS_WAITING_FOR_ACK:    6,
-  STATUS_CANCELED:           7,
-  STATUS_TERMINATED:         8,
-  STATUS_CONFIRMED:          9
+  STATUS_1XX_SDP_RECEIVED:   3,
+  STATUS_INVITE_RECEIVED:    4,
+  STATUS_WAITING_FOR_ANSWER: 5,
+  STATUS_ANSWERED:           6,
+  STATUS_WAITING_FOR_ACK:    7,
+  STATUS_CANCELED:           8,
+  STATUS_TERMINATED:         9,
+  STATUS_CONFIRMED:         10
 };
 
 /**
  * Expose C object.
  */
 RTCSession.C = C;
-
 
 /**
  * Dependencies.
@@ -13595,6 +13595,7 @@ RTCSession.prototype.isInProgress = function() {
     case C.STATUS_NULL:
     case C.STATUS_INVITE_SENT:
     case C.STATUS_1XX_RECEIVED:
+    case C.STATUS_1XX_SDP_RECEIVED:
     case C.STATUS_INVITE_RECEIVED:
     case C.STATUS_WAITING_FOR_ANSWER:
       return true;
@@ -14097,7 +14098,8 @@ RTCSession.prototype.terminate = function(options) {
     case C.STATUS_NULL:
     case C.STATUS_INVITE_SENT:
     case C.STATUS_1XX_RECEIVED:
-      debug('canceling sesssion');
+    case C.STATUS_1XX_SDP_RECEIVED:
+      debug('canceling session');
 
       if (status_code && (status_code < 200 || status_code >= 700)) {
         throw new TypeError('Invalid status_code: '+ status_code);
@@ -14113,7 +14115,7 @@ RTCSession.prototype.terminate = function(options) {
       } else if (this.status === C.STATUS_INVITE_SENT) {
         this.isCanceled = true;
         this.cancelReason = cancel_reason;
-      } else if(this.status === C.STATUS_1XX_RECEIVED) {
+      } else if(this.status === C.STATUS_1XX_RECEIVED || this.status === C.STATUS_1XX_SDP_RECEIVED) {
         this.request.cancel(cancel_reason);
       }
 
@@ -14838,6 +14840,9 @@ function createLocalDescription(type, onSuccess, onFailure, constraints) {
   var connection = this.connection;
 
   this.rtcReady = false;
+  this.iceTimer = null;
+  this.trickleTime = 2000;
+  this.iceCandidates = [];
 
   if (type === 'offer') {
     connection.createOffer(
@@ -14871,21 +14876,26 @@ function createLocalDescription(type, onSuccess, onFailure, constraints) {
 
   // createAnswer or createOffer succeeded
   function createSucceeded(desc) {
+    setIceTimer.call(self);
     connection.onicecandidate = function(event, candidate) {
       if (! candidate) {
         connection.onicecandidate = null;
         self.rtcReady = true;
-        if (onSuccess) { onSuccess(connection.localDescription.sdp); }
+        if (onSuccess) { onSuccess(addIceCandidates.call(self, connection.localDescription.sdp)); }
         onSuccess = null;
+      } else {
+        self.iceCandidates.push(candidate.candidate);
       }
     };
 
+    /* Disable attempts at rtcp-mux as this seems to break TURN */
+    desc.sdp = desc.sdp.replace(/a=rtcp-mux[\r\n]+/, '').replace(/a=group:BUNDLE.*?[\r\n]+/, '');
     connection.setLocalDescription(desc,
       // success
       function() {
         if (connection.iceGatheringState === 'complete') {
           self.rtcReady = true;
-          if (onSuccess) { onSuccess(connection.localDescription.sdp); }
+          if (onSuccess) { onSuccess(addIceCandidates.call(self, connection.localDescription.sdp)); }
           onSuccess = null;
         }
       },
@@ -14898,6 +14908,39 @@ function createLocalDescription(type, onSuccess, onFailure, constraints) {
   }
 }
 
+function addIceCandidates(offer) {
+  var idx;
+
+  clearIceTimer();
+  for (idx = 0; idx < this.iceCandidates.length; idx++) {
+    if (offer.indexOf(this.iceCandidates[idx]) === -1) {
+      offer += 'a=' + this.iceCandidates[idx] + '\n';
+    }
+  }
+  this.iceCandidates = [];
+  return offer;
+}
+
+function clearIceTimer() {
+  if (this.iceTimer !== null && this.iceTimer !== '_done_') {
+    clearTimeout(this.iceTimer);
+  }
+  this.iceTimer = '_done_';
+}
+
+function setIceTimer() {
+  var self = this;
+  function trickle() {
+    debug('setIceTimer().trickle');
+    self.iceTimer = '_done_';
+    if (self.connection.onicecandidate) {
+      self.connection.onicecandidate();
+    }
+  }
+  if (this.iceTimer === null && this.iceTimer !== '_done_') {
+    this.iceTimer = setTimeout(trickle, this.trickleTime);
+  }
+}
 
 /**
  * Dialog Management
@@ -15254,12 +15297,15 @@ function receiveInviteResponse(response) {
     return;
   }
 
-  if(this.status !== C.STATUS_INVITE_SENT && this.status !== C.STATUS_1XX_RECEIVED) {
+  if(this.status !== C.STATUS_INVITE_SENT &&
+     this.status !== C.STATUS_1XX_RECEIVED &&
+     this.status !== C.STATUS_1XX_SDP_RECEIVED) {
     return;
   }
 
   switch(true) {
     case /^100$/.test(response.status_code):
+      trying.call(this, 'remote', response);
       this.status = C.STATUS_1XX_RECEIVED;
       break;
 
@@ -15278,17 +15324,21 @@ function receiveInviteResponse(response) {
         }
       }
 
-      this.status = C.STATUS_1XX_RECEIVED;
-      progress.call(this, 'remote', response);
-
-      if (!response.body) {
+      if (this.status !== C.STATUS_1XX_SDP_RECEIVED) {
+        this.status = C.STATUS_1XX_RECEIVED;
+      }
+      if (!response.body || this.status === C.STATUS_1XX_SDP_RECEIVED) {
+        progress.call(this, 'remote', response);
         break;
       }
+      this.status = C.STATUS_1XX_SDP_RECEIVED;
 
       this.connection.setRemoteDescription(
-        new rtcninja.RTCSessionDescription({type:'pranswer', sdp:response.body}),
+        new rtcninja.RTCSessionDescription({type:'answer', sdp:response.body}),
         // success
-        null,
+        function() {
+          progress.call(self, 'remote', response);
+        },
         // failure
         function() {
           self.earlyDialogs[response.call_id + response.from_tag + response.to_tag].terminate();
@@ -15297,9 +15347,8 @@ function receiveInviteResponse(response) {
       break;
 
     case /^2[0-9]{2}$/.test(response.status_code):
-      this.status = C.STATUS_CONFIRMED;
 
-      if(!response.body) {
+      if(!response.body && this.status !== C.STATUS_1XX_SDP_RECEIVED) {
         acceptAndTerminate.call(this, response, 400, JsSIP_C.causes.MISSING_SDP);
         failed.call(this, 'remote', response, JsSIP_C.causes.BAD_MEDIA_DESCRIPTION);
         break;
@@ -15309,6 +15358,21 @@ function receiveInviteResponse(response) {
       if (! createDialog.call(this, response, 'UAC')) {
         break;
       }
+
+      if (this.status === C.STATUS_1XX_SDP_RECEIVED ) {
+        /* We have done an 'answer' in lieu of 'pranswer', so cannot repeat
+         * TODO: Look for any new ICE lines and submit them.
+         */
+        this.status = C.STATUS_CONFIRMED;
+        accepted.call(this, 'remote', response);
+        sendRequest.call(this, JsSIP_C.ACK);
+        confirmed.call(this, 'local', null);
+
+        // Handle Session Timers.
+        handleSessionTimersInIncomingResponse.call(self, response);
+        break;
+      }
+      this.status = C.STATUS_CONFIRMED;
 
       this.connection.setRemoteDescription(
         new rtcninja.RTCSessionDescription({type:'answer', sdp:response.body}),
@@ -15829,6 +15893,15 @@ function connecting(request) {
   });
 }
 
+function trying(originator, response) {
+  debug('session trying');
+
+  this.emit('trying', {
+    originator: originator,
+    response: response || null
+  });
+}
+
 function progress(originator, response) {
   debug('session progress');
 
@@ -16112,6 +16185,7 @@ function Request(session, method) {
 
   // Check RTCSession Status
   if (this.session.status !== RTCSession.C.STATUS_1XX_RECEIVED &&
+    this.session.status !== RTCSession.C.TATUS_1XX_SDP_RECEIVED &&
     this.session.status !== RTCSession.C.STATUS_WAITING_FOR_ANSWER &&
     this.session.status !== RTCSession.C.STATUS_WAITING_FOR_ACK &&
     this.session.status !== RTCSession.C.STATUS_CONFIRMED &&
@@ -21875,10 +21949,13 @@ function Adapter(options) {
 		RTCSessionDescription = pluginInterface.RTCSessionDescription;
 		RTCIceCandidate = pluginInterface.RTCIceCandidate;
 		MediaStreamTrack = pluginInterface.MediaStreamTrack;
-		if (MediaStreamTrack && MediaStreamTrack.getSources) {
-			getMediaDevices = MediaStreamTrack.getSources.bind(MediaStreamTrack);
-		} else if (_navigator.getMediaDevices) {
-			getMediaDevices = _navigator.getMediaDevices.bind(_navigator);
+		// TODO: getSources() freezes IE so disable it.
+		if (browser.safari) {
+			if (MediaStreamTrack && MediaStreamTrack.getSources) {
+				getMediaDevices = MediaStreamTrack.getSources.bind(MediaStreamTrack);
+			} else if (_navigator.getMediaDevices) {
+				getMediaDevices = _navigator.getMediaDevices.bind(_navigator);
+			}
 		}
 		attachMediaStream = pluginInterface.attachMediaStream;
 		canRenegotiate = pluginInterface.canRenegotiate;
@@ -23238,7 +23315,7 @@ module.exports = require('../package.json').version;
 },{}],38:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": {
     "name": "Iñaki Baz Castillo",
@@ -23277,14 +23354,15 @@ module.exports={
   },
   "readme": "# rtcninja.js\n\nWebRTC API wrapper to deal with different browsers.\n\n\n## Installation\n\n* With **npm**:\n\n```bash\n$ npm install rtcninja\n```\n\n* With **bower**:\n\n```bash\n$ bower install rtcninja\n```\n\n## Usage in Node\n\n```javascript\nvar rtcninja = require('rtcninja');\n```\n\n\n## Browserified library\n\nTake a browserified version of the library from the `dist/` folder:\n\n* `dist/rtcninja-X.Y.Z.js`: The uncompressed version.\n* `dist/rtcninja-X.Y.Z.min.js`: The compressed production-ready version.\n* `dist/rtcninja.js`: A copy of the uncompressed version.\n* `dist/rtcninja.min.js`: A copy of the compressed version.\n\nThey expose the global `window.rtcninja` module.\n\n```html\n<script src='rtcninja-X.Y.Z.js'></script>\n```\n\n\n## Usage Example\n\n```javascript\n// Must first call it.\nrtcninja();\n\n// Then check.\nif (rtcninja.hasWebRTC()) {\n    // Do something.\n}\nelse {\n    // Do something.\n}\n```\n\n\n## Documentation\n\nYou can read the full [API documentation](docs/index.md) in the docs folder.\n\n\n## Debugging\n\nThe library includes the Node [debug](https://github.com/visionmedia/debug) module. In order to enable debugging:\n\nIn Node set the `DEBUG=rtcninja*` environment variable before running the application, or set it at the top of the script:\n\n```javascript\nprocess.env.DEBUG = 'rtcninja*';\n```\n\nIn the browser run `rtcninja.debug.enable('rtcninja*');` and reload the page. Note that the debugging settings are stored into the browser LocalStorage. To disable it run `rtcninja.debug.disable('rtcninja*');`.\n\n\n## Author\n\nIñaki Baz Castillo at [eFace2Face](http://eface2face.com).\n\n\n## License\n\nISC.\n",
   "readmeFilename": "README.md",
-  "gitHead": "e55c21bf513343a2b188e6dab988ca83a297f15e",
   "bugs": {
     "url": "https://github.com/eface2face/rtcninja.js/issues"
   },
-  "_id": "rtcninja@0.5.4",
-  "scripts": {},
-  "_shasum": "4255720bbc9dc4e7760da7b4c03ed28526228db7",
-  "_from": "rtcninja@>=0.5.4 <0.6.0"
+  "_id": "rtcninja@0.5.5",
+  "dist": {
+    "shasum": "509cbb44c351a0a57ec6463f1832dd3c48b5b03c"
+  },
+  "_from": "rtcninja@^0.5.5",
+  "_resolved": "https://registry.npmjs.org/rtcninja/-/rtcninja-0.5.5.tgz"
 }
 
 },{}],39:[function(require,module,exports){
@@ -23853,31 +23931,17 @@ module.exports={
     "lib": "./lib"
   },
   "browser": "lib/browser.js",
-  "gitHead": "2888a6d8c6ea0211b429000d43ed5da76124733f",
+  "readme": "WebSocket Client & Server Implementation for Node\n=================================================\n\n[![Join the chat at https://gitter.im/theturtle32/WebSocket-Node](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/theturtle32/WebSocket-Node?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)\n\n[![npm version](https://badge.fury.io/js/websocket.svg)](http://badge.fury.io/js/websocket)\n\n[![NPM](https://nodei.co/npm/websocket.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/websocket/)\n\n[![NPM](https://nodei.co/npm-dl/websocket.png?height=3)](https://nodei.co/npm/websocket/)\n\n[ ![Codeship Status for theturtle32/WebSocket-Node](https://codeship.com/projects/70458270-8ee7-0132-7756-0a0cf4fe8e66/status?branch=master)](https://codeship.com/projects/61106)\n\nOverview\n--------\nThis is a (mostly) pure JavaScript implementation of the WebSocket protocol versions 8 and 13 for Node.  There are some example client and server applications that implement various interoperability testing protocols in the \"test/scripts\" folder.\n\nFor a WebSocket client written in ActionScript 3, see my [AS3WebScocket](https://github.com/theturtle32/AS3WebSocket) project.\n\n\nDocumentation\n=============\n\n[You can read the full API documentation in the docs folder.](docs/index.md)\n\n\nChangelog\n---------\n\n***Current Version: 1.0.18*** — Released 2015-03-19\n\n***Version 1.0.18***\n\n* Resolves [issue #195](https://github.com/theturtle32/WebSocket-Node/pull/179) - passing number to connection.send() causes crash\n* [Added close code/reason arguments to W3CWebSocket#close()](https://github.com/theturtle32/WebSocket-Node/issues/184)\n\n***Version 1.0.17***\n\n* Resolves [issue #179](https://github.com/theturtle32/WebSocket-Node/pull/179) - Allow toBuffer to work with empty data\n\n***Version 1.0.16***\n\n* Resolves [issue #178](https://github.com/theturtle32/WebSocket-Node/issues/178) - Ping Frames with no data\n\n***Version 1.0.15***\n\n* Resolves [issue #177](https://github.com/theturtle32/WebSocket-Node/issues/177) - WebSocketClient ignores options unless it has a tlsOptions property\n\n***Version 1.0.14***\n\n* Resolves [issue #173](https://github.com/theturtle32/WebSocket-Node/issues/173) - To allow the W3CWebSocket interface to accept an optional non-standard configuration object as its third parameter, which will be ignored when running in a browser context.\n\n\n[View the full changelog](CHANGELOG.md)\n\nBrowser Support\n---------------\n\nAll current browsers are fully supported.\n\n* Firefox 7-9 (Old) (Protocol Version 8)\n* Firefox 10+ (Protocol Version 13)\n* Chrome 14,15 (Old) (Protocol Version 8)\n* Chrome 16+ (Protocol Version 13)\n* Internet Explorer 10+ (Protocol Version 13)\n* Safari 6+ (Protocol Version 13)\n\n***Safari older than 6.0 is not supported since it uses a very old draft of WebSockets***\n\n***If you need to simultaneously support legacy browser versions that had implemented draft-75/draft-76/draft-00, take a look here: https://gist.github.com/1428579***\n\nBenchmarks\n----------\nThere are some basic benchmarking sections in the Autobahn test suite.  I've put up a [benchmark page](http://theturtle32.github.com/WebSocket-Node/benchmarks/) that shows the results from the Autobahn tests run against AutobahnServer 0.4.10, WebSocket-Node 1.0.2, WebSocket-Node 1.0.4, and ws 0.3.4.\n\nAutobahn Tests\n--------------\nThe very complete [Autobahn Test Suite](http://autobahn.ws/testsuite/) is used by most WebSocket implementations to test spec compliance and interoperability.\n\n- [View Server Test Results](http://theturtle32.github.com/WebSocket-Node/test-report/servers/)\n- [View Client Test Results](http://theturtle32.github.com/WebSocket-Node/test-report/clients/)\n\nNotes\n-----\nThis library has been used in production on [worlize.com](https://www.worlize.com) since April 2011 and seems to be stable.  Your mileage may vary.\n\n**Tested with the following node versions:**\n\n- 0.8.28\n- 0.10.33\n\nIt may work in earlier or later versions but I'm not actively testing it outside of the listed versions.  YMMV.\n\nInstallation\n------------\n\nA few users have reported difficulties building the native extensions without first manually installing node-gyp.  If you have trouble building the native extensions, make sure you've got a C++ compiler, and have done `npm install -g node-gyp` first. \n\nNative extensions are optional, however, and WebSocket-Node will work even if the extensions cannot be compiled.\n\nIn your project root:\n\n    $ npm install websocket\n  \nThen in your code:\n\n```javascript\nvar WebSocketServer = require('websocket').server;\nvar WebSocketClient = require('websocket').client;\nvar WebSocketFrame  = require('websocket').frame;\nvar WebSocketRouter = require('websocket').router;\nvar W3CWebSocket = require('websocket').w3cwebsocket;\n```\n\nNote for Windows Users\n----------------------\nBecause there is a small C++ component used for validating UTF-8 data, you will need to install a few other software packages in addition to Node to be able to build this module:\n\n- [Microsoft Visual C++](http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express)\n- [Python 2.7](http://www.python.org/download/) (NOT Python 3.x)\n\n\nCurrent Features:\n-----------------\n- Licensed under the Apache License, Version 2.0\n- Protocol version \"8\" and \"13\" (Draft-08 through the final RFC) framing and handshake\n- Can handle/aggregate received fragmented messages\n- Can fragment outgoing messages\n- Router to mount multiple applications to various path and protocol combinations\n- TLS supported for outbound connections via WebSocketClient\n- TLS supported for server connections (use https.createServer instead of http.createServer)\n  - Thanks to [pors](https://github.com/pors) for confirming this!\n- Cookie setting and parsing\n- Tunable settings\n  - Max Receivable Frame Size\n  - Max Aggregate ReceivedMessage Size\n  - Whether to fragment outgoing messages\n  - Fragmentation chunk size for outgoing messages\n  - Whether to automatically send ping frames for the purposes of keepalive\n  - Keep-alive ping interval\n  - Whether or not to automatically assemble received fragments (allows application to handle individual fragments directly)\n  - How long to wait after sending a close frame for acknowledgment before closing the socket.\n- [W3C WebSocket API](http://www.w3.org/TR/websockets/) for applications running on both Node and browsers (via the `W3CWebSocket` class). \n\n\nKnown Issues/Missing Features:\n------------------------------\n- No API for user-provided protocol extensions.\n\n\nUsage Examples\n==============\n\nServer Example\n--------------\n\nHere's a short example showing a server that echos back anything sent to it, whether utf-8 or binary.\n\n```javascript\n#!/usr/bin/env node\nvar WebSocketServer = require('websocket').server;\nvar http = require('http');\n\nvar server = http.createServer(function(request, response) {\n    console.log((new Date()) + ' Received request for ' + request.url);\n    response.writeHead(404);\n    response.end();\n});\nserver.listen(8080, function() {\n    console.log((new Date()) + ' Server is listening on port 8080');\n});\n\nwsServer = new WebSocketServer({\n    httpServer: server,\n    // You should not use autoAcceptConnections for production\n    // applications, as it defeats all standard cross-origin protection\n    // facilities built into the protocol and the browser.  You should\n    // *always* verify the connection's origin and decide whether or not\n    // to accept it.\n    autoAcceptConnections: false\n});\n\nfunction originIsAllowed(origin) {\n  // put logic here to detect whether the specified origin is allowed.\n  return true;\n}\n\nwsServer.on('request', function(request) {\n    if (!originIsAllowed(request.origin)) {\n      // Make sure we only accept requests from an allowed origin\n      request.reject();\n      console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');\n      return;\n    }\n    \n    var connection = request.accept('echo-protocol', request.origin);\n    console.log((new Date()) + ' Connection accepted.');\n    connection.on('message', function(message) {\n        if (message.type === 'utf8') {\n            console.log('Received Message: ' + message.utf8Data);\n            connection.sendUTF(message.utf8Data);\n        }\n        else if (message.type === 'binary') {\n            console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');\n            connection.sendBytes(message.binaryData);\n        }\n    });\n    connection.on('close', function(reasonCode, description) {\n        console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');\n    });\n});\n```\n\nClient Example\n--------------\n\nThis is a simple example client that will print out any utf-8 messages it receives on the console, and periodically sends a random number.\n\n*This code demonstrates a client in Node.js, not in the browser*\n\n```javascript\n#!/usr/bin/env node\nvar WebSocketClient = require('websocket').client;\n\nvar client = new WebSocketClient();\n\nclient.on('connectFailed', function(error) {\n    console.log('Connect Error: ' + error.toString());\n});\n\nclient.on('connect', function(connection) {\n    console.log('WebSocket Client Connected');\n    connection.on('error', function(error) {\n        console.log(\"Connection Error: \" + error.toString());\n    });\n    connection.on('close', function() {\n        console.log('echo-protocol Connection Closed');\n    });\n    connection.on('message', function(message) {\n        if (message.type === 'utf8') {\n            console.log(\"Received: '\" + message.utf8Data + \"'\");\n        }\n    });\n    \n    function sendNumber() {\n        if (connection.connected) {\n            var number = Math.round(Math.random() * 0xFFFFFF);\n            connection.sendUTF(number.toString());\n            setTimeout(sendNumber, 1000);\n        }\n    }\n    sendNumber();\n});\n\nclient.connect('ws://localhost:8080/', 'echo-protocol');\n```\n\nClient Example using the *W3C WebSocket API*\n--------------------------------------------\n\nSame example as above but using the [W3C WebSocket API](http://www.w3.org/TR/websockets/).\n\n```javascript\nvar W3CWebSocket = require('websocket').w3cwebsocket;\n\nvar client = new W3CWebSocket('ws://localhost:8080/', 'echo-protocol');\n\nclient.onerror = function() {\n    console.log('Connection Error');\n};\n\nclient.onopen = function() {\n    console.log('WebSocket Client Connected');\n\n    function sendNumber() {\n        if (client.readyState === client.OPEN) {\n            var number = Math.round(Math.random() * 0xFFFFFF);\n            client.send(number.toString());\n            setTimeout(sendNumber, 1000);\n        }\n    }\n    sendNumber();\n};\n\nclient.onclose = function() {\n    console.log('echo-protocol Client Closed');\n};\n\nclient.onmessage = function(e) {\n    if (typeof e.data === 'string') {\n        console.log(\"Received: '\" + e.data + \"'\");\n    }\n};\n```\n    \nRequest Router Example\n----------------------\n\nFor an example of using the request router, see `libwebsockets-test-server.js` in the `test` folder.\n\n\nResources\n---------\n\nA presentation on the state of the WebSockets protocol that I gave on July 23, 2011 at the LA Hacker News meetup.  [WebSockets: The Real-Time Web, Delivered](http://www.scribd.com/doc/60898569/WebSockets-The-Real-Time-Web-Delivered)\n",
+  "readmeFilename": "README.md",
   "bugs": {
     "url": "https://github.com/theturtle32/WebSocket-Node/issues"
   },
   "_id": "websocket@1.0.18",
-  "_shasum": "140280dcc90ed42caa7a701e182a8c9e2dec75ef",
-  "_from": "websocket@>=1.0.18 <2.0.0",
-  "_npmVersion": "2.6.1",
-  "_nodeVersion": "1.4.3",
-  "_npmUser": {
-    "name": "theturtle32",
-    "email": "brian@worlize.com"
-  },
-  "maintainers": [
-    {
-      "name": "theturtle32",
-      "email": "brian@worlize.com"
-    }
-  ],
   "dist": {
-    "shasum": "140280dcc90ed42caa7a701e182a8c9e2dec75ef",
-    "tarball": "http://registry.npmjs.org/websocket/-/websocket-1.0.18.tgz"
+    "shasum": "c18bc080b983c80d032ad76fb5f3034f6bdf4644"
   },
-  "_resolved": "https://registry.npmjs.org/websocket/-/websocket-1.0.18.tgz",
-  "readme": "ERROR: No README data found!"
+  "_from": "websocket@^1.0.17",
+  "_resolved": "https://registry.npmjs.org/websocket/-/websocket-1.0.18.tgz"
 }
 
 },{}],46:[function(require,module,exports){
