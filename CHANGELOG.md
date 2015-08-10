@@ -1,6 +1,80 @@
 CHANGELOG
 =========
 
+Version 0.7.4 (released in 2015-08-10)
+---------------------------------------
+
+* Allow rejecting an in-dialog INVITE or UPDATE message
+
+
+Version 0.7.3 (released in 2015-07-29)
+---------------------------------------
+
+* FIX properly restart UA if start() is called while closing.
+
+
+Version 0.7.2 (released in 2015-07-27)
+---------------------------------------
+
+* Update dependencies.
+
+
+Version 0.7.1 (released in 2015-07-27)
+---------------------------------------
+
+* Update dependencies.
+
+
+Version 0.7.0 (released in 2015-07-23)
+---------------------------------------
+
+* Add REFER support.
+
+
+Version 0.6.33 (released in 2015-06-17)
+---------------------------------------
+
+* Don't keep URI params&headers in the registrar server URI.
+* `RTCSession` emits `peerconnection` for outgoing calls once the `RTCPeerConnection` is created and before the SDP offer is generated (good chance to create a `RTCDataChannel` without requiring renegotiation).
+
+
+Version 0.6.32 (released in 2015-06-16)
+---------------------------------------
+
+* Add callback to `update` and `reinvite` events.
+
+
+Version 0.6.31 (released in 2015-06-16)
+---------------------------------------
+
+* Added a parser for Reason header.
+
+
+Version 0.6.30 (released in 2015-06-09)
+---------------------------------------
+
+* Fix array iteration in `URI#toString()` to avoid Array prototype mangling by devil libraries such as Ember.
+
+
+Version 0.6.29 (released in 2015-06-06)
+---------------------------------------
+
+* Auto-register on transport connection before emitting the event.
+
+
+Version 0.6.28 (released in 2015-06-02)
+---------------------------------------
+
+* Update "rtcninja" dependencie.
+
+
+Version 0.6.27 (released in 2015-06-02)
+---------------------------------------
+
+* Don't terminate SIP dialog if processing of 183 with SDP fails.
+* Update dependencies.
+
+
 Version 0.6.26 (released in 2015-04-17)
 ---------------------------------------
 
@@ -298,7 +372,7 @@ Version 0.3.0 (released in 2013-03-18)
 * [(da23790)](https://github.com/versatica/JsSIP/commit/da23790) Fix 'UTF8-NONASCII' grammar rule
 * [(3f86b94)](https://github.com/versatica/JsSIP/commit/3f86b94) Require a single grunt task for packaging
 * [(81595be)](https://github.com/versatica/JsSIP/commit/81595be) Add some log lines into sanity check code for clarity
-* [(a8a7627)](https://github.com/versatica/JsSIP/commit/a8a7627) Enhance RTCPeerconnection SDP error handling. Thanks @ibc for reporting.
+* [(a8a7627)](https://github.com/versatica/JsSIP/commit/a8a7627) Enhance RTCPeerConnection SDP error handling. Thanks @ibc for reporting.
 * [(3acc474)](https://github.com/versatica/JsSIP/commit/3acc474) Add turn configuration parameters for RTCPeerConnection
 * [(9fccaf5)](https://github.com/versatica/JsSIP/commit/9fccaf5) Enhance 'boolean' comparison
 * [(24fcdbb)](https://github.com/versatica/JsSIP/commit/24fcdbb) Make preloaded Route header optional.
