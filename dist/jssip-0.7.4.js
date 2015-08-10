@@ -15476,6 +15476,7 @@ function createLocalDescription(type, onSuccess, onFailure, constraints) {
 
 function addIceCandidates(offer) {
   var idx;
+  var bad_ip = (offer.indexOf('c=IN IP4 0.0.0.0') !== -1);
 
   clearIceTimer();
   for (idx = 0; idx < this.iceCandidates.length; idx++) {
@@ -15484,6 +15485,11 @@ function addIceCandidates(offer) {
     }
   }
   this.iceCandidates = [];
+
+  var cand;
+  if (bad_ip && (cand = offer.match(/^.*a=candidate:[^\s]+\s+1\s+UDP\s+\d+\s+(\d+\.\d+\.\d+\.\d+)\s+/im))) {
+    offer = offer.replace(/c=IN IP4 0.0.0.0/, 'c=IN IP4 ' + cand[1]);
+  }
   return offer;
 }
 
