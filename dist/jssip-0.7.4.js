@@ -678,7 +678,7 @@ module.exports = (function(){
    *
    * http://pegjs.majda.cz/
    */
-  
+
   function quote(s) {
     /*
      * ECMA-262, 5th ed., 7.8.4: All characters may appear literally in a
@@ -701,7 +701,7 @@ module.exports = (function(){
       .replace(/[\x00-\x07\x0B\x0E-\x1F\x80-\uFFFF]/g, escape)
       + '"';
   }
-  
+
   var result = {
     /*
      * Parses the input with a generated parser. If the parsing is successfull,
@@ -935,7 +935,7 @@ module.exports = (function(){
         "from_tag": parse_from_tag,
         "early_flag": parse_early_flag
       };
-      
+
       if (startRule !== undefined) {
         if (parseFunctions[startRule] === undefined) {
           throw new Error("Invalid rule name: " + quote(startRule) + ".");
@@ -943,28 +943,28 @@ module.exports = (function(){
       } else {
         startRule = "CRLF";
       }
-      
+
       var pos = 0;
       var reportFailures = 0;
       var rightmostFailuresPos = 0;
       var rightmostFailuresExpected = [];
-      
+
       function padLeft(input, padding, length) {
         var result = input;
-        
+
         var padLength = length - input.length;
         for (var i = 0; i < padLength; i++) {
           result = padding + result;
         }
-        
+
         return result;
       }
-      
+
       function escape(ch) {
         var charCode = ch.charCodeAt(0);
         var escapeChar;
         var length;
-        
+
         if (charCode <= 0xFF) {
           escapeChar = 'x';
           length = 2;
@@ -972,26 +972,26 @@ module.exports = (function(){
           escapeChar = 'u';
           length = 4;
         }
-        
+
         return '\\' + escapeChar + padLeft(charCode.toString(16).toUpperCase(), '0', length);
       }
-      
+
       function matchFailed(failure) {
         if (pos < rightmostFailuresPos) {
           return;
         }
-        
+
         if (pos > rightmostFailuresPos) {
           rightmostFailuresPos = pos;
           rightmostFailuresExpected = [];
         }
-        
+
         rightmostFailuresExpected.push(failure);
       }
-      
+
       function parse_CRLF() {
         var result0;
-        
+
         if (input.substr(pos, 2) === "\r\n") {
           result0 = "\r\n";
           pos += 2;
@@ -1003,10 +1003,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_DIGIT() {
         var result0;
-        
+
         if (/^[0-9]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1018,10 +1018,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_ALPHA() {
         var result0;
-        
+
         if (/^[a-zA-Z]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1033,10 +1033,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_HEXDIG() {
         var result0;
-        
+
         if (/^[0-9a-fA-F]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1048,20 +1048,20 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_WSP() {
         var result0;
-        
+
         result0 = parse_SP();
         if (result0 === null) {
           result0 = parse_HTAB();
         }
         return result0;
       }
-      
+
       function parse_OCTET() {
         var result0;
-        
+
         if (/^[\0-\xFF]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1073,10 +1073,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_DQUOTE() {
         var result0;
-        
+
         if (/^["]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1088,10 +1088,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_SP() {
         var result0;
-        
+
         if (input.charCodeAt(pos) === 32) {
           result0 = " ";
           pos++;
@@ -1103,10 +1103,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_HTAB() {
         var result0;
-        
+
         if (input.charCodeAt(pos) === 9) {
           result0 = "\t";
           pos++;
@@ -1118,10 +1118,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_alphanum() {
         var result0;
-        
+
         if (/^[a-zA-Z0-9]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1133,10 +1133,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_reserved() {
         var result0;
-        
+
         if (input.charCodeAt(pos) === 59) {
           result0 = ";";
           pos++;
@@ -1247,20 +1247,20 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_unreserved() {
         var result0;
-        
+
         result0 = parse_alphanum();
         if (result0 === null) {
           result0 = parse_mark();
         }
         return result0;
       }
-      
+
       function parse_mark() {
         var result0;
-        
+
         if (input.charCodeAt(pos) === 45) {
           result0 = "-";
           pos++;
@@ -1360,11 +1360,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_escaped() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.charCodeAt(pos) === 37) {
@@ -1402,11 +1402,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_LWS() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         pos2 = pos;
@@ -1458,19 +1458,19 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_SWS() {
         var result0;
-        
+
         result0 = parse_LWS();
         result0 = result0 !== null ? result0 : "";
         return result0;
       }
-      
+
       function parse_HCOLON() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = [];
@@ -1519,11 +1519,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_TEXT_UTF8_TRIM() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result1 = parse_TEXT_UTF8char();
@@ -1598,10 +1598,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_TEXT_UTF8char() {
         var result0;
-        
+
         if (/^[!-~]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1616,10 +1616,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_UTF8_NONASCII() {
         var result0;
-        
+
         if (/^[\x80-\uFFFF]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1631,10 +1631,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_UTF8_CONT() {
         var result0;
-        
+
         if (/^[\x80-\xBF]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1646,10 +1646,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_LHEX() {
         var result0;
-        
+
         result0 = parse_DIGIT();
         if (result0 === null) {
           if (/^[a-f]/.test(input.charAt(pos))) {
@@ -1664,11 +1664,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_token() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         result1 = parse_alphanum();
         if (result1 === null) {
@@ -1909,11 +1909,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_token_nodot() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         result1 = parse_alphanum();
         if (result1 === null) {
@@ -2132,10 +2132,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_separators() {
         var result0;
-        
+
         if (input.charCodeAt(pos) === 40) {
           result0 = "(";
           pos++;
@@ -2321,11 +2321,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_word() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         result1 = parse_alphanum();
         if (result1 === null) {
@@ -2836,11 +2836,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_STAR() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -2878,11 +2878,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_SLASH() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -2920,11 +2920,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_EQUAL() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -2962,11 +2962,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_LPAREN() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3004,11 +3004,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_RPAREN() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3046,11 +3046,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_RAQUOT() {
         var result0, result1;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.charCodeAt(pos) === 62) {
@@ -3082,11 +3082,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_LAQUOT() {
         var result0, result1;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3118,11 +3118,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_COMMA() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3160,11 +3160,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_SEMI() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3202,11 +3202,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_COLON() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3244,11 +3244,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_LDQUOT() {
         var result0, result1;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3272,11 +3272,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_RDQUOT() {
         var result0, result1;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_DQUOTE();
@@ -3300,11 +3300,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_comment() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_LPAREN();
         if (result0 !== null) {
@@ -3344,10 +3344,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_ctext() {
         var result0;
-        
+
         if (/^[!-']/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -3387,11 +3387,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_quoted_string() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3439,11 +3439,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_quoted_string_clean() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3491,10 +3491,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_qdtext() {
         var result0;
-        
+
         result0 = parse_LWS();
         if (result0 === null) {
           if (input.charCodeAt(pos) === 33) {
@@ -3534,11 +3534,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_quoted_pair() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         if (input.charCodeAt(pos) === 92) {
           result0 = "\\";
@@ -3593,11 +3593,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_SIP_URI_noparams() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_uri_scheme();
@@ -3652,11 +3652,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_SIP_URI() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_uri_scheme();
@@ -3717,7 +3717,7 @@ module.exports = (function(){
                                 delete data.host_type;
                                 delete data.port;
                                 delete data.uri_params;
-        
+
                                 if (startRule === 'SIP_URI') { data = data.uri;}
                               } catch(e) {
                                 data = -1;
@@ -3728,11 +3728,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_uri_scheme() {
         var result0;
         var pos0;
-        
+
         if (input.substr(pos, 3).toLowerCase() === "sip") {
           result0 = input.substr(pos, 3);
           pos += 3;
@@ -3763,11 +3763,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_userinfo() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_user();
@@ -3828,10 +3828,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_user() {
         var result0, result1;
-        
+
         result1 = parse_unreserved();
         if (result1 === null) {
           result1 = parse_escaped();
@@ -3856,10 +3856,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_user_unreserved() {
         var result0;
-        
+
         if (input.charCodeAt(pos) === 38) {
           result0 = "&";
           pos++;
@@ -3948,11 +3948,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_password() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         result0 = [];
         result1 = parse_unreserved();
@@ -4085,11 +4085,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_hostport() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_host();
         if (result0 !== null) {
@@ -4128,11 +4128,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_host() {
         var result0;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_IPv4address();
         if (result0 === null) {
@@ -4151,11 +4151,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_hostname() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = [];
@@ -4243,10 +4243,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_domainlabel() {
         var result0, result1;
-        
+
         if (/^[a-zA-Z0-9_\-]/.test(input.charAt(pos))) {
           result1 = input.charAt(pos);
           pos++;
@@ -4275,10 +4275,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_toplabel() {
         var result0, result1;
-        
+
         if (/^[a-zA-Z0-9_\-]/.test(input.charAt(pos))) {
           result1 = input.charAt(pos);
           pos++;
@@ -4307,11 +4307,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_IPv6reference() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.charCodeAt(pos) === 91) {
@@ -4359,11 +4359,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_IPv6address() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_h16();
@@ -5963,11 +5963,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_h16() {
         var result0, result1, result2, result3;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_HEXDIG();
         if (result0 !== null) {
@@ -5999,11 +5999,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_ls32() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_h16();
         if (result0 !== null) {
@@ -6037,11 +6037,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_IPv4address() {
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_dec_octet();
@@ -6121,11 +6121,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_dec_octet() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         if (input.substr(pos, 2) === "25") {
           result0 = "25";
@@ -6253,11 +6253,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_port() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_DIGIT();
@@ -6307,11 +6307,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_uri_parameters() {
         var result0, result1, result2;
         var pos0;
-        
+
         result0 = [];
         pos0 = pos;
         if (input.charCodeAt(pos) === 59) {
@@ -6362,10 +6362,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_uri_parameter() {
         var result0;
-        
+
         result0 = parse_transport_param();
         if (result0 === null) {
           result0 = parse_user_param();
@@ -6387,11 +6387,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_transport_param() {
         var result0, result1;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 10).toLowerCase() === "transport=") {
@@ -6469,11 +6469,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_user_param() {
         var result0, result1;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 5).toLowerCase() === "user=") {
@@ -6529,11 +6529,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_method_param() {
         var result0, result1;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 7).toLowerCase() === "method=") {
@@ -6567,11 +6567,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_ttl_param() {
         var result0, result1;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 4).toLowerCase() === "ttl=") {
@@ -6605,11 +6605,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_maddr_param() {
         var result0, result1;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 6).toLowerCase() === "maddr=") {
@@ -6643,11 +6643,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_lr_param() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 2).toLowerCase() === "lr") {
@@ -6703,11 +6703,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_other_param() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_pname();
@@ -6761,11 +6761,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_pname() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         result1 = parse_paramchar();
         if (result1 !== null) {
@@ -6785,11 +6785,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_pvalue() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         result1 = parse_paramchar();
         if (result1 !== null) {
@@ -6809,10 +6809,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_paramchar() {
         var result0;
-        
+
         result0 = parse_param_unreserved();
         if (result0 === null) {
           result0 = parse_unreserved();
@@ -6822,10 +6822,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_param_unreserved() {
         var result0;
-        
+
         if (input.charCodeAt(pos) === 91) {
           result0 = "[";
           pos++;
@@ -6903,11 +6903,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_headers() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         pos0 = pos;
         if (input.charCodeAt(pos) === 63) {
           result0 = "?";
@@ -6985,11 +6985,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_header() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_hname();
@@ -7035,10 +7035,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_hname() {
         var result0, result1;
-        
+
         result1 = parse_hnv_unreserved();
         if (result1 === null) {
           result1 = parse_unreserved();
@@ -7063,10 +7063,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_hvalue() {
         var result0, result1;
-        
+
         result0 = [];
         result1 = parse_hnv_unreserved();
         if (result1 === null) {
@@ -7087,10 +7087,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_hnv_unreserved() {
         var result0;
-        
+
         if (input.charCodeAt(pos) === 91) {
           result0 = "[";
           pos++;
@@ -7168,21 +7168,21 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Request_Response() {
         var result0;
-        
+
         result0 = parse_Status_Line();
         if (result0 === null) {
           result0 = parse_Request_Line();
         }
         return result0;
       }
-      
+
       function parse_Request_Line() {
         var result0, result1, result2, result3, result4;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_Method();
         if (result0 !== null) {
@@ -7217,21 +7217,21 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Request_URI() {
         var result0;
-        
+
         result0 = parse_SIP_URI();
         if (result0 === null) {
           result0 = parse_absoluteURI();
         }
         return result0;
       }
-      
+
       function parse_absoluteURI() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_scheme();
         if (result0 !== null) {
@@ -7265,11 +7265,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_hier_part() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_net_path();
         if (result0 === null) {
@@ -7311,11 +7311,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_net_path() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         if (input.substr(pos, 2) === "//") {
           result0 = "//";
@@ -7347,11 +7347,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_abs_path() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         if (input.charCodeAt(pos) === 47) {
           result0 = "/";
@@ -7376,11 +7376,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_opaque_part() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_uric_no_slash();
         if (result0 !== null) {
@@ -7402,10 +7402,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_uric() {
         var result0;
-        
+
         result0 = parse_reserved();
         if (result0 === null) {
           result0 = parse_unreserved();
@@ -7415,10 +7415,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_uric_no_slash() {
         var result0;
-        
+
         result0 = parse_unreserved();
         if (result0 === null) {
           result0 = parse_escaped();
@@ -7524,11 +7524,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_path_segments() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_segment();
         if (result0 !== null) {
@@ -7592,11 +7592,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_segment() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = [];
         result1 = parse_pchar();
@@ -7665,10 +7665,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_param() {
         var result0, result1;
-        
+
         result0 = [];
         result1 = parse_pchar();
         while (result1 !== null) {
@@ -7677,10 +7677,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_pchar() {
         var result0;
-        
+
         result0 = parse_unreserved();
         if (result0 === null) {
           result0 = parse_escaped();
@@ -7764,11 +7764,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_scheme() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_ALPHA();
@@ -7870,21 +7870,21 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_authority() {
         var result0;
-        
+
         result0 = parse_srvr();
         if (result0 === null) {
           result0 = parse_reg_name();
         }
         return result0;
       }
-      
+
       function parse_srvr() {
         var result0, result1;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_userinfo();
@@ -7924,10 +7924,10 @@ module.exports = (function(){
         result0 = result0 !== null ? result0 : "";
         return result0;
       }
-      
+
       function parse_reg_name() {
         var result0, result1;
-        
+
         result1 = parse_unreserved();
         if (result1 === null) {
           result1 = parse_escaped();
@@ -8122,10 +8122,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_query() {
         var result0, result1;
-        
+
         result0 = [];
         result1 = parse_uric();
         while (result1 !== null) {
@@ -8134,11 +8134,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_SIP_Version() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 3).toLowerCase() === "sip") {
@@ -8223,10 +8223,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_INVITEm() {
         var result0;
-        
+
         if (input.substr(pos, 6) === "INVITE") {
           result0 = "INVITE";
           pos += 6;
@@ -8238,10 +8238,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_ACKm() {
         var result0;
-        
+
         if (input.substr(pos, 3) === "ACK") {
           result0 = "ACK";
           pos += 3;
@@ -8253,10 +8253,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_OPTIONSm() {
         var result0;
-        
+
         if (input.substr(pos, 7) === "OPTIONS") {
           result0 = "OPTIONS";
           pos += 7;
@@ -8268,10 +8268,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_BYEm() {
         var result0;
-        
+
         if (input.substr(pos, 3) === "BYE") {
           result0 = "BYE";
           pos += 3;
@@ -8283,10 +8283,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_CANCELm() {
         var result0;
-        
+
         if (input.substr(pos, 6) === "CANCEL") {
           result0 = "CANCEL";
           pos += 6;
@@ -8298,10 +8298,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_REGISTERm() {
         var result0;
-        
+
         if (input.substr(pos, 8) === "REGISTER") {
           result0 = "REGISTER";
           pos += 8;
@@ -8313,10 +8313,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_SUBSCRIBEm() {
         var result0;
-        
+
         if (input.substr(pos, 9) === "SUBSCRIBE") {
           result0 = "SUBSCRIBE";
           pos += 9;
@@ -8328,10 +8328,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_NOTIFYm() {
         var result0;
-        
+
         if (input.substr(pos, 6) === "NOTIFY") {
           result0 = "NOTIFY";
           pos += 6;
@@ -8362,7 +8362,7 @@ module.exports = (function(){
       function parse_Method() {
         var result0;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_INVITEm();
         if (result0 === null) {
@@ -8402,11 +8402,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Status_Line() {
         var result0, result1, result2, result3, result4;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_SIP_Version();
         if (result0 !== null) {
@@ -8441,11 +8441,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Status_Code() {
         var result0;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_extension_code();
         if (result0 !== null) {
@@ -8457,11 +8457,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_extension_code() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_DIGIT();
         if (result0 !== null) {
@@ -8484,11 +8484,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Reason_Phrase() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         result0 = [];
         result1 = parse_reserved();
@@ -8541,11 +8541,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Allow_Events() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_event_type();
         if (result0 !== null) {
@@ -8593,11 +8593,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Call_ID() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_word();
@@ -8644,11 +8644,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Contact() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         result0 = parse_STAR();
         if (result0 === null) {
@@ -8719,11 +8719,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_contact_param() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SIP_URI_noparams();
@@ -8795,11 +8795,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_name_addr() {
         var result0, result1, result2, result3;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_display_name();
         result0 = result0 !== null ? result0 : "";
@@ -8829,11 +8829,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_display_name() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_token();
@@ -8896,10 +8896,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_contact_params() {
         var result0;
-        
+
         result0 = parse_c_p_q();
         if (result0 === null) {
           result0 = parse_c_p_expires();
@@ -8909,11 +8909,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_c_p_q() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 1).toLowerCase() === "q") {
@@ -8953,11 +8953,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_c_p_expires() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 7).toLowerCase() === "expires") {
@@ -8997,11 +8997,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_delta_seconds() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         result1 = parse_DIGIT();
         if (result1 !== null) {
@@ -9022,11 +9022,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_qvalue() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.charCodeAt(pos) === 48) {
@@ -9096,11 +9096,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_generic_param() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_token();
@@ -9146,10 +9146,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_gen_value() {
         var result0;
-        
+
         result0 = parse_token();
         if (result0 === null) {
           result0 = parse_host();
@@ -9159,11 +9159,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Content_Disposition() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_disp_type();
         if (result0 !== null) {
@@ -9211,10 +9211,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_disp_type() {
         var result0;
-        
+
         if (input.substr(pos, 6).toLowerCase() === "render") {
           result0 = input.substr(pos, 6);
           pos += 6;
@@ -9262,21 +9262,21 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_disp_param() {
         var result0;
-        
+
         result0 = parse_handling_param();
         if (result0 === null) {
           result0 = parse_generic_param();
         }
         return result0;
       }
-      
+
       function parse_handling_param() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         if (input.substr(pos, 8).toLowerCase() === "handling") {
           result0 = input.substr(pos, 8);
@@ -9329,11 +9329,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Content_Encoding() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -9381,11 +9381,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Content_Length() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         result1 = parse_DIGIT();
         if (result1 !== null) {
@@ -9406,11 +9406,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Content_Type() {
         var result0;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_media_type();
         if (result0 !== null) {
@@ -9422,11 +9422,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_media_type() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_m_type();
         if (result0 !== null) {
@@ -9486,20 +9486,20 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_m_type() {
         var result0;
-        
+
         result0 = parse_discrete_type();
         if (result0 === null) {
           result0 = parse_composite_type();
         }
         return result0;
       }
-      
+
       function parse_discrete_type() {
         var result0;
-        
+
         if (input.substr(pos, 4).toLowerCase() === "text") {
           result0 = input.substr(pos, 4);
           pos += 4;
@@ -9558,10 +9558,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_composite_type() {
         var result0;
-        
+
         if (input.substr(pos, 7).toLowerCase() === "message") {
           result0 = input.substr(pos, 7);
           pos += 7;
@@ -9587,21 +9587,21 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_extension_token() {
         var result0;
-        
+
         result0 = parse_token();
         if (result0 === null) {
           result0 = parse_x_token();
         }
         return result0;
       }
-      
+
       function parse_x_token() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         if (input.substr(pos, 2).toLowerCase() === "x-") {
           result0 = input.substr(pos, 2);
@@ -9626,21 +9626,21 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_m_subtype() {
         var result0;
-        
+
         result0 = parse_extension_token();
         if (result0 === null) {
           result0 = parse_token();
         }
         return result0;
       }
-      
+
       function parse_m_parameter() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -9663,21 +9663,21 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_m_value() {
         var result0;
-        
+
         result0 = parse_token();
         if (result0 === null) {
           result0 = parse_quoted_string();
         }
         return result0;
       }
-      
+
       function parse_CSeq() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_CSeq_value();
         if (result0 !== null) {
@@ -9700,11 +9700,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_CSeq_value() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         result1 = parse_DIGIT();
         if (result1 !== null) {
@@ -9725,11 +9725,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Expires() {
         var result0;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_delta_seconds();
         if (result0 !== null) {
@@ -9740,11 +9740,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Event() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_event_type();
@@ -9800,11 +9800,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_event_type() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_token_nodot();
         if (result0 !== null) {
@@ -9868,11 +9868,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_From() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SIP_URI_noparams();
@@ -9937,21 +9937,21 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_from_param() {
         var result0;
-        
+
         result0 = parse_tag_param();
         if (result0 === null) {
           result0 = parse_generic_param();
         }
         return result0;
       }
-      
+
       function parse_tag_param() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 3).toLowerCase() === "tag") {
@@ -9989,11 +9989,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Max_Forwards() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         result1 = parse_DIGIT();
         if (result1 !== null) {
@@ -10014,11 +10014,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Min_Expires() {
         var result0;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_delta_seconds();
         if (result0 !== null) {
@@ -10029,11 +10029,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Name_Addr_Header() {
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = [];
@@ -10116,18 +10116,18 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Proxy_Authenticate() {
         var result0;
-        
+
         result0 = parse_challenge();
         return result0;
       }
-      
+
       function parse_challenge() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-        
+
         pos0 = pos;
         if (input.substr(pos, 6).toLowerCase() === "digest") {
           result0 = input.substr(pos, 6);
@@ -10198,11 +10198,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_other_challenge() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -10262,11 +10262,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_auth_param() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -10292,10 +10292,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_digest_cln() {
         var result0;
-        
+
         result0 = parse_realm();
         if (result0 === null) {
           result0 = parse_domain();
@@ -10320,11 +10320,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_realm() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         if (input.substr(pos, 5).toLowerCase() === "realm") {
           result0 = input.substr(pos, 5);
@@ -10355,11 +10355,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_realm_value() {
         var result0;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_quoted_string_clean();
         if (result0 !== null) {
@@ -10370,11 +10370,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_domain() {
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1;
-        
+
         pos0 = pos;
         if (input.substr(pos, 6).toLowerCase() === "domain") {
           result0 = input.substr(pos, 6);
@@ -10472,21 +10472,21 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_URI() {
         var result0;
-        
+
         result0 = parse_absoluteURI();
         if (result0 === null) {
           result0 = parse_abs_path();
         }
         return result0;
       }
-      
+
       function parse_nonce() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         if (input.substr(pos, 5).toLowerCase() === "nonce") {
           result0 = input.substr(pos, 5);
@@ -10517,11 +10517,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_nonce_value() {
         var result0;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_quoted_string_clean();
         if (result0 !== null) {
@@ -10532,11 +10532,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_opaque() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 6).toLowerCase() === "opaque") {
@@ -10574,11 +10574,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_stale() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         if (input.substr(pos, 5).toLowerCase() === "stale") {
           result0 = input.substr(pos, 5);
@@ -10642,11 +10642,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_algorithm() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 9).toLowerCase() === "algorithm") {
@@ -10707,11 +10707,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_qop_options() {
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         if (input.substr(pos, 3).toLowerCase() === "qop") {
           result0 = input.substr(pos, 3);
@@ -10814,11 +10814,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_qop_value() {
         var result0;
         var pos0;
-        
+
         pos0 = pos;
         if (input.substr(pos, 8).toLowerCase() === "auth-int") {
           result0 = input.substr(pos, 8);
@@ -10853,11 +10853,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Proxy_Require() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -10905,11 +10905,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Record_Route() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_rec_route();
@@ -10977,11 +10977,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_rec_route() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_name_addr();
@@ -11197,7 +11197,7 @@ module.exports = (function(){
       function parse_Require() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -11245,11 +11245,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Route() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_route_param();
         if (result0 !== null) {
@@ -11297,11 +11297,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_route_param() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_name_addr();
         if (result0 !== null) {
@@ -11349,11 +11349,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Subscription_State() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_substate_value();
         if (result0 !== null) {
@@ -11401,11 +11401,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_substate_value() {
         var result0;
         var pos0;
-        
+
         pos0 = pos;
         if (input.substr(pos, 6).toLowerCase() === "active") {
           result0 = input.substr(pos, 6);
@@ -11450,11 +11450,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_subexp_params() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 6).toLowerCase() === "reason") {
@@ -11572,10 +11572,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_event_reason_value() {
         var result0;
-        
+
         if (input.substr(pos, 11).toLowerCase() === "deactivated") {
           result0 = input.substr(pos, 11);
           pos += 11;
@@ -11656,19 +11656,19 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_Subject() {
         var result0;
-        
+
         result0 = parse_TEXT_UTF8_TRIM();
         result0 = result0 !== null ? result0 : "";
         return result0;
       }
-      
+
       function parse_Supported() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -11717,11 +11717,11 @@ module.exports = (function(){
         result0 = result0 !== null ? result0 : "";
         return result0;
       }
-      
+
       function parse_To() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SIP_URI_noparams();
@@ -11786,21 +11786,21 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_to_param() {
         var result0;
-        
+
         result0 = parse_tag_param();
         if (result0 === null) {
           result0 = parse_generic_param();
         }
         return result0;
       }
-      
+
       function parse_Via() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_via_param();
         if (result0 !== null) {
@@ -11848,11 +11848,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_via_param() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_sent_protocol();
         if (result0 !== null) {
@@ -11912,10 +11912,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_via_params() {
         var result0;
-        
+
         result0 = parse_via_ttl();
         if (result0 === null) {
           result0 = parse_via_maddr();
@@ -11934,11 +11934,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_via_ttl() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 3).toLowerCase() === "ttl") {
@@ -11977,11 +11977,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_via_maddr() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 5).toLowerCase() === "maddr") {
@@ -12020,11 +12020,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_via_received() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 8).toLowerCase() === "received") {
@@ -12066,11 +12066,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_via_branch() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 6).toLowerCase() === "branch") {
@@ -12109,11 +12109,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_response_port() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 5).toLowerCase() === "rport") {
@@ -12166,11 +12166,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_sent_protocol() {
         var result0, result1, result2, result3, result4;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_protocol_name();
         if (result0 !== null) {
@@ -12205,11 +12205,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_protocol_name() {
         var result0;
         var pos0;
-        
+
         pos0 = pos;
         if (input.substr(pos, 3).toLowerCase() === "sip") {
           result0 = input.substr(pos, 3);
@@ -12232,11 +12232,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_transport() {
         var result0;
         var pos0;
-        
+
         pos0 = pos;
         if (input.substr(pos, 3).toLowerCase() === "udp") {
           result0 = input.substr(pos, 3);
@@ -12292,11 +12292,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_sent_by() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_via_host();
         if (result0 !== null) {
@@ -12327,11 +12327,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_via_host() {
         var result0;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_IPv4address();
         if (result0 === null) {
@@ -12349,11 +12349,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_via_port() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_DIGIT();
@@ -12401,11 +12401,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_ttl() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_DIGIT();
@@ -12438,18 +12438,18 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_WWW_Authenticate() {
         var result0;
-        
+
         result0 = parse_challenge();
         return result0;
       }
-      
+
       function parse_Session_Expires() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         result0 = parse_s_e_expires();
         if (result0 !== null) {
@@ -12497,11 +12497,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_s_e_expires() {
         var result0;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_delta_seconds();
         if (result0 !== null) {
@@ -12512,21 +12512,21 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_s_e_params() {
         var result0;
-        
+
         result0 = parse_s_e_refresher();
         if (result0 === null) {
           result0 = parse_generic_param();
         }
         return result0;
       }
-      
+
       function parse_s_e_refresher() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 9).toLowerCase() === "refresher") {
@@ -12583,11 +12583,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_extension_header() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -12610,10 +12610,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_header_value() {
         var result0, result1;
-        
+
         result0 = [];
         result1 = parse_TEXT_UTF8char();
         if (result1 === null) {
@@ -12634,10 +12634,10 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_message_body() {
         var result0, result1;
-        
+
         result0 = [];
         result1 = parse_OCTET();
         while (result1 !== null) {
@@ -12646,11 +12646,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_uuid_URI() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         if (input.substr(pos, 5) === "uuid:") {
           result0 = "uuid:";
@@ -12675,11 +12675,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_uuid() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_hex8();
@@ -12778,11 +12778,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_hex4() {
         var result0, result1, result2, result3;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_HEXDIG();
         if (result0 !== null) {
@@ -12811,11 +12811,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_hex8() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_hex4();
         if (result0 !== null) {
@@ -12832,11 +12832,11 @@ module.exports = (function(){
         }
         return result0;
       }
-      
+
       function parse_hex12() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         result0 = parse_hex4();
         if (result0 !== null) {
@@ -13159,7 +13159,7 @@ module.exports = (function(){
       
       function cleanupExpected(expected) {
         expected.sort();
-        
+
         var lastExpected = null;
         var cleanExpected = [];
         for (var i = 0; i < expected.length; i++) {
@@ -13170,7 +13170,7 @@ module.exports = (function(){
         }
         return cleanExpected;
       }
-      
+
       function computeErrorPosition() {
         /*
          * The first idea was to use |String.split| to break the input up to the
@@ -13178,11 +13178,11 @@ module.exports = (function(){
          * there. However IE's |split| implementation is so broken that it was
          * enough to prevent it.
          */
-        
+
         var line = 1;
         var column = 1;
         var seenCR = false;
-        
+
         for (var i = 0; i < Math.max(pos, rightmostFailuresPos); i++) {
           var ch = input.charAt(i);
           if (ch === "\n") {
@@ -13198,19 +13198,19 @@ module.exports = (function(){
             seenCR = false;
           }
         }
-        
+
         return { line: line, column: column };
       }
-      
-      
+
+
         var URI = require('./URI');
         var NameAddrHeader = require('./NameAddrHeader');
-      
+
         var data = {};
-      
-      
+
+
       var result = parseFunctions[startRule]();
-      
+
       /*
        * The parser is now in one of the following three states:
        *
@@ -13239,7 +13239,7 @@ module.exports = (function(){
         var offset = Math.max(pos, rightmostFailuresPos);
         var found = offset < input.length ? input.charAt(offset) : null;
         var errorPosition = computeErrorPosition();
-        
+
         new this.SyntaxError(
           cleanupExpected(rightmostFailuresExpected),
           found,
@@ -13249,20 +13249,20 @@ module.exports = (function(){
         );
         return -1;
       }
-      
+
       return data;
     },
-    
+
     /* Returns the parser source code. */
     toSource: function() { return this._source; }
   };
-  
+
   /* Thrown when a parser encounters a syntax error. */
-  
+
   result.SyntaxError = function(expected, found, offset, line, column) {
     function buildMessage(expected, found) {
       var expectedHumanized, foundHumanized;
-      
+
       switch (expected.length) {
         case 0:
           expectedHumanized = "end of input";
@@ -13275,12 +13275,12 @@ module.exports = (function(){
             + " or "
             + expected[expected.length - 1];
       }
-      
+
       foundHumanized = found ? quote(found) : "end of input";
-      
+
       return "Expected " + expectedHumanized + " but " + foundHumanized + " found.";
     }
-    
+
     this.name = "SyntaxError";
     this.expected = expected;
     this.found = found;
@@ -13289,9 +13289,9 @@ module.exports = (function(){
     this.line = line;
     this.column = column;
   };
-  
+
   result.SyntaxError.prototype = Error.prototype;
-  
+
   return result;
 })();
 
@@ -13973,20 +13973,20 @@ var C = {
   STATUS_NULL:               0,
   STATUS_INVITE_SENT:        1,
   STATUS_1XX_RECEIVED:       2,
-  STATUS_INVITE_RECEIVED:    3,
-  STATUS_WAITING_FOR_ANSWER: 4,
-  STATUS_ANSWERED:           5,
-  STATUS_WAITING_FOR_ACK:    6,
-  STATUS_CANCELED:           7,
-  STATUS_TERMINATED:         8,
-  STATUS_CONFIRMED:          9
+  STATUS_1XX_SDP_RECEIVED:   3,
+  STATUS_INVITE_RECEIVED:    4,
+  STATUS_WAITING_FOR_ANSWER: 5,
+  STATUS_ANSWERED:           6,
+  STATUS_WAITING_FOR_ACK:    7,
+  STATUS_CANCELED:           8,
+  STATUS_TERMINATED:         9,
+  STATUS_CONFIRMED:         10
 };
 
 /**
  * Expose C object.
  */
 RTCSession.C = C;
-
 
 /**
  * Dependencies.
@@ -14095,6 +14095,7 @@ RTCSession.prototype.isInProgress = function() {
     case C.STATUS_NULL:
     case C.STATUS_INVITE_SENT:
     case C.STATUS_1XX_RECEIVED:
+    case C.STATUS_1XX_SDP_RECEIVED:
     case C.STATUS_INVITE_RECEIVED:
     case C.STATUS_WAITING_FOR_ANSWER:
       return true;
@@ -14618,7 +14619,8 @@ RTCSession.prototype.terminate = function(options) {
     case C.STATUS_NULL:
     case C.STATUS_INVITE_SENT:
     case C.STATUS_1XX_RECEIVED:
-      debug('canceling sesssion');
+    case C.STATUS_1XX_SDP_RECEIVED:
+      debug('canceling session');
 
       if (status_code && (status_code < 200 || status_code >= 700)) {
         throw new TypeError('Invalid status_code: '+ status_code);
@@ -14634,7 +14636,7 @@ RTCSession.prototype.terminate = function(options) {
       } else if (this.status === C.STATUS_INVITE_SENT) {
         this.isCanceled = true;
         this.cancelReason = cancel_reason;
-      } else if(this.status === C.STATUS_1XX_RECEIVED) {
+      } else if(this.status === C.STATUS_1XX_RECEIVED || this.status === C.STATUS_1XX_SDP_RECEIVED) {
         this.request.cancel(cancel_reason);
       }
 
@@ -15404,6 +15406,9 @@ function createLocalDescription(type, onSuccess, onFailure, constraints) {
   var connection = this.connection;
 
   this.rtcReady = false;
+  this.iceTimer = null;
+  this.trickleTime = 2000;
+  this.iceCandidates = [];
 
   if (type === 'offer') {
     connection.createOffer(
@@ -15437,21 +15442,26 @@ function createLocalDescription(type, onSuccess, onFailure, constraints) {
 
   // createAnswer or createOffer succeeded
   function createSucceeded(desc) {
+    setIceTimer.call(self);
     connection.onicecandidate = function(event, candidate) {
       if (! candidate) {
         connection.onicecandidate = null;
         self.rtcReady = true;
-        if (onSuccess) { onSuccess(connection.localDescription.sdp); }
+        if (onSuccess) { onSuccess(addIceCandidates.call(self, connection.localDescription.sdp)); }
         onSuccess = null;
+      } else {
+        self.iceCandidates.push(candidate.candidate);
       }
     };
 
+    /* Disable attempts at rtcp-mux as this seems to break TURN */
+    desc.sdp = desc.sdp.replace(/a=rtcp-mux[\r\n]+/, '').replace(/a=group:BUNDLE.*?[\r\n]+/, '');
     connection.setLocalDescription(desc,
       // success
       function() {
         if (connection.iceGatheringState === 'complete') {
           self.rtcReady = true;
-          if (onSuccess) { onSuccess(connection.localDescription.sdp); }
+          if (onSuccess) { onSuccess(addIceCandidates.call(self, connection.localDescription.sdp)); }
           onSuccess = null;
         }
       },
@@ -15464,6 +15474,39 @@ function createLocalDescription(type, onSuccess, onFailure, constraints) {
   }
 }
 
+function addIceCandidates(offer) {
+  var idx;
+
+  clearIceTimer();
+  for (idx = 0; idx < this.iceCandidates.length; idx++) {
+    if (offer.indexOf(this.iceCandidates[idx]) === -1) {
+      offer += 'a=' + this.iceCandidates[idx] + '\n';
+    }
+  }
+  this.iceCandidates = [];
+  return offer;
+}
+
+function clearIceTimer() {
+  if (this.iceTimer !== null && this.iceTimer !== '_done_') {
+    clearTimeout(this.iceTimer);
+  }
+  this.iceTimer = '_done_';
+}
+
+function setIceTimer() {
+  var self = this;
+  function trickle() {
+    debug('setIceTimer().trickle');
+    self.iceTimer = '_done_';
+    if (self.connection.onicecandidate) {
+      self.connection.onicecandidate();
+    }
+  }
+  if (this.iceTimer === null && this.iceTimer !== '_done_') {
+    this.iceTimer = setTimeout(trickle, this.trickleTime);
+  }
+}
 
 /**
  * Dialog Management
@@ -16044,12 +16087,15 @@ function receiveInviteResponse(response) {
     return;
   }
 
-  if(this.status !== C.STATUS_INVITE_SENT && this.status !== C.STATUS_1XX_RECEIVED) {
+  if(this.status !== C.STATUS_INVITE_SENT &&
+     this.status !== C.STATUS_1XX_RECEIVED &&
+     this.status !== C.STATUS_1XX_SDP_RECEIVED) {
     return;
   }
 
   switch(true) {
     case /^100$/.test(response.status_code):
+      trying.call(this, 'remote', response);
       this.status = C.STATUS_1XX_RECEIVED;
       break;
 
@@ -16068,26 +16114,31 @@ function receiveInviteResponse(response) {
         }
       }
 
-      this.status = C.STATUS_1XX_RECEIVED;
-      progress.call(this, 'remote', response);
-
-      if (!response.body) {
+      if (this.status !== C.STATUS_1XX_SDP_RECEIVED) {
+        this.status = C.STATUS_1XX_RECEIVED;
+      }
+      if (!response.body || this.status === C.STATUS_1XX_SDP_RECEIVED) {
+        progress.call(this, 'remote', response);
         break;
       }
+      this.status = C.STATUS_1XX_SDP_RECEIVED;
 
       this.connection.setRemoteDescription(
-        new rtcninja.RTCSessionDescription({type:'pranswer', sdp:response.body}),
+        new rtcninja.RTCSessionDescription({type:'answer', sdp:response.body}),
         // success
-        null,
+        function() {
+          progress.call(self, 'remote', response);
+        },
         // failure
-        null
+        function() {
+          self.earlyDialogs[response.call_id + response.from_tag + response.to_tag].terminate();
+        }
       );
       break;
 
     case /^2[0-9]{2}$/.test(response.status_code):
-      this.status = C.STATUS_CONFIRMED;
 
-      if(!response.body) {
+      if(!response.body && this.status !== C.STATUS_1XX_SDP_RECEIVED) {
         acceptAndTerminate.call(this, response, 400, JsSIP_C.causes.MISSING_SDP);
         failed.call(this, 'remote', response, JsSIP_C.causes.BAD_MEDIA_DESCRIPTION);
         break;
@@ -16097,6 +16148,21 @@ function receiveInviteResponse(response) {
       if (! createDialog.call(this, response, 'UAC')) {
         break;
       }
+
+      if (this.status === C.STATUS_1XX_SDP_RECEIVED ) {
+        /* We have done an 'answer' in lieu of 'pranswer', so cannot repeat
+         * TODO: Look for any new ICE lines and submit them.
+         */
+        this.status = C.STATUS_CONFIRMED;
+        accepted.call(this, 'remote', response);
+        sendRequest.call(this, JsSIP_C.ACK);
+        confirmed.call(this, 'local', null);
+
+        // Handle Session Timers.
+        handleSessionTimersInIncomingResponse.call(self, response);
+        break;
+      }
+      this.status = C.STATUS_CONFIRMED;
 
       this.connection.setRemoteDescription(
         new rtcninja.RTCSessionDescription({type:'answer', sdp:response.body}),
@@ -16616,6 +16682,15 @@ function connecting(request) {
   });
 }
 
+function trying(originator, response) {
+  debug('session trying');
+
+  this.emit('trying', {
+    originator: originator,
+    response: response || null
+  });
+}
+
 function progress(originator, response) {
   debug('session progress');
 
@@ -17123,6 +17198,7 @@ function Request(session, method) {
 
   // Check RTCSession Status
   if (this.session.status !== RTCSession.C.STATUS_1XX_RECEIVED &&
+    this.session.status !== RTCSession.C.TATUS_1XX_SDP_RECEIVED &&
     this.session.status !== RTCSession.C.STATUS_WAITING_FOR_ANSWER &&
     this.session.status !== RTCSession.C.STATUS_WAITING_FOR_ACK &&
     this.session.status !== RTCSession.C.STATUS_CONFIRMED &&
@@ -24513,14 +24589,15 @@ module.exports={
   },
   "readme": "# rtcninja.js <img src=\"http://www.pubnub.com/blog/wp-content/uploads/2014/01/google-webrtc-logo.png\" height=\"30\" width=\"30\">\n\nWebRTC API wrapper to deal with different browsers transparently, [eventually](http://iswebrtcreadyyet.com/) this library shouldn't be needed. We only have to wait until W3C group in charge [finishes the specification](https://tools.ietf.org/wg/rtcweb/) and the different browsers implement it correctly :sweat_smile:.\n\n<img src=\"http://images4.fanpop.com/image/photos/21800000/browser-fight-google-chrome-21865454-600-531.jpg\" height=\"250\" width=\"250\">\n\nSupported environments:\n* [Google Chrome](https://www.google.com/chrome/browser/desktop/index.html) (desktop & mobile)\n* [Google Canary](https://www.google.com/chrome/browser/canary.html) (desktop & mobile)\n* [Mozilla Firefox](https://www.mozilla.org/en-GB/firefox/new) (desktop & mobile)\n* [Firefox Nigthly](https://nightly.mozilla.org/) (desktop & mobile)\n* [Opera](http://www.opera.com/)\n* [Vivaldi](https://vivaldi.com/)\n* [CrossWalk](https://crosswalk-project.org/)\n* [Cordova](cordova.apache.org): iOS support, you only have to use our plugin [following these steps](https://github.com/eface2face/cordova-plugin-iosrtc#usage).\n* [Node-webkit](https://github.com/nwjs/nw.js/)\n\n\n## Installation\n\n### **npm**:\n\n```bash\n$ npm install rtcninja\n```\n\nand then:\n\n```javascript\nvar rtcninja = require('rtcninja');\n```\n\n### **bower**:\n\n```bash\n$ bower install rtcninja\n```\n\n\n## Browserified library\n\nTake a browserified version of the library from the `dist/` folder:\n\n* `dist/rtcninja.js`: The uncompressed version.\n* `dist/rtcninja.min.js`: The compressed production-ready version.\n\nThey expose the global `window.rtcninja` module.\n\n\n## Usage\n\nIn the [examples](./examples/) folder we provide a complete one.\n\n```javascript\n// Must first call it.\nrtcninja();\n\n// Then check.\nif (rtcninja.hasWebRTC()) {\n    // Do something.\n}\nelse {\n    // Do something.\n}\n```\n\n\n## Documentation\n\nYou can read the full [API documentation](docs/index.md) in the docs folder.\n\n\n## Issues\n\nhttps://github.com/eface2face/rtcninja.js/issues\n\n\n## Developer guide\n\n* Create a branch with a name including your user and a meaningful word about the fix/feature you're going to implement, ie: \"jesusprubio/fixstuff\"\n* Use [GitHub pull requests](https://help.github.com/articles/using-pull-requests).\n* Conventions:\n * We use [JSHint](http://jshint.com/) and [Crockford's Styleguide](http://javascript.crockford.com/code.html).\n * Please run `grunt lint` to be sure your code fits with them.\n\n\n### Debugging\n\nThe library includes the Node [debug](https://github.com/visionmedia/debug) module. In order to enable debugging:\n\nIn Node set the `DEBUG=rtcninja*` environment variable before running the application, or set it at the top of the script:\n\n```javascript\nprocess.env.DEBUG = 'rtcninja*';\n```\n\nIn the browser run `rtcninja.debug.enable('rtcninja*');` and reload the page. Note that the debugging settings are stored into the browser LocalStorage. To disable it run `rtcninja.debug.disable('rtcninja*');`.\n\n\n## Copyright & License\n\n* eFace2Face Inc.\n* [MIT](./LICENSE)\n",
   "readmeFilename": "README.md",
-  "gitHead": "3d2258f6b1b69cfede5d116bb278b49fddbb2998",
   "bugs": {
     "url": "https://github.com/eface2face/rtcninja.js/issues"
   },
   "_id": "rtcninja@0.6.3",
-  "scripts": {},
-  "_shasum": "96137cb04d712e82b46e42e7ed22b18500bf7bee",
-  "_from": "rtcninja@>=0.6.3 <0.7.0"
+  "dist": {
+    "shasum": "fe862af91e80787bb22ad6ad2001108bc6eaa299"
+  },
+  "_from": "rtcninja@^0.6.3",
+  "_resolved": "https://registry.npmjs.org/rtcninja/-/rtcninja-0.6.3.tgz"
 }
 
 },{}],41:[function(require,module,exports){
@@ -25064,7 +25141,7 @@ module.exports={
   "version": "1.0.21",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/theturtle32/WebSocket-Node.git"
+    "url": "https://github.com/theturtle32/WebSocket-Node.git"
   },
   "homepage": "https://github.com/theturtle32/WebSocket-Node",
   "engines": {
@@ -25098,31 +25175,17 @@ module.exports={
   },
   "browser": "lib/browser.js",
   "license": "Apache-2.0",
-  "gitHead": "8f5d5f3ef3d946324fe016d525893546ff6500e1",
+  "readme": "WebSocket Client & Server Implementation for Node\n=================================================\n\n[![Join the chat at https://gitter.im/theturtle32/WebSocket-Node](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/theturtle32/WebSocket-Node?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)\n\n[![npm version](https://badge.fury.io/js/websocket.svg)](http://badge.fury.io/js/websocket)\n\n[![NPM](https://nodei.co/npm/websocket.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/websocket/)\n\n[![NPM](https://nodei.co/npm-dl/websocket.png?height=3)](https://nodei.co/npm/websocket/)\n\n[ ![Codeship Status for theturtle32/WebSocket-Node](https://codeship.com/projects/70458270-8ee7-0132-7756-0a0cf4fe8e66/status?branch=master)](https://codeship.com/projects/61106)\n\nOverview\n--------\nThis is a (mostly) pure JavaScript implementation of the WebSocket protocol versions 8 and 13 for Node.  There are some example client and server applications that implement various interoperability testing protocols in the \"test/scripts\" folder.\n\nFor a WebSocket client written in ActionScript 3, see my [AS3WebScocket](https://github.com/theturtle32/AS3WebSocket) project.\n\n\nDocumentation\n=============\n\n[You can read the full API documentation in the docs folder.](docs/index.md)\n\n\nChangelog\n---------\n\n***Current Version: 1.0.21*** — Released 2015-07-22\n\n***Version 1.0.21***\n\n* Incrememnted and re-published to work around an aborted npm publish of v1.0.20.\n\n***Version 1.0.20***\n\n* Added EventTarget to the W3CWebSocket interface (Thanks, [@ibc](https://github.com/ibc)!)\n* Corrected an inaccurate error message. (Thanks, [@lekoaf](https://github.com/lekoaf)!)\n\n***Version 1.0.19***\n\n* Updated to nan v1.8.x (tested with v1.8.4)\n* Added `\"license\": \"Apache-2.0\"` to package.json via [pull request #199](https://github.com/theturtle32/WebSocket-Node/pull/199) by [@pgilad](https://github.com/pgilad). See [npm1k.org](http://npm1k.org/).\n\n[View the full changelog](CHANGELOG.md)\n\nBrowser Support\n---------------\n\nAll current browsers are fully supported.\n\n* Firefox 7-9 (Old) (Protocol Version 8)\n* Firefox 10+ (Protocol Version 13)\n* Chrome 14,15 (Old) (Protocol Version 8)\n* Chrome 16+ (Protocol Version 13)\n* Internet Explorer 10+ (Protocol Version 13)\n* Safari 6+ (Protocol Version 13)\n\n***Safari older than 6.0 is not supported since it uses a very old draft of WebSockets***\n\n***If you need to simultaneously support legacy browser versions that had implemented draft-75/draft-76/draft-00, take a look here: https://gist.github.com/1428579***\n\nBenchmarks\n----------\nThere are some basic benchmarking sections in the Autobahn test suite.  I've put up a [benchmark page](http://theturtle32.github.com/WebSocket-Node/benchmarks/) that shows the results from the Autobahn tests run against AutobahnServer 0.4.10, WebSocket-Node 1.0.2, WebSocket-Node 1.0.4, and ws 0.3.4.\n\nAutobahn Tests\n--------------\nThe very complete [Autobahn Test Suite](http://autobahn.ws/testsuite/) is used by most WebSocket implementations to test spec compliance and interoperability.\n\n- [View Server Test Results](http://theturtle32.github.com/WebSocket-Node/test-report/servers/)\n- [View Client Test Results](http://theturtle32.github.com/WebSocket-Node/test-report/clients/)\n\nNotes\n-----\nThis library has been used in production on [worlize.com](https://www.worlize.com) since April 2011 and seems to be stable.  Your mileage may vary.\n\n**Tested with the following node versions:**\n\n- 0.8.28\n- 0.10.33\n\nIt may work in earlier or later versions but I'm not actively testing it outside of the listed versions.  YMMV.\n\nInstallation\n------------\n\nA few users have reported difficulties building the native extensions without first manually installing node-gyp.  If you have trouble building the native extensions, make sure you've got a C++ compiler, and have done `npm install -g node-gyp` first. \n\nNative extensions are optional, however, and WebSocket-Node will work even if the extensions cannot be compiled.\n\nIn your project root:\n\n    $ npm install websocket\n  \nThen in your code:\n\n```javascript\nvar WebSocketServer = require('websocket').server;\nvar WebSocketClient = require('websocket').client;\nvar WebSocketFrame  = require('websocket').frame;\nvar WebSocketRouter = require('websocket').router;\nvar W3CWebSocket = require('websocket').w3cwebsocket;\n```\n\nNote for Windows Users\n----------------------\nBecause there is a small C++ component used for validating UTF-8 data, you will need to install a few other software packages in addition to Node to be able to build this module:\n\n- [Microsoft Visual C++](http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express)\n- [Python 2.7](http://www.python.org/download/) (NOT Python 3.x)\n\n\nCurrent Features:\n-----------------\n- Licensed under the Apache License, Version 2.0\n- Protocol version \"8\" and \"13\" (Draft-08 through the final RFC) framing and handshake\n- Can handle/aggregate received fragmented messages\n- Can fragment outgoing messages\n- Router to mount multiple applications to various path and protocol combinations\n- TLS supported for outbound connections via WebSocketClient\n- TLS supported for server connections (use https.createServer instead of http.createServer)\n  - Thanks to [pors](https://github.com/pors) for confirming this!\n- Cookie setting and parsing\n- Tunable settings\n  - Max Receivable Frame Size\n  - Max Aggregate ReceivedMessage Size\n  - Whether to fragment outgoing messages\n  - Fragmentation chunk size for outgoing messages\n  - Whether to automatically send ping frames for the purposes of keepalive\n  - Keep-alive ping interval\n  - Whether or not to automatically assemble received fragments (allows application to handle individual fragments directly)\n  - How long to wait after sending a close frame for acknowledgment before closing the socket.\n- [W3C WebSocket API](http://www.w3.org/TR/websockets/) for applications running on both Node and browsers (via the `W3CWebSocket` class). \n\n\nKnown Issues/Missing Features:\n------------------------------\n- No API for user-provided protocol extensions.\n\n\nUsage Examples\n==============\n\nServer Example\n--------------\n\nHere's a short example showing a server that echos back anything sent to it, whether utf-8 or binary.\n\n```javascript\n#!/usr/bin/env node\nvar WebSocketServer = require('websocket').server;\nvar http = require('http');\n\nvar server = http.createServer(function(request, response) {\n    console.log((new Date()) + ' Received request for ' + request.url);\n    response.writeHead(404);\n    response.end();\n});\nserver.listen(8080, function() {\n    console.log((new Date()) + ' Server is listening on port 8080');\n});\n\nwsServer = new WebSocketServer({\n    httpServer: server,\n    // You should not use autoAcceptConnections for production\n    // applications, as it defeats all standard cross-origin protection\n    // facilities built into the protocol and the browser.  You should\n    // *always* verify the connection's origin and decide whether or not\n    // to accept it.\n    autoAcceptConnections: false\n});\n\nfunction originIsAllowed(origin) {\n  // put logic here to detect whether the specified origin is allowed.\n  return true;\n}\n\nwsServer.on('request', function(request) {\n    if (!originIsAllowed(request.origin)) {\n      // Make sure we only accept requests from an allowed origin\n      request.reject();\n      console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');\n      return;\n    }\n    \n    var connection = request.accept('echo-protocol', request.origin);\n    console.log((new Date()) + ' Connection accepted.');\n    connection.on('message', function(message) {\n        if (message.type === 'utf8') {\n            console.log('Received Message: ' + message.utf8Data);\n            connection.sendUTF(message.utf8Data);\n        }\n        else if (message.type === 'binary') {\n            console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');\n            connection.sendBytes(message.binaryData);\n        }\n    });\n    connection.on('close', function(reasonCode, description) {\n        console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');\n    });\n});\n```\n\nClient Example\n--------------\n\nThis is a simple example client that will print out any utf-8 messages it receives on the console, and periodically sends a random number.\n\n*This code demonstrates a client in Node.js, not in the browser*\n\n```javascript\n#!/usr/bin/env node\nvar WebSocketClient = require('websocket').client;\n\nvar client = new WebSocketClient();\n\nclient.on('connectFailed', function(error) {\n    console.log('Connect Error: ' + error.toString());\n});\n\nclient.on('connect', function(connection) {\n    console.log('WebSocket Client Connected');\n    connection.on('error', function(error) {\n        console.log(\"Connection Error: \" + error.toString());\n    });\n    connection.on('close', function() {\n        console.log('echo-protocol Connection Closed');\n    });\n    connection.on('message', function(message) {\n        if (message.type === 'utf8') {\n            console.log(\"Received: '\" + message.utf8Data + \"'\");\n        }\n    });\n    \n    function sendNumber() {\n        if (connection.connected) {\n            var number = Math.round(Math.random() * 0xFFFFFF);\n            connection.sendUTF(number.toString());\n            setTimeout(sendNumber, 1000);\n        }\n    }\n    sendNumber();\n});\n\nclient.connect('ws://localhost:8080/', 'echo-protocol');\n```\n\nClient Example using the *W3C WebSocket API*\n--------------------------------------------\n\nSame example as above but using the [W3C WebSocket API](http://www.w3.org/TR/websockets/).\n\n```javascript\nvar W3CWebSocket = require('websocket').w3cwebsocket;\n\nvar client = new W3CWebSocket('ws://localhost:8080/', 'echo-protocol');\n\nclient.onerror = function() {\n    console.log('Connection Error');\n};\n\nclient.onopen = function() {\n    console.log('WebSocket Client Connected');\n\n    function sendNumber() {\n        if (client.readyState === client.OPEN) {\n            var number = Math.round(Math.random() * 0xFFFFFF);\n            client.send(number.toString());\n            setTimeout(sendNumber, 1000);\n        }\n    }\n    sendNumber();\n};\n\nclient.onclose = function() {\n    console.log('echo-protocol Client Closed');\n};\n\nclient.onmessage = function(e) {\n    if (typeof e.data === 'string') {\n        console.log(\"Received: '\" + e.data + \"'\");\n    }\n};\n```\n    \nRequest Router Example\n----------------------\n\nFor an example of using the request router, see `libwebsockets-test-server.js` in the `test` folder.\n\n\nResources\n---------\n\nA presentation on the state of the WebSockets protocol that I gave on July 23, 2011 at the LA Hacker News meetup.  [WebSockets: The Real-Time Web, Delivered](http://www.scribd.com/doc/60898569/WebSockets-The-Real-Time-Web-Delivered)\n",
+  "readmeFilename": "README.md",
   "bugs": {
     "url": "https://github.com/theturtle32/WebSocket-Node/issues"
   },
   "_id": "websocket@1.0.21",
-  "_shasum": "f51f0a96ed19629af39922470ab591907f1c5bd9",
-  "_from": "websocket@>=1.0.21 <2.0.0",
-  "_npmVersion": "2.12.1",
-  "_nodeVersion": "2.3.4",
-  "_npmUser": {
-    "name": "theturtle32",
-    "email": "brian@worlize.com"
-  },
-  "maintainers": [
-    {
-      "name": "theturtle32",
-      "email": "brian@worlize.com"
-    }
-  ],
   "dist": {
-    "shasum": "f51f0a96ed19629af39922470ab591907f1c5bd9",
-    "tarball": "http://registry.npmjs.org/websocket/-/websocket-1.0.21.tgz"
+    "shasum": "d6f8f8966233980934329438ef8ab0bf81029cb8"
   },
-  "_resolved": "https://registry.npmjs.org/websocket/-/websocket-1.0.21.tgz",
-  "readme": "ERROR: No README data found!"
+  "_from": "websocket@^1.0.21",
+  "_resolved": "https://registry.npmjs.org/websocket/-/websocket-1.0.21.tgz"
 }
 
 },{}],48:[function(require,module,exports){
