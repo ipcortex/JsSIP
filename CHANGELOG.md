@@ -1,6 +1,37 @@
 CHANGELOG
 =========
 
+
+Version 0.7.11 (released in 2015-12-17)
+---------------------------------------
+
+* Fix typo ("iceconnetionstatechange" => "iceconnectionstatechange"). Thanks to Vertika Srivastava.
+
+
+Version 0.7.10 (released in 2015-12-01)
+---------------------------------------
+
+* Make `gulp` run on Node 4.0.X and 5.0.X.
+
+
+Version 0.7.9 (released in 2015-10-16)
+---------------------------------------
+
+* `UA`: Add `set(parameter, value)` method to change a configuration setting in runtime (currently just "password" is implemented).
+
+
+Version 0.7.8 (released in 2015-10-13)
+---------------------------------------
+
+* `RTCSession`: Add `resetLocalMedia()` method to reset the session local MediaStream by enabling both its audio and video tracks (unless the remote peer is on hold).
+
+
+Version 0.7.7 (released in 2015-10-05)
+---------------------------------------
+
+* `RTCSession`: Add "sending" event to outgoing, a good chance for the app to mangle the INVITE or its SDP offer.
+
+
 Version 0.7.6 (released in 2015-09-29)
 ---------------------------------------
 

@@ -1,5 +1,5 @@
 /*
- * JsSIP v0.7.6
+ * JsSIP v0.7.11
  * the Javascript SIP library
  * Copyright: 2012-2015 José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)
  * Homepage: http://jssip.net
@@ -13682,7 +13682,6 @@ module.exports = Parser;
  */
 var debugerror = require('debug')('JsSIP:ERROR:Parser');
 debugerror.log = console.warn.bind(console);
-var sdp_transform = require('sdp-transform');
 var Grammar = require('./Grammar');
 var SIPMessage = require('./SIPMessage');
 
@@ -13954,17 +13953,7 @@ Parser.parseMessage = function(data, ua) {
   return message;
 };
 
-
-/**
- * sdp-transform features.
- */
-Parser.parseSDP = sdp_transform.parse;
-Parser.writeSDP = sdp_transform.write;
-Parser.parseFmtpConfig = sdp_transform.parseFmtpConfig;
-Parser.parsePayloads = sdp_transform.parsePayloads;
-Parser.parseRemoteCandidates = sdp_transform.parseRemoteCandidates;
-
-},{"./Grammar":6,"./SIPMessage":18,"debug":31,"sdp-transform":42}],11:[function(require,module,exports){
+},{"./Grammar":6,"./SIPMessage":18,"debug":31}],11:[function(require,module,exports){
 module.exports = RTCSession;
 
 
@@ -13997,10 +13986,10 @@ var debug = require('debug')('JsSIP:RTCSession');
 var debugerror = require('debug')('JsSIP:ERROR:RTCSession');
 debugerror.log = console.warn.bind(console);
 var rtcninja = require('rtcninja');
+var sdp_transform = require('sdp-transform');
 var JsSIP_C = require('./Constants');
 var Exceptions = require('./Exceptions');
 var Transactions = require('./Transactions');
-var Parser = require('./Parser');
 var Utils = require('./Utils');
 var Timers = require('./Timers');
 var SIPMessage = require('./SIPMessage');
@@ -14439,7 +14428,7 @@ RTCSession.prototype.answer = function(options) {
   extraHeaders.unshift('Contact: ' + self.contact);
 
   // Determine incoming media from incoming SDP offer (if any).
-  sdp = Parser.parseSDP(request.body || '');
+  sdp = request.parseSDP();
 
   // Make sure sdp.media is an array, not the case if there is only one media
   if (! Array.isArray(sdp.media)) {
@@ -14565,14 +14554,14 @@ RTCSession.prototype.answer = function(options) {
     }
   }
 
-  function rtcSucceeded(sdp) {
+  function rtcSucceeded(desc) {
     if (self.status === C.STATUS_TERMINATED) { return; }
 
     // run for reply success callback
     function replySucceeded() {
       self.status = C.STATUS_WAITING_FOR_ACK;
 
-      setInvite2xxTimer.call(self, request, sdp);
+      setInvite2xxTimer.call(self, request, desc);
       setACKTimer.call(self);
       accepted.call(self, 'local');
     }
@@ -14585,7 +14574,7 @@ RTCSession.prototype.answer = function(options) {
     handleSessionTimersInIncomingRequest.call(self, request, extraHeaders);
 
     request.reply(200, null, extraHeaders,
-      sdp,
+      desc,
       replySucceeded,
       replyFailed
     );
@@ -15325,6 +15314,18 @@ RTCSession.prototype.newDTMF = function(data) {
 };
 
 
+RTCSession.prototype.resetLocalMedia = function() {
+  debug('resetLocalMedia()');
+
+  // Reset all but remoteHold.
+  this.localHold = false;
+  this.audioMuted = false;
+  this.videoMuted = false;
+
+  setLocalMediaStatus.call(this);
+};
+
+
 /**
  * Private API.
  */
@@ -15393,7 +15394,7 @@ function createRTCConnection(pcConfig, rtcConstraints) {
   };
 
   this.connection.oniceconnectionstatechange = function(event, state) {
-    self.emit('iceconnetionstatechange', {state: state});
+    self.emit('iceconnectionstatechange', {state: state});
 
     // TODO: Do more with different states.
     if (state === 'failed') {
@@ -15626,7 +15627,7 @@ function receiveReinvite(request) {
       return;
     }
 
-    sdp = Parser.parseSDP(request.body);
+    sdp = request.parseSDP();
 
     for (idx=0; idx < sdp.media.length; idx++) {
       m = sdp.media[idx];
@@ -15768,7 +15769,7 @@ function receiveUpdate(request) {
     return;
   }
 
-  sdp = Parser.parseSDP(request.body);
+  sdp = request.parseSDP();
 
   for (idx=0; idx < sdp.media.length; idx++) {
     m = sdp.media[idx];
@@ -15973,7 +15974,10 @@ function sendInitialRequest(mediaConstraints, rtcOfferConstraints, mediaStream) 
 
   // If a local MediaStream is given use it.
   if (mediaStream) {
-    userMediaSucceeded(mediaStream);
+    // Wait a bit so the app can set events such as 'peerconnection' and 'connecting'.
+    setTimeout(function() {
+      userMediaSucceeded(mediaStream);
+    });
   // If at least audio or video is requested prompt getUserMedia.
   } else if (mediaConstraints.audio || mediaConstraints.video) {
     this.localMediaStreamLocallyGenerated = true;
@@ -16013,11 +16017,18 @@ function sendInitialRequest(mediaConstraints, rtcOfferConstraints, mediaStream) 
     failed.call(self, 'local', null, JsSIP_C.causes.USER_DENIED_MEDIA_ACCESS);
   }
 
-  function rtcSucceeded(sdp) {
+  function rtcSucceeded(desc) {
     if (self.isCanceled || self.status === C.STATUS_TERMINATED) { return; }
 
-    self.request.body = sdp;
+    self.request.body = desc;
     self.status = C.STATUS_INVITE_SENT;
+
+    // Emit 'sending' so the app can mangle the body before the request
+    // is sent.
+    self.emit('sending', {
+      request: self.request
+    });
+
     request_sender.send();
   }
 
@@ -16473,7 +16484,7 @@ function mangleOffer(sdp) {
     return sdp;
   }
 
-  sdp = Parser.parseSDP(sdp);
+  sdp = sdp_transform.parse(sdp);
 
   // Local hold.
   if (this.localHold && ! this.remoteHold) {
@@ -16524,34 +16535,28 @@ function mangleOffer(sdp) {
     }
   }
 
-  return Parser.writeSDP(sdp);
+  return sdp_transform.write(sdp);
 }
 
 function setLocalMediaStatus() {
-  if (this.localHold) {
-    debug('setLocalMediaStatus() | me on hold, mutting my media');
-    toogleMuteAudio.call(this, true);
-    toogleMuteVideo.call(this, true);
-    return;
-  }
-  else if (this.remoteHold) {
-    debug('setLocalMediaStatus() | remote on hold, mutting my media');
-    toogleMuteAudio.call(this, true);
-    toogleMuteVideo.call(this, true);
-    return;
+  var enableAudio = true,
+    enableVideo = true;
+
+  if (this.localHold || this.remoteHold) {
+    enableAudio = false;
+    enableVideo = false;
   }
 
   if (this.audioMuted) {
-    toogleMuteAudio.call(this, true);
-  } else {
-    toogleMuteAudio.call(this, false);
+    enableAudio = false;
   }
 
   if (this.videoMuted) {
-    toogleMuteVideo.call(this, true);
-  } else {
-    toogleMuteVideo.call(this, false);
+    enableVideo = false;
   }
+
+  toogleMuteAudio.call(this, !enableAudio);
+  toogleMuteVideo.call(this, !enableVideo);
 }
 
 /**
@@ -16794,7 +16799,7 @@ function onunmute(options) {
   });
 }
 
-},{"./Constants":1,"./Dialog":2,"./Exceptions":5,"./Parser":10,"./RTCSession/DTMF":12,"./RTCSession/ReferNotifier":13,"./RTCSession/ReferSubscriber":14,"./RTCSession/Request":15,"./RequestSender":17,"./SIPMessage":18,"./Timers":19,"./Transactions":20,"./Utils":24,"debug":31,"events":26,"rtcninja":36,"util":30}],12:[function(require,module,exports){
+},{"./Constants":1,"./Dialog":2,"./Exceptions":5,"./RTCSession/DTMF":12,"./RTCSession/ReferNotifier":13,"./RTCSession/ReferSubscriber":14,"./RTCSession/Request":15,"./RequestSender":17,"./SIPMessage":18,"./Timers":19,"./Transactions":20,"./Utils":24,"debug":31,"events":26,"rtcninja":36,"sdp-transform":42,"util":30}],12:[function(require,module,exports){
 module.exports = DTMF;
 
 
@@ -17722,6 +17727,7 @@ module.exports = {
  * Dependencies.
  */
 var debug = require('debug')('JsSIP:SIPMessage');
+var sdp_transform = require('sdp-transform');
 var JsSIP_C = require('./Constants');
 var Utils = require('./Utils');
 var NameAddrHeader = require('./NameAddrHeader');
@@ -17813,6 +17819,16 @@ OutgoingRequest.prototype = {
    * -param {String | Array} value header value
    */
   setHeader: function(name, value) {
+    var regexp, idx;
+
+    // Remove the header from extraHeaders if present.
+    regexp = new RegExp('^\\s*'+ name +'\\s*:','i');
+    for (idx=0; idx<this.extraHeaders.length; idx++) {
+      if (regexp.test(this.extraHeaders[idx])) {
+        this.extraHeaders.splice(idx, 1);
+      }
+    }
+
     this.headers[Utils.headerize(name)] = (Array.isArray(value)) ? value : [value];
   },
 
@@ -17895,6 +17911,22 @@ OutgoingRequest.prototype = {
     return false;
   },
 
+  /**
+   * Parse the current body as a SDP and store the resulting object
+   * into this.sdp.
+   * -param {Boolean} force: Parse even if this.sdp already exists.
+   *
+   * Returns this.sdp.
+   */
+  parseSDP: function(force) {
+    if (!force && this.sdp) {
+      return this.sdp;
+    } else {
+      this.sdp = sdp_transform.parse(this.body || '');
+      return this.sdp;
+    }
+  },
+
   toString: function() {
     var msg = '', header, length, idx,
       supported = [];
@@ -17968,6 +18000,7 @@ function IncomingMessage(){
   this.to = null;
   this.to_tag = null;
   this.body = null;
+  this.sdp = null;
 }
 
 IncomingMessage.prototype = {
@@ -18091,6 +18124,22 @@ IncomingMessage.prototype = {
   setHeader: function(name, value) {
     var header = { raw: value };
     this.headers[Utils.headerize(name)] = [header];
+  },
+
+  /**
+   * Parse the current body as a SDP and store the resulting object
+   * into this.sdp.
+   * -param {Boolean} force: Parse even if this.sdp already exists.
+   *
+   * Returns this.sdp.
+   */
+  parseSDP: function(force) {
+    if (!force && this.sdp) {
+      return this.sdp;
+    } else {
+      this.sdp = sdp_transform.parse(this.body || '');
+      return this.sdp;
+    }
   },
 
   toString: function() {
@@ -18274,7 +18323,7 @@ function IncomingResponse() {
 
 IncomingResponse.prototype = new IncomingMessage();
 
-},{"./Constants":1,"./Grammar":6,"./NameAddrHeader":9,"./Utils":24,"debug":31}],19:[function(require,module,exports){
+},{"./Constants":1,"./Grammar":6,"./NameAddrHeader":9,"./Utils":24,"debug":31,"sdp-transform":42}],19:[function(require,module,exports){
 var T1 = 500,
   T2 = 4000,
   T4 = 5000;
@@ -19044,6 +19093,8 @@ Transport.C = C;
  * Dependencies.
  */
 var debug = require('debug')('JsSIP:Transport');
+var debugerror = require('debug')('JsSIP:ERROR:Transport');
+debugerror.log = console.warn.bind(console);
 var JsSIP_C = require('./Constants');
 var Parser = require('./Parser');
 var UA = require('./UA');
@@ -19123,7 +19174,7 @@ Transport.prototype = {
         transport.onError(e);
       };
     } catch(e) {
-      debug('error connecting to WebSocket ' + this.server.ws_uri + ': ' + e);
+      debugerror('error connecting to WebSocket ' + this.server.ws_uri + ': ' + e);
       this.lastTransportError.code = null;
       this.lastTransportError.reason = e.message;
       this.ua.onTransportError(this);
@@ -19163,11 +19214,11 @@ Transport.prototype = {
     var message = msg.toString();
 
     if(this.ws && this.ws.readyState === this.ws.OPEN) {
-      debug('sending WebSocket message:\n\n' + message + '\n');
+      debug('sending WebSocket message:\n%s\n', message);
       this.ws.send(message);
       return true;
     } else {
-      debug('unable to send message, WebSocket is not open');
+      debugerror('unable to send message, WebSocket is not open');
       return false;
     }
   },
@@ -19200,7 +19251,7 @@ Transport.prototype = {
     debug('WebSocket disconnected (code: ' + e.code + (e.reason? '| reason: ' + e.reason : '') +')');
 
     if(e.wasClean === false) {
-      debug('WebSocket abrupt disconnection');
+      debugerror('WebSocket abrupt disconnection');
     }
     // Transport was connected
     if (connected_before === true) {
@@ -19232,16 +19283,16 @@ Transport.prototype = {
       try {
         data = String.fromCharCode.apply(null, new Uint8Array(data));
       } catch(evt) {
-        debug('received WebSocket binary message failed to be converted into string, message discarded');
+        debugerror('received WebSocket binary message failed to be converted into string, message discarded');
         return;
       }
 
-      debug('received WebSocket binary message:\n\n' + data + '\n');
+      debug('received WebSocket binary message:\n%s\n', data);
     }
 
     // WebSocket text message.
     else {
-      debug('received WebSocket text message:\n\n' + data + '\n');
+      debug('received WebSocket text message:\n%s\n', data);
     }
 
     message = Parser.parseMessage(data, this.ua);
@@ -19288,7 +19339,7 @@ Transport.prototype = {
   },
 
   onError: function(e) {
-    debug('WebSocket connection error: %o', e);
+    debugerror('WebSocket connection error: %o', e);
   },
 
   /**
@@ -19300,7 +19351,7 @@ Transport.prototype = {
     this.reconnection_attempts += 1;
 
     if(this.reconnection_attempts > this.ua.configuration.ws_server_max_reconnection) {
-      debug('maximum reconnection attempts for WebSocket ' + this.server.ws_uri);
+      debugerror('maximum reconnection attempts for WebSocket ' + this.server.ws_uri);
       this.ua.onTransportError(this);
     } else {
       debug('trying to reconnect to WebSocket ' + this.server.ws_uri + ' (reconnection attempt ' + this.reconnection_attempts + ')');
@@ -19341,6 +19392,8 @@ UA.C = C;
 var util = require('util');
 var events = require('events');
 var debug = require('debug')('JsSIP:UA');
+var debugerror = require('debug')('JsSIP:ERROR:UA');
+debugerror.log = console.warn.bind(console);
 var rtcninja = require('rtcninja');
 var JsSIP_C = require('./Constants');
 var Registrator = require('./Registrator');
@@ -19670,28 +19723,46 @@ UA.prototype.normalizeTarget = function(target) {
   return Utils.normalizeTarget(target, this.configuration.hostport_params);
 };
 
+/**
+ * Allow configuration changes in runtime.
+ * Returns true if the parameter could be set.
+ */
+UA.prototype.set = function(parameter, value) {
+  switch(parameter) {
+    case 'password':
+      this.configuration.password = String(value);
+      break;
+
+    default:
+      debugerror('set() | cannot set "%s" parameter in runtime', parameter);
+      return false;
+  }
+
+  return true;
+};
+
 
 //===============================
 //  Private (For internal use)
 //===============================
 
-UA.prototype.saveCredentials = function(credentials) {
-  this.cache.credentials[credentials.realm] = this.cache.credentials[credentials.realm] || {};
-  this.cache.credentials[credentials.realm][credentials.uri] = credentials;
-};
+// UA.prototype.saveCredentials = function(credentials) {
+//   this.cache.credentials[credentials.realm] = this.cache.credentials[credentials.realm] || {};
+//   this.cache.credentials[credentials.realm][credentials.uri] = credentials;
+// };
 
-UA.prototype.getCredentials = function(request) {
-  var realm, credentials;
+// UA.prototype.getCredentials = function(request) {
+//   var realm, credentials;
 
-  realm = request.ruri.host;
+//   realm = request.ruri.host;
 
-  if (this.cache.credentials[realm] && this.cache.credentials[realm][request.ruri]) {
-    credentials = this.cache.credentials[realm][request.ruri];
-    credentials.method = request.method;
-  }
+//   if (this.cache.credentials[realm] && this.cache.credentials[realm][request.ruri]) {
+//     credentials = this.cache.credentials[realm][request.ruri];
+//     credentials.method = request.method;
+//   }
 
-  return credentials;
-};
+//   return credentials;
+// };
 
 
 //==========================
@@ -20312,46 +20383,54 @@ UA.prototype.loadConfig = function(configuration) {
  * Configuration Object skeleton.
  */
 UA.configuration_skeleton = (function() {
-  var idx,  parameter,
-  skeleton = {},
-  parameters = [
-    // Internal parameters
-    'jssip_id',
-    'ws_server_max_reconnection',
-    'ws_server_reconnection_timeout',
-    'hostport_params',
+  var
+    idx, parameter, writable,
+    skeleton = {},
+    parameters = [
+      // Internal parameters
+      'jssip_id',
+      'ws_server_max_reconnection',
+      'ws_server_reconnection_timeout',
+      'hostport_params',
 
-    // Mandatory user configurable parameters
-    'uri',
-    'ws_servers',
+      // Mandatory user configurable parameters
+      'uri',
+      'ws_servers',
 
-    // Optional user configurable parameters
-    'authorization_user',
-    'connection_recovery_max_interval',
-    'connection_recovery_min_interval',
-    'display_name',
-    'hack_via_tcp', // false
-    'hack_via_ws', // false
-    'hack_ip_in_contact', //false
-    'instance_id',
-    'no_answer_timeout', // 30 seconds
-    'session_timers', // true
-    'node_websocket_options',
-    'password',
-    'register_expires', // 600 seconds
-    'registrar_server',
-    'use_preloaded_route',
+      // Optional user configurable parameters
+      'authorization_user',
+      'connection_recovery_max_interval',
+      'connection_recovery_min_interval',
+      'display_name',
+      'hack_via_tcp', // false
+      'hack_via_ws', // false
+      'hack_ip_in_contact', //false
+      'instance_id',
+      'no_answer_timeout', // 30 seconds
+      'session_timers', // true
+      'node_websocket_options',
+      'password',
+      'register_expires', // 600 seconds
+      'registrar_server',
+      'use_preloaded_route',
 
-    // Post-configuration generated parameters
-    'via_core_value',
-    'via_host'
-  ];
+      // Post-configuration generated parameters
+      'via_core_value',
+      'via_host'
+    ];
 
   for(idx in parameters) {
     parameter = parameters[idx];
+
+    if (['password'].indexOf(parameter) !== -1) {
+      writable = true;
+    } else {
+      writable = false;
+    }
+
     skeleton[parameter] = {
       value: '',
-      writable: false,
+      writable: writable,
       configurable: false
     };
   }
@@ -21501,18 +21580,11 @@ EventEmitter.prototype.emit = function(type) {
         break;
       // slower
       default:
-        len = arguments.length;
-        args = new Array(len - 1);
-        for (i = 1; i < len; i++)
-          args[i - 1] = arguments[i];
+        args = Array.prototype.slice.call(arguments, 1);
         handler.apply(this, args);
     }
   } else if (isObject(handler)) {
-    len = arguments.length;
-    args = new Array(len - 1);
-    for (i = 1; i < len; i++)
-      args[i - 1] = arguments[i];
-
+    args = Array.prototype.slice.call(arguments, 1);
     listeners = handler.slice();
     len = listeners.length;
     for (i = 0; i < len; i++)
@@ -21550,7 +21622,6 @@ EventEmitter.prototype.addListener = function(type, listener) {
 
   // Check for listener leak
   if (isObject(this._events[type]) && !this._events[type].warned) {
-    var m;
     if (!isUndefined(this._maxListeners)) {
       m = this._maxListeners;
     } else {
@@ -21672,7 +21743,7 @@ EventEmitter.prototype.removeAllListeners = function(type) {
 
   if (isFunction(listeners)) {
     this.removeListener(type, listeners);
-  } else {
+  } else if (listeners) {
     // LIFO order
     while (listeners.length)
       this.removeListener(type, listeners[listeners.length - 1]);
@@ -21693,15 +21764,20 @@ EventEmitter.prototype.listeners = function(type) {
   return ret;
 };
 
+EventEmitter.prototype.listenerCount = function(type) {
+  if (this._events) {
+    var evlistener = this._events[type];
+
+    if (isFunction(evlistener))
+      return 1;
+    else if (evlistener)
+      return evlistener.length;
+  }
+  return 0;
+};
+
 EventEmitter.listenerCount = function(emitter, type) {
-  var ret;
-  if (!emitter._events || !emitter._events[type])
-    ret = 0;
-  else if (isFunction(emitter._events[type]))
-    ret = 1;
-  else
-    ret = emitter._events[type].length;
-  return ret;
+  return emitter.listenerCount(type);
 };
 
 function isFunction(arg) {
@@ -24789,13 +24865,19 @@ var grammar = module.exports = {
       //a=candidate:0 1 UDP 2113667327 203.0.113.1 54400 typ host
       //a=candidate:1162875081 1 udp 2113937151 192.168.34.75 60017 typ host generation 0
       //a=candidate:3289912957 2 udp 1845501695 193.84.77.194 60017 typ srflx raddr 192.168.34.75 rport 60017 generation 0
+      //a=candidate:229815620 1 tcp 1518280447 192.168.150.19 60017 typ host tcptype active generation 0
+      //a=candidate:3289912957 2 tcp 1845501695 193.84.77.194 60017 typ srflx raddr 192.168.34.75 rport 60017 tcptype passive generation 0
       push:'candidates',
-      reg: /^candidate:(\S*) (\d*) (\S*) (\d*) (\S*) (\d*) typ (\S*)(?: raddr (\S*) rport (\d*))?(?: generation (\d*))?/,
-      names: ['foundation', 'component', 'transport', 'priority', 'ip', 'port', 'type', 'raddr', 'rport', 'generation'],
+      reg: /^candidate:(\S*) (\d*) (\S*) (\d*) (\S*) (\d*) typ (\S*)(?: raddr (\S*) rport (\d*))?(?: tcptype (\S*))?(?: generation (\d*))?/,
+      names: ['foundation', 'component', 'transport', 'priority', 'ip', 'port', 'type', 'raddr', 'rport', 'tcptype', 'generation'],
       format: function (o) {
         var str = "candidate:%s %d %s %d %s %d typ %s";
-        // NB: candidate has two optional chunks, so %void middle one if it's missing
+
         str += (o.raddr != null) ? " raddr %s rport %d" : "%v%v";
+
+        // NB: candidate has three optional chunks, so %void middles one if it's missing
+        str += (o.tcptype != null) ? " tcptype %s" : "%v";
+
         if (o.generation != null) {
           str += " generation %d";
         }
@@ -25213,7 +25295,7 @@ module.exports={
   "name": "jssip",
   "title": "JsSIP",
   "description": "the Javascript SIP library",
-  "version": "0.7.6",
+  "version": "0.7.11",
   "homepage": "http://jssip.net",
   "author": "José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)",
   "contributors": [
@@ -25240,21 +25322,23 @@ module.exports={
   "dependencies": {
     "debug": "^2.2.0",
     "rtcninja": "^0.6.4",
-    "sdp-transform": "~1.5.0",
+    "sdp-transform": "~1.5.3",
     "websocket": "^1.0.22"
   },
   "devDependencies": {
-    "browserify": "^11.2.0",
+    "browserify": "^12.0.1",
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
     "gulp-expect-file": "0.0.7",
     "gulp-header": "^1.7.1",
-    "gulp-jshint": "^1.11.2",
+    "gulp-jshint": "^2.0.0",
     "gulp-nodeunit-runner": "^0.2.2",
     "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^1.4.1",
-    "gulp-util": "^3.0.6",
-    "jshint-stylish": "^1.0.1",
+    "gulp-uglify": "^1.5.1",
+    "gulp-util": "^3.0.7",
+    "jshint": "^2.8.0",
+    "jshint-stylish": "^2.1.0",
     "pegjs": "0.7.0",
+    "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },
   "scripts": {
