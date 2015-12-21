@@ -15494,8 +15494,10 @@ function addIceCandidates(offer) {
   this.iceCandidates = [];
 
   var cand;
-  if (bad_ip && (cand = offer.match(/^.*a=candidate:[^\s]+\s+1\s+UDP\s+\d+\s+(\d+\.\d+\.\d+\.\d+)\s+/im))) {
+  if (bad_ip && ((cand = offer.match(/^.*a=candidate:[^\s]+\s+1\s+UDP\s+\d+\s+(\d+\.\d+\.\d+\.\d+)\s+(\d+)\s+typ\s+srflx/im)) ||
+                 (cand = offer.match(/^.*a=candidate:[^\s]+\s+1\s+UDP\s+\d+\s+(\d+\.\d+\.\d+\.\d+)\s+(\d+)\s+typ\s+host/im)))) {
     offer = offer.replace(/c=IN IP4 0.0.0.0/, 'c=IN IP4 ' + cand[1]);
+    offer = offer.replace(/(m=audio\s+)\d+(\s+)/, '$1' + cand[2] + '$2');
   }
   return offer;
 }
