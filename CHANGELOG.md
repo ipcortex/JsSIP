@@ -1,6 +1,87 @@
 CHANGELOG
 =========
 
+Version 1.0.0 (released in 2016-05-11)
+---------------------------------------
+
+* `RTCSession`: new event on('sdp') to allow SDP modifications.
+
+
+Version 0.7.23 (released in 2016-04-12)
+---------------------------------------
+
+* `RTCSession`: Allow multiple calls to `refer()` at the same time.
+
+
+Version 0.7.22 (released in 2016-04-06)
+---------------------------------------
+
+* `UA`: `set()` allows changing user's display name.
+* Ignore SDP answer in received ACK retransmissions (fix [367](https://github.com/versatica/JsSIP/issues/367)).
+
+
+Version 0.7.21 (released in 2016-04-05)
+---------------------------------------
+
+* `RTCSession`: Also emit `peerconnection` event for incoming INVITE without SDP.
+
+
+Version 0.7.20 (released in 2016-04-05)
+---------------------------------------
+
+* `RTCSession/ReferSubscriber`: Fix typo that breaks exposed API.
+
+
+Version 0.7.19 (released in 2016-04-05)
+---------------------------------------
+
+* `RTCSession`: Make `refer()` method to return the corresponding instance of `ReferSubscriber` so the app can set and manage as many events as desired on it.
+
+
+Version 0.7.18 (released in 2016-03-23)
+---------------------------------------
+
+* Add INFO method to allowed methods list
+* Add SIP Code 424 RFC 6442
+
+
+Version 0.7.17 (released in 2016-02-25)
+---------------------------------------
+
+* Apply changes of 0.7.16 also to browserified files under `dist/` folder.
+
+
+Version 0.7.16 (released in 2016-02-24)
+---------------------------------------
+
+* Fix [337](https://github.com/versatica/JsSIP/issues/337). Consistenly indicate registration status through events.
+
+
+Version 0.7.15 (released in 2016-02-24)
+---------------------------------------
+
+* Emit UA 'connected' event before sending REGISTER on transport connection
+* Fix [355](https://github.com/versatica/JsSIP/pull/355 ). call to non existent `parsed.error` function. Thanks Stéphane Alnet @shimaore
+
+
+Version 0.7.14 (released in 2016-02-17)
+---------------------------------------
+
+* Fix sips URI scheme parsing rule.
+
+
+Version 0.7.13 (released in 2016-02-10)
+---------------------------------------
+
+* Fix. Don't lowercase URI parameter values. Thanks to Alexandr Dubovikov @adubovikov
+
+
+Version 0.7.12 (released in 2016-02-05)
+---------------------------------------
+
+* Accept new `UA` configuration parameters `ha1` and `realm` to avoid plain SIP password handling ([issue 353](https://github.com/versatica/JsSIP/issues/353)).
+* New `UA.set()` and `UA.get()` methods to set and retrieve computed configuration parameters in runtime.
+
 
 Version 0.7.11 (released in 2015-12-17)
 ---------------------------------------
