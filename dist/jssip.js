@@ -1,5 +1,5 @@
 /*
- * JsSIP v1.0.0
+ * JsSIP v2.0.2
  * the Javascript SIP library
  * Copyright: 2012-2016 José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)
  * Homepage: http://jssip.net
@@ -162,7 +162,7 @@ var C = {
 
 module.exports = C;
 
-},{"../package.json":48}],2:[function(require,module,exports){
+},{"../package.json":47}],2:[function(require,module,exports){
 module.exports = Dialog;
 
 
@@ -380,7 +380,7 @@ Dialog.prototype = {
   }
 };
 
-},{"./Constants":1,"./Dialog/RequestSender":3,"./SIPMessage":18,"./Transactions":20,"debug":27}],3:[function(require,module,exports){
+},{"./Constants":1,"./Dialog/RequestSender":3,"./SIPMessage":18,"./Transactions":21,"debug":29}],3:[function(require,module,exports){
 module.exports = DialogRequestSender;
 
 /**
@@ -460,7 +460,7 @@ DialogRequestSender.prototype = {
   }
 };
 
-},{"../Constants":1,"../RTCSession":11,"../RequestSender":17,"../Transactions":20}],4:[function(require,module,exports){
+},{"../Constants":1,"../RTCSession":11,"../RequestSender":17,"../Transactions":21}],4:[function(require,module,exports){
 module.exports = DigestAuthentication;
 
 
@@ -649,7 +649,7 @@ DigestAuthentication.prototype.toString = function() {
   return 'Digest ' + auth_params.join(', ');
 };
 
-},{"./Utils":24,"debug":27}],5:[function(require,module,exports){
+},{"./Utils":25,"debug":29}],5:[function(require,module,exports){
 /**
  * @namespace Exceptions
  * @memberOf JsSIP
@@ -714,7 +714,6 @@ module.exports = (function(){
    *
    * http://pegjs.majda.cz/
    */
-
   function quote(s) {
     /*
      * ECMA-262, 5th ed., 7.8.4: All characters may appear literally in a
@@ -737,7 +736,6 @@ module.exports = (function(){
       .replace(/[\x00-\x07\x0B\x0E-\x1F\x80-\uFFFF]/g, escape)
       + '"';
   }
-
   var result = {
     /*
      * Parses the input with a generated parser. If the parsing is successfull,
@@ -973,7 +971,6 @@ module.exports = (function(){
         "from_tag": parse_from_tag,
         "early_flag": parse_early_flag
       };
-
       if (startRule !== undefined) {
         if (parseFunctions[startRule] === undefined) {
           throw new Error("Invalid rule name: " + quote(startRule) + ".");
@@ -981,28 +978,22 @@ module.exports = (function(){
       } else {
         startRule = "CRLF";
       }
-
       var pos = 0;
       var reportFailures = 0;
       var rightmostFailuresPos = 0;
       var rightmostFailuresExpected = [];
-
       function padLeft(input, padding, length) {
         var result = input;
-
         var padLength = length - input.length;
         for (var i = 0; i < padLength; i++) {
           result = padding + result;
         }
-
         return result;
       }
-
       function escape(ch) {
         var charCode = ch.charCodeAt(0);
         var escapeChar;
         var length;
-
         if (charCode <= 0xFF) {
           escapeChar = 'x';
           length = 2;
@@ -1010,26 +1001,20 @@ module.exports = (function(){
           escapeChar = 'u';
           length = 4;
         }
-
         return '\\' + escapeChar + padLeft(charCode.toString(16).toUpperCase(), '0', length);
       }
-
       function matchFailed(failure) {
         if (pos < rightmostFailuresPos) {
           return;
         }
-
         if (pos > rightmostFailuresPos) {
           rightmostFailuresPos = pos;
           rightmostFailuresExpected = [];
         }
-
         rightmostFailuresExpected.push(failure);
       }
-
       function parse_CRLF() {
         var result0;
-
         if (input.substr(pos, 2) === "\r\n") {
           result0 = "\r\n";
           pos += 2;
@@ -1041,10 +1026,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_DIGIT() {
         var result0;
-
         if (/^[0-9]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1056,10 +1039,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_ALPHA() {
         var result0;
-
         if (/^[a-zA-Z]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1071,10 +1052,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_HEXDIG() {
         var result0;
-
         if (/^[0-9a-fA-F]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1086,20 +1065,16 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_WSP() {
         var result0;
-
         result0 = parse_SP();
         if (result0 === null) {
           result0 = parse_HTAB();
         }
         return result0;
       }
-
       function parse_OCTET() {
         var result0;
-
         if (/^[\0-\xFF]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1111,10 +1086,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_DQUOTE() {
         var result0;
-
         if (/^["]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1126,10 +1099,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_SP() {
         var result0;
-
         if (input.charCodeAt(pos) === 32) {
           result0 = " ";
           pos++;
@@ -1141,10 +1112,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_HTAB() {
         var result0;
-
         if (input.charCodeAt(pos) === 9) {
           result0 = "\t";
           pos++;
@@ -1156,10 +1125,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_alphanum() {
         var result0;
-
         if (/^[a-zA-Z0-9]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1171,10 +1138,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_reserved() {
         var result0;
-
         if (input.charCodeAt(pos) === 59) {
           result0 = ";";
           pos++;
@@ -1285,20 +1250,16 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_unreserved() {
         var result0;
-
         result0 = parse_alphanum();
         if (result0 === null) {
           result0 = parse_mark();
         }
         return result0;
       }
-
       function parse_mark() {
         var result0;
-
         if (input.charCodeAt(pos) === 45) {
           result0 = "-";
           pos++;
@@ -1398,11 +1359,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_escaped() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.charCodeAt(pos) === 37) {
@@ -1440,11 +1399,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_LWS() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         pos2 = pos;
@@ -1496,19 +1453,15 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_SWS() {
         var result0;
-
         result0 = parse_LWS();
         result0 = result0 !== null ? result0 : "";
         return result0;
       }
-
       function parse_HCOLON() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = [];
@@ -1557,11 +1510,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_TEXT_UTF8_TRIM() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result1 = parse_TEXT_UTF8char();
@@ -1636,10 +1587,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_TEXT_UTF8char() {
         var result0;
-
         if (/^[!-~]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1654,10 +1603,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_UTF8_NONASCII() {
         var result0;
-
         if (/^[\x80-\uFFFF]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1669,10 +1616,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_UTF8_CONT() {
         var result0;
-
         if (/^[\x80-\xBF]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -1684,10 +1629,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_LHEX() {
         var result0;
-
         result0 = parse_DIGIT();
         if (result0 === null) {
           if (/^[a-f]/.test(input.charAt(pos))) {
@@ -1702,11 +1645,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_token() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         result1 = parse_alphanum();
         if (result1 === null) {
@@ -1947,11 +1888,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_token_nodot() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         result1 = parse_alphanum();
         if (result1 === null) {
@@ -2170,10 +2109,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_separators() {
         var result0;
-
         if (input.charCodeAt(pos) === 40) {
           result0 = "(";
           pos++;
@@ -2359,11 +2296,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_word() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         result1 = parse_alphanum();
         if (result1 === null) {
@@ -2874,11 +2809,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_STAR() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -2916,11 +2849,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_SLASH() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -2958,11 +2889,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_EQUAL() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3000,11 +2929,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_LPAREN() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3042,11 +2969,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_RPAREN() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3084,11 +3009,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_RAQUOT() {
         var result0, result1;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.charCodeAt(pos) === 62) {
@@ -3120,11 +3043,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_LAQUOT() {
         var result0, result1;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3156,11 +3077,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_COMMA() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3198,11 +3117,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_SEMI() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3240,11 +3157,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_COLON() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3282,11 +3197,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_LDQUOT() {
         var result0, result1;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3310,11 +3223,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_RDQUOT() {
         var result0, result1;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_DQUOTE();
@@ -3338,11 +3249,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_comment() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         result0 = parse_LPAREN();
         if (result0 !== null) {
@@ -3382,10 +3291,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_ctext() {
         var result0;
-
         if (/^[!-']/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -3425,11 +3332,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_quoted_string() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3477,11 +3382,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_quoted_string_clean() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SWS();
@@ -3529,10 +3432,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_qdtext() {
         var result0;
-
         result0 = parse_LWS();
         if (result0 === null) {
           if (input.charCodeAt(pos) === 33) {
@@ -3572,11 +3473,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_quoted_pair() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         if (input.charCodeAt(pos) === 92) {
           result0 = "\\";
@@ -3631,11 +3530,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_SIP_URI_noparams() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_uri_scheme();
@@ -3690,11 +3587,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_SIP_URI() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_uri_scheme();
@@ -3755,7 +3650,6 @@ module.exports = (function(){
                                 delete data.host_type;
                                 delete data.port;
                                 delete data.uri_params;
-
                                 if (startRule === 'SIP_URI') { data = data.uri;}
                               } catch(e) {
                                 data = -1;
@@ -3766,21 +3660,17 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_uri_scheme() {
         var result0;
-        
         result0 = parse_uri_scheme_sips();
         if (result0 === null) {
           result0 = parse_uri_scheme_sip();
         }
         return result0;
       }
-      
       function parse_uri_scheme_sips() {
         var result0;
         var pos0;
-        
         pos0 = pos;
         if (input.substr(pos, 4).toLowerCase() === "sips") {
           result0 = input.substr(pos, 4);
@@ -3800,11 +3690,9 @@ module.exports = (function(){
         }
         return result0;
       }
-      
       function parse_uri_scheme_sip() {
         var result0;
         var pos0;
-        
         pos0 = pos;
         if (input.substr(pos, 3).toLowerCase() === "sip") {
           result0 = input.substr(pos, 3);
@@ -3824,11 +3712,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_userinfo() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_user();
@@ -3889,10 +3775,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_user() {
         var result0, result1;
-
         result1 = parse_unreserved();
         if (result1 === null) {
           result1 = parse_escaped();
@@ -3917,10 +3801,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_user_unreserved() {
         var result0;
-
         if (input.charCodeAt(pos) === 38) {
           result0 = "&";
           pos++;
@@ -4009,11 +3891,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_password() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         result0 = [];
         result1 = parse_unreserved();
@@ -4146,11 +4026,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_hostport() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_host();
         if (result0 !== null) {
@@ -4189,17 +4067,15 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_host() {
         var result0;
         var pos0;
-
         pos0 = pos;
-        result0 = parse_IPv4address();
+        result0 = parse_hostname();
         if (result0 === null) {
-          result0 = parse_IPv6reference();
+          result0 = parse_IPv4address();
           if (result0 === null) {
-            result0 = parse_hostname();
+            result0 = parse_IPv6reference();
           }
         }
         if (result0 !== null) {
@@ -4212,11 +4088,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_hostname() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result0 = [];
@@ -4304,75 +4178,145 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_domainlabel() {
-        var result0, result1;
-
-        if (/^[a-zA-Z0-9_\-]/.test(input.charAt(pos))) {
-          result1 = input.charAt(pos);
-          pos++;
-        } else {
-          result1 = null;
-          if (reportFailures === 0) {
-            matchFailed("[a-zA-Z0-9_\\-]");
-          }
-        }
-        if (result1 !== null) {
-          result0 = [];
-          while (result1 !== null) {
-            result0.push(result1);
-            if (/^[a-zA-Z0-9_\-]/.test(input.charAt(pos))) {
-              result1 = input.charAt(pos);
+        var result0, result1, result2;
+        var pos0;
+        pos0 = pos;
+        result0 = parse_alphanum();
+        if (result0 !== null) {
+          result1 = [];
+          result2 = parse_alphanum();
+          if (result2 === null) {
+            if (input.charCodeAt(pos) === 45) {
+              result2 = "-";
               pos++;
             } else {
-              result1 = null;
+              result2 = null;
               if (reportFailures === 0) {
-                matchFailed("[a-zA-Z0-9_\\-]");
+                matchFailed("\"-\"");
+              }
+            }
+            if (result2 === null) {
+              if (input.charCodeAt(pos) === 95) {
+                result2 = "_";
+                pos++;
+              } else {
+                result2 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"_\"");
+                }
               }
             }
           }
+          while (result2 !== null) {
+            result1.push(result2);
+            result2 = parse_alphanum();
+            if (result2 === null) {
+              if (input.charCodeAt(pos) === 45) {
+                result2 = "-";
+                pos++;
+              } else {
+                result2 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"-\"");
+                }
+              }
+              if (result2 === null) {
+                if (input.charCodeAt(pos) === 95) {
+                  result2 = "_";
+                  pos++;
+                } else {
+                  result2 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"_\"");
+                  }
+                }
+              }
+            }
+          }
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = pos0;
+          }
         } else {
           result0 = null;
+          pos = pos0;
         }
         return result0;
       }
-
       function parse_toplabel() {
-        var result0, result1;
-
-        if (/^[a-zA-Z0-9_\-]/.test(input.charAt(pos))) {
-          result1 = input.charAt(pos);
-          pos++;
-        } else {
-          result1 = null;
-          if (reportFailures === 0) {
-            matchFailed("[a-zA-Z0-9_\\-]");
-          }
-        }
-        if (result1 !== null) {
-          result0 = [];
-          while (result1 !== null) {
-            result0.push(result1);
-            if (/^[a-zA-Z0-9_\-]/.test(input.charAt(pos))) {
-              result1 = input.charAt(pos);
+        var result0, result1, result2;
+        var pos0;
+        pos0 = pos;
+        result0 = parse_ALPHA();
+        if (result0 !== null) {
+          result1 = [];
+          result2 = parse_alphanum();
+          if (result2 === null) {
+            if (input.charCodeAt(pos) === 45) {
+              result2 = "-";
               pos++;
             } else {
-              result1 = null;
+              result2 = null;
               if (reportFailures === 0) {
-                matchFailed("[a-zA-Z0-9_\\-]");
+                matchFailed("\"-\"");
+              }
+            }
+            if (result2 === null) {
+              if (input.charCodeAt(pos) === 95) {
+                result2 = "_";
+                pos++;
+              } else {
+                result2 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"_\"");
+                }
               }
             }
           }
+          while (result2 !== null) {
+            result1.push(result2);
+            result2 = parse_alphanum();
+            if (result2 === null) {
+              if (input.charCodeAt(pos) === 45) {
+                result2 = "-";
+                pos++;
+              } else {
+                result2 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"-\"");
+                }
+              }
+              if (result2 === null) {
+                if (input.charCodeAt(pos) === 95) {
+                  result2 = "_";
+                  pos++;
+                } else {
+                  result2 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"_\"");
+                  }
+                }
+              }
+            }
+          }
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = pos0;
+          }
         } else {
           result0 = null;
+          pos = pos0;
         }
         return result0;
       }
-
       function parse_IPv6reference() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.charCodeAt(pos) === 91) {
@@ -4420,11 +4364,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_IPv6address() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_h16();
@@ -6024,11 +5966,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_h16() {
         var result0, result1, result2, result3;
         var pos0;
-
         pos0 = pos;
         result0 = parse_HEXDIG();
         if (result0 !== null) {
@@ -6060,11 +6000,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_ls32() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         result0 = parse_h16();
         if (result0 !== null) {
@@ -6098,11 +6036,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_IPv4address() {
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_dec_octet();
@@ -6182,11 +6118,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_dec_octet() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         if (input.substr(pos, 2) === "25") {
           result0 = "25";
@@ -6314,11 +6248,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_port() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_DIGIT();
@@ -6368,11 +6300,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_uri_parameters() {
         var result0, result1, result2;
         var pos0;
-
         result0 = [];
         pos0 = pos;
         if (input.charCodeAt(pos) === 59) {
@@ -6423,10 +6353,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_uri_parameter() {
         var result0;
-
         result0 = parse_transport_param();
         if (result0 === null) {
           result0 = parse_user_param();
@@ -6448,11 +6376,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_transport_param() {
         var result0, result1;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 10).toLowerCase() === "transport=") {
@@ -6530,11 +6456,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_user_param() {
         var result0, result1;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 5).toLowerCase() === "user=") {
@@ -6590,11 +6514,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_method_param() {
         var result0, result1;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 7).toLowerCase() === "method=") {
@@ -6628,11 +6550,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_ttl_param() {
         var result0, result1;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 4).toLowerCase() === "ttl=") {
@@ -6666,11 +6586,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_maddr_param() {
         var result0, result1;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 6).toLowerCase() === "maddr=") {
@@ -6704,11 +6622,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_lr_param() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 2).toLowerCase() === "lr") {
@@ -6764,11 +6680,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_other_param() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_pname();
@@ -6822,11 +6736,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_pname() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         result1 = parse_paramchar();
         if (result1 !== null) {
@@ -6846,11 +6758,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_pvalue() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         result1 = parse_paramchar();
         if (result1 !== null) {
@@ -6870,10 +6780,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_paramchar() {
         var result0;
-
         result0 = parse_param_unreserved();
         if (result0 === null) {
           result0 = parse_unreserved();
@@ -6883,10 +6791,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_param_unreserved() {
         var result0;
-
         if (input.charCodeAt(pos) === 91) {
           result0 = "[";
           pos++;
@@ -6964,11 +6870,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_headers() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-
         pos0 = pos;
         if (input.charCodeAt(pos) === 63) {
           result0 = "?";
@@ -7046,11 +6950,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_header() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_hname();
@@ -7096,10 +6998,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_hname() {
         var result0, result1;
-
         result1 = parse_hnv_unreserved();
         if (result1 === null) {
           result1 = parse_unreserved();
@@ -7124,10 +7024,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_hvalue() {
         var result0, result1;
-
         result0 = [];
         result1 = parse_hnv_unreserved();
         if (result1 === null) {
@@ -7148,10 +7046,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_hnv_unreserved() {
         var result0;
-
         if (input.charCodeAt(pos) === 91) {
           result0 = "[";
           pos++;
@@ -7229,21 +7125,17 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Request_Response() {
         var result0;
-
         result0 = parse_Status_Line();
         if (result0 === null) {
           result0 = parse_Request_Line();
         }
         return result0;
       }
-
       function parse_Request_Line() {
         var result0, result1, result2, result3, result4;
         var pos0;
-
         pos0 = pos;
         result0 = parse_Method();
         if (result0 !== null) {
@@ -7278,21 +7170,17 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Request_URI() {
         var result0;
-
         result0 = parse_SIP_URI();
         if (result0 === null) {
           result0 = parse_absoluteURI();
         }
         return result0;
       }
-
       function parse_absoluteURI() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         result0 = parse_scheme();
         if (result0 !== null) {
@@ -7326,11 +7214,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_hier_part() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_net_path();
         if (result0 === null) {
@@ -7372,11 +7258,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_net_path() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         if (input.substr(pos, 2) === "//") {
           result0 = "//";
@@ -7408,11 +7292,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_abs_path() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         if (input.charCodeAt(pos) === 47) {
           result0 = "/";
@@ -7437,11 +7319,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_opaque_part() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         result0 = parse_uric_no_slash();
         if (result0 !== null) {
@@ -7463,10 +7343,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_uric() {
         var result0;
-
         result0 = parse_reserved();
         if (result0 === null) {
           result0 = parse_unreserved();
@@ -7476,10 +7354,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_uric_no_slash() {
         var result0;
-
         result0 = parse_unreserved();
         if (result0 === null) {
           result0 = parse_escaped();
@@ -7585,11 +7461,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_path_segments() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_segment();
         if (result0 !== null) {
@@ -7653,11 +7527,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_segment() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = [];
         result1 = parse_pchar();
@@ -7726,10 +7598,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_param() {
         var result0, result1;
-
         result0 = [];
         result1 = parse_pchar();
         while (result1 !== null) {
@@ -7738,10 +7608,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_pchar() {
         var result0;
-
         result0 = parse_unreserved();
         if (result0 === null) {
           result0 = parse_escaped();
@@ -7825,11 +7693,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_scheme() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_ALPHA();
@@ -7931,21 +7797,17 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_authority() {
         var result0;
-
         result0 = parse_srvr();
         if (result0 === null) {
           result0 = parse_reg_name();
         }
         return result0;
       }
-
       function parse_srvr() {
         var result0, result1;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_userinfo();
@@ -7985,10 +7847,8 @@ module.exports = (function(){
         result0 = result0 !== null ? result0 : "";
         return result0;
       }
-
       function parse_reg_name() {
         var result0, result1;
-
         result1 = parse_unreserved();
         if (result1 === null) {
           result1 = parse_escaped();
@@ -8183,10 +8043,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_query() {
         var result0, result1;
-
         result0 = [];
         result1 = parse_uric();
         while (result1 !== null) {
@@ -8195,11 +8053,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_SIP_Version() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 3).toLowerCase() === "sip") {
@@ -8284,10 +8140,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_INVITEm() {
         var result0;
-
         if (input.substr(pos, 6) === "INVITE") {
           result0 = "INVITE";
           pos += 6;
@@ -8299,10 +8153,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_ACKm() {
         var result0;
-
         if (input.substr(pos, 3) === "ACK") {
           result0 = "ACK";
           pos += 3;
@@ -8314,10 +8166,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_OPTIONSm() {
         var result0;
-
         if (input.substr(pos, 7) === "OPTIONS") {
           result0 = "OPTIONS";
           pos += 7;
@@ -8329,10 +8179,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_BYEm() {
         var result0;
-
         if (input.substr(pos, 3) === "BYE") {
           result0 = "BYE";
           pos += 3;
@@ -8344,10 +8192,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_CANCELm() {
         var result0;
-
         if (input.substr(pos, 6) === "CANCEL") {
           result0 = "CANCEL";
           pos += 6;
@@ -8359,10 +8205,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_REGISTERm() {
         var result0;
-
         if (input.substr(pos, 8) === "REGISTER") {
           result0 = "REGISTER";
           pos += 8;
@@ -8374,10 +8218,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_SUBSCRIBEm() {
         var result0;
-
         if (input.substr(pos, 9) === "SUBSCRIBE") {
           result0 = "SUBSCRIBE";
           pos += 9;
@@ -8389,10 +8231,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_NOTIFYm() {
         var result0;
-
         if (input.substr(pos, 6) === "NOTIFY") {
           result0 = "NOTIFY";
           pos += 6;
@@ -8404,10 +8244,8 @@ module.exports = (function(){
         }
         return result0;
       }
-      
       function parse_REFERm() {
         var result0;
-        
         if (input.substr(pos, 5) === "REFER") {
           result0 = "REFER";
           pos += 5;
@@ -8419,11 +8257,9 @@ module.exports = (function(){
         }
         return result0;
       }
-      
       function parse_Method() {
         var result0;
         var pos0;
-
         pos0 = pos;
         result0 = parse_INVITEm();
         if (result0 === null) {
@@ -8463,11 +8299,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Status_Line() {
         var result0, result1, result2, result3, result4;
         var pos0;
-
         pos0 = pos;
         result0 = parse_SIP_Version();
         if (result0 !== null) {
@@ -8502,11 +8336,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Status_Code() {
         var result0;
         var pos0;
-
         pos0 = pos;
         result0 = parse_extension_code();
         if (result0 !== null) {
@@ -8518,11 +8350,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_extension_code() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         result0 = parse_DIGIT();
         if (result0 !== null) {
@@ -8545,11 +8375,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Reason_Phrase() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         result0 = [];
         result1 = parse_reserved();
@@ -8602,11 +8430,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Allow_Events() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_event_type();
         if (result0 !== null) {
@@ -8654,11 +8480,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Call_ID() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_word();
@@ -8705,11 +8529,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Contact() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         result0 = parse_STAR();
         if (result0 === null) {
@@ -8780,11 +8602,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_contact_param() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SIP_URI_noparams();
@@ -8856,11 +8676,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_name_addr() {
         var result0, result1, result2, result3;
         var pos0;
-
         pos0 = pos;
         result0 = parse_display_name();
         result0 = result0 !== null ? result0 : "";
@@ -8890,11 +8708,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_display_name() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_token();
@@ -8957,10 +8773,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_contact_params() {
         var result0;
-
         result0 = parse_c_p_q();
         if (result0 === null) {
           result0 = parse_c_p_expires();
@@ -8970,11 +8784,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_c_p_q() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 1).toLowerCase() === "q") {
@@ -9014,11 +8826,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_c_p_expires() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 7).toLowerCase() === "expires") {
@@ -9058,11 +8868,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_delta_seconds() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         result1 = parse_DIGIT();
         if (result1 !== null) {
@@ -9083,11 +8891,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_qvalue() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         if (input.charCodeAt(pos) === 48) {
@@ -9157,11 +8963,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_generic_param() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_token();
@@ -9207,10 +9011,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_gen_value() {
         var result0;
-
         result0 = parse_token();
         if (result0 === null) {
           result0 = parse_host();
@@ -9220,11 +9022,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Content_Disposition() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_disp_type();
         if (result0 !== null) {
@@ -9272,10 +9072,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_disp_type() {
         var result0;
-
         if (input.substr(pos, 6).toLowerCase() === "render") {
           result0 = input.substr(pos, 6);
           pos += 6;
@@ -9323,21 +9121,17 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_disp_param() {
         var result0;
-
         result0 = parse_handling_param();
         if (result0 === null) {
           result0 = parse_generic_param();
         }
         return result0;
       }
-
       function parse_handling_param() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         if (input.substr(pos, 8).toLowerCase() === "handling") {
           result0 = input.substr(pos, 8);
@@ -9390,11 +9184,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Content_Encoding() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -9442,11 +9234,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Content_Length() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         result1 = parse_DIGIT();
         if (result1 !== null) {
@@ -9467,11 +9257,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Content_Type() {
         var result0;
         var pos0;
-
         pos0 = pos;
         result0 = parse_media_type();
         if (result0 !== null) {
@@ -9483,11 +9271,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_media_type() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_m_type();
         if (result0 !== null) {
@@ -9547,20 +9333,16 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_m_type() {
         var result0;
-
         result0 = parse_discrete_type();
         if (result0 === null) {
           result0 = parse_composite_type();
         }
         return result0;
       }
-
       function parse_discrete_type() {
         var result0;
-
         if (input.substr(pos, 4).toLowerCase() === "text") {
           result0 = input.substr(pos, 4);
           pos += 4;
@@ -9619,10 +9401,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_composite_type() {
         var result0;
-
         if (input.substr(pos, 7).toLowerCase() === "message") {
           result0 = input.substr(pos, 7);
           pos += 7;
@@ -9648,21 +9428,17 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_extension_token() {
         var result0;
-
         result0 = parse_token();
         if (result0 === null) {
           result0 = parse_x_token();
         }
         return result0;
       }
-
       function parse_x_token() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         if (input.substr(pos, 2).toLowerCase() === "x-") {
           result0 = input.substr(pos, 2);
@@ -9687,21 +9463,17 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_m_subtype() {
         var result0;
-
         result0 = parse_extension_token();
         if (result0 === null) {
           result0 = parse_token();
         }
         return result0;
       }
-
       function parse_m_parameter() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -9724,21 +9496,17 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_m_value() {
         var result0;
-
         result0 = parse_token();
         if (result0 === null) {
           result0 = parse_quoted_string();
         }
         return result0;
       }
-
       function parse_CSeq() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         result0 = parse_CSeq_value();
         if (result0 !== null) {
@@ -9761,11 +9529,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_CSeq_value() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         result1 = parse_DIGIT();
         if (result1 !== null) {
@@ -9786,11 +9552,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Expires() {
         var result0;
         var pos0;
-
         pos0 = pos;
         result0 = parse_delta_seconds();
         if (result0 !== null) {
@@ -9801,11 +9565,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Event() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_event_type();
@@ -9861,11 +9623,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_event_type() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_token_nodot();
         if (result0 !== null) {
@@ -9929,11 +9689,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_From() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SIP_URI_noparams();
@@ -9998,21 +9756,17 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_from_param() {
         var result0;
-
         result0 = parse_tag_param();
         if (result0 === null) {
           result0 = parse_generic_param();
         }
         return result0;
       }
-
       function parse_tag_param() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 3).toLowerCase() === "tag") {
@@ -10050,11 +9804,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Max_Forwards() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         result1 = parse_DIGIT();
         if (result1 !== null) {
@@ -10075,11 +9827,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Min_Expires() {
         var result0;
         var pos0;
-
         pos0 = pos;
         result0 = parse_delta_seconds();
         if (result0 !== null) {
@@ -10090,11 +9840,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Name_Addr_Header() {
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result0 = [];
@@ -10177,18 +9925,14 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Proxy_Authenticate() {
         var result0;
-
         result0 = parse_challenge();
         return result0;
       }
-
       function parse_challenge() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-
         pos0 = pos;
         if (input.substr(pos, 6).toLowerCase() === "digest") {
           result0 = input.substr(pos, 6);
@@ -10259,11 +10003,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_other_challenge() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -10323,11 +10065,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_auth_param() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -10353,10 +10093,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_digest_cln() {
         var result0;
-
         result0 = parse_realm();
         if (result0 === null) {
           result0 = parse_domain();
@@ -10381,11 +10119,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_realm() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         if (input.substr(pos, 5).toLowerCase() === "realm") {
           result0 = input.substr(pos, 5);
@@ -10416,11 +10152,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_realm_value() {
         var result0;
         var pos0;
-
         pos0 = pos;
         result0 = parse_quoted_string_clean();
         if (result0 !== null) {
@@ -10431,11 +10165,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_domain() {
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1;
-
         pos0 = pos;
         if (input.substr(pos, 6).toLowerCase() === "domain") {
           result0 = input.substr(pos, 6);
@@ -10533,21 +10265,17 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_URI() {
         var result0;
-
         result0 = parse_absoluteURI();
         if (result0 === null) {
           result0 = parse_abs_path();
         }
         return result0;
       }
-
       function parse_nonce() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         if (input.substr(pos, 5).toLowerCase() === "nonce") {
           result0 = input.substr(pos, 5);
@@ -10578,11 +10306,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_nonce_value() {
         var result0;
         var pos0;
-
         pos0 = pos;
         result0 = parse_quoted_string_clean();
         if (result0 !== null) {
@@ -10593,11 +10319,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_opaque() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 6).toLowerCase() === "opaque") {
@@ -10635,11 +10359,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_stale() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         if (input.substr(pos, 5).toLowerCase() === "stale") {
           result0 = input.substr(pos, 5);
@@ -10703,11 +10425,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_algorithm() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 9).toLowerCase() === "algorithm") {
@@ -10768,11 +10488,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_qop_options() {
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         if (input.substr(pos, 3).toLowerCase() === "qop") {
           result0 = input.substr(pos, 3);
@@ -10875,11 +10593,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_qop_value() {
         var result0;
         var pos0;
-
         pos0 = pos;
         if (input.substr(pos, 8).toLowerCase() === "auth-int") {
           result0 = input.substr(pos, 8);
@@ -10914,11 +10630,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Proxy_Require() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -10966,11 +10680,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Record_Route() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_rec_route();
@@ -11038,11 +10750,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_rec_route() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_name_addr();
@@ -11111,11 +10821,9 @@ module.exports = (function(){
         }
         return result0;
       }
-      
       function parse_Reason() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 3).toLowerCase() === "sip") {
@@ -11176,9 +10884,7 @@ module.exports = (function(){
         if (result0 !== null) {
           result0 = (function(offset, protocol) {
                           data.protocol = protocol.toLowerCase();
-        
                           if (!data.params) data.params = {};
-        
                           if (data.params.text && data.params.text[0] === '"') {
                             var text = data.params.text;
                             data.text = text.substring(1, text.length-1);
@@ -11191,21 +10897,17 @@ module.exports = (function(){
         }
         return result0;
       }
-      
       function parse_reason_param() {
         var result0;
-        
         result0 = parse_reason_cause();
         if (result0 === null) {
           result0 = parse_generic_param();
         }
         return result0;
       }
-      
       function parse_reason_cause() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 5).toLowerCase() === "cause") {
@@ -11254,11 +10956,9 @@ module.exports = (function(){
         }
         return result0;
       }
-      
       function parse_Require() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -11306,11 +11006,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Route() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_route_param();
         if (result0 !== null) {
@@ -11358,11 +11056,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_route_param() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_name_addr();
         if (result0 !== null) {
@@ -11410,11 +11106,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Subscription_State() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_substate_value();
         if (result0 !== null) {
@@ -11462,11 +11156,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_substate_value() {
         var result0;
         var pos0;
-
         pos0 = pos;
         if (input.substr(pos, 6).toLowerCase() === "active") {
           result0 = input.substr(pos, 6);
@@ -11511,11 +11203,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_subexp_params() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 6).toLowerCase() === "reason") {
@@ -11633,10 +11323,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_event_reason_value() {
         var result0;
-
         if (input.substr(pos, 11).toLowerCase() === "deactivated") {
           result0 = input.substr(pos, 11);
           pos += 11;
@@ -11717,19 +11405,15 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_Subject() {
         var result0;
-
         result0 = parse_TEXT_UTF8_TRIM();
         result0 = result0 !== null ? result0 : "";
         return result0;
       }
-
       function parse_Supported() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -11778,11 +11462,9 @@ module.exports = (function(){
         result0 = result0 !== null ? result0 : "";
         return result0;
       }
-
       function parse_To() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SIP_URI_noparams();
@@ -11847,21 +11529,17 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_to_param() {
         var result0;
-
         result0 = parse_tag_param();
         if (result0 === null) {
           result0 = parse_generic_param();
         }
         return result0;
       }
-
       function parse_Via() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_via_param();
         if (result0 !== null) {
@@ -11909,11 +11587,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_via_param() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_sent_protocol();
         if (result0 !== null) {
@@ -11973,10 +11649,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_via_params() {
         var result0;
-
         result0 = parse_via_ttl();
         if (result0 === null) {
           result0 = parse_via_maddr();
@@ -11995,11 +11669,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_via_ttl() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 3).toLowerCase() === "ttl") {
@@ -12038,11 +11710,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_via_maddr() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 5).toLowerCase() === "maddr") {
@@ -12081,11 +11751,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_via_received() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 8).toLowerCase() === "received") {
@@ -12127,11 +11795,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_via_branch() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 6).toLowerCase() === "branch") {
@@ -12170,11 +11836,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_response_port() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 5).toLowerCase() === "rport") {
@@ -12227,11 +11891,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_sent_protocol() {
         var result0, result1, result2, result3, result4;
         var pos0;
-
         pos0 = pos;
         result0 = parse_protocol_name();
         if (result0 !== null) {
@@ -12266,11 +11928,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_protocol_name() {
         var result0;
         var pos0;
-
         pos0 = pos;
         if (input.substr(pos, 3).toLowerCase() === "sip") {
           result0 = input.substr(pos, 3);
@@ -12293,11 +11953,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_transport() {
         var result0;
         var pos0;
-
         pos0 = pos;
         if (input.substr(pos, 3).toLowerCase() === "udp") {
           result0 = input.substr(pos, 3);
@@ -12353,11 +12011,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_sent_by() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_via_host();
         if (result0 !== null) {
@@ -12388,11 +12044,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_via_host() {
         var result0;
         var pos0;
-
         pos0 = pos;
         result0 = parse_IPv4address();
         if (result0 === null) {
@@ -12410,11 +12064,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_via_port() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_DIGIT();
@@ -12462,11 +12114,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_ttl() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_DIGIT();
@@ -12499,18 +12149,14 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_WWW_Authenticate() {
         var result0;
-
         result0 = parse_challenge();
         return result0;
       }
-
       function parse_Session_Expires() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-
         pos0 = pos;
         result0 = parse_s_e_expires();
         if (result0 !== null) {
@@ -12558,11 +12204,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_s_e_expires() {
         var result0;
         var pos0;
-
         pos0 = pos;
         result0 = parse_delta_seconds();
         if (result0 !== null) {
@@ -12573,21 +12217,17 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_s_e_params() {
         var result0;
-
         result0 = parse_s_e_refresher();
         if (result0 === null) {
           result0 = parse_generic_param();
         }
         return result0;
       }
-
       function parse_s_e_refresher() {
         var result0, result1, result2;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 9).toLowerCase() === "refresher") {
@@ -12644,11 +12284,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_extension_header() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         result0 = parse_token();
         if (result0 !== null) {
@@ -12671,10 +12309,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_header_value() {
         var result0, result1;
-
         result0 = [];
         result1 = parse_TEXT_UTF8char();
         if (result1 === null) {
@@ -12695,10 +12331,8 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_message_body() {
         var result0, result1;
-
         result0 = [];
         result1 = parse_OCTET();
         while (result1 !== null) {
@@ -12707,11 +12341,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_uuid_URI() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         if (input.substr(pos, 5) === "uuid:") {
           result0 = "uuid:";
@@ -12736,11 +12368,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_uuid() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8;
         var pos0, pos1;
-
         pos0 = pos;
         pos1 = pos;
         result0 = parse_hex8();
@@ -12839,11 +12469,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_hex4() {
         var result0, result1, result2, result3;
         var pos0;
-
         pos0 = pos;
         result0 = parse_HEXDIG();
         if (result0 !== null) {
@@ -12872,11 +12500,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_hex8() {
         var result0, result1;
         var pos0;
-
         pos0 = pos;
         result0 = parse_hex4();
         if (result0 !== null) {
@@ -12893,11 +12519,9 @@ module.exports = (function(){
         }
         return result0;
       }
-
       function parse_hex12() {
         var result0, result1, result2;
         var pos0;
-
         pos0 = pos;
         result0 = parse_hex4();
         if (result0 !== null) {
@@ -12920,11 +12544,9 @@ module.exports = (function(){
         }
         return result0;
       }
-      
       function parse_Refer_To() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
         pos0 = pos;
         pos1 = pos;
         result0 = parse_SIP_URI_noparams();
@@ -12987,11 +12609,9 @@ module.exports = (function(){
         }
         return result0;
       }
-      
       function parse_Replaces() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
         pos0 = pos;
         result0 = parse_call_id();
         if (result0 !== null) {
@@ -13039,11 +12659,9 @@ module.exports = (function(){
         }
         return result0;
       }
-      
       function parse_call_id() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-        
         pos0 = pos;
         pos1 = pos;
         result0 = parse_word();
@@ -13090,10 +12708,8 @@ module.exports = (function(){
         }
         return result0;
       }
-      
       function parse_replaces_param() {
         var result0;
-        
         result0 = parse_to_tag();
         if (result0 === null) {
           result0 = parse_from_tag();
@@ -13106,11 +12722,9 @@ module.exports = (function(){
         }
         return result0;
       }
-      
       function parse_to_tag() {
         var result0, result1, result2;
         var pos0, pos1;
-        
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 6) === "to-tag") {
@@ -13149,11 +12763,9 @@ module.exports = (function(){
         }
         return result0;
       }
-      
       function parse_from_tag() {
         var result0, result1, result2;
         var pos0, pos1;
-        
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 8) === "from-tag") {
@@ -13192,11 +12804,9 @@ module.exports = (function(){
         }
         return result0;
       }
-      
       function parse_early_flag() {
         var result0;
         var pos0;
-        
         pos0 = pos;
         if (input.substr(pos, 10) === "early-only") {
           result0 = "early-only";
@@ -13216,11 +12826,8 @@ module.exports = (function(){
         }
         return result0;
       }
-      
-      
       function cleanupExpected(expected) {
         expected.sort();
-
         var lastExpected = null;
         var cleanExpected = [];
         for (var i = 0; i < expected.length; i++) {
@@ -13231,7 +12838,6 @@ module.exports = (function(){
         }
         return cleanExpected;
       }
-
       function computeErrorPosition() {
         /*
          * The first idea was to use |String.split| to break the input up to the
@@ -13239,11 +12845,9 @@ module.exports = (function(){
          * there. However IE's |split| implementation is so broken that it was
          * enough to prevent it.
          */
-
         var line = 1;
         var column = 1;
         var seenCR = false;
-
         for (var i = 0; i < Math.max(pos, rightmostFailuresPos); i++) {
           var ch = input.charAt(i);
           if (ch === "\n") {
@@ -13259,19 +12863,12 @@ module.exports = (function(){
             seenCR = false;
           }
         }
-
         return { line: line, column: column };
       }
-
-
         var URI = require('./URI');
         var NameAddrHeader = require('./NameAddrHeader');
-
         var data = {};
-
-
       var result = parseFunctions[startRule]();
-
       /*
        * The parser is now in one of the following three states:
        *
@@ -13300,7 +12897,6 @@ module.exports = (function(){
         var offset = Math.max(pos, rightmostFailuresPos);
         var found = offset < input.length ? input.charAt(offset) : null;
         var errorPosition = computeErrorPosition();
-
         new this.SyntaxError(
           cleanupExpected(rightmostFailuresExpected),
           found,
@@ -13310,20 +12906,15 @@ module.exports = (function(){
         );
         return -1;
       }
-
       return data;
     },
-
     /* Returns the parser source code. */
     toSource: function() { return this._source; }
   };
-
   /* Thrown when a parser encounters a syntax error. */
-
   result.SyntaxError = function(expected, found, offset, line, column) {
     function buildMessage(expected, found) {
       var expectedHumanized, foundHumanized;
-
       switch (expected.length) {
         case 0:
           expectedHumanized = "end of input";
@@ -13336,12 +12927,9 @@ module.exports = (function(){
             + " or "
             + expected[expected.length - 1];
       }
-
       foundHumanized = found ? quote(found) : "end of input";
-
       return "Expected " + expectedHumanized + " but " + foundHumanized + " found.";
     }
-
     this.name = "SyntaxError";
     this.expected = expected;
     this.found = found;
@@ -13350,13 +12938,10 @@ module.exports = (function(){
     this.line = line;
     this.column = column;
   };
-
   result.SyntaxError.prototype = Error.prototype;
-
   return result;
 })();
-
-},{"./NameAddrHeader":9,"./URI":23}],7:[function(require,module,exports){
+},{"./NameAddrHeader":9,"./URI":24}],7:[function(require,module,exports){
 /**
  * Dependencies.
  */
@@ -13373,6 +12958,7 @@ var UA = require('./UA');
 var URI = require('./URI');
 var NameAddrHeader = require('./NameAddrHeader');
 var Grammar = require('./Grammar');
+var WebSocketInterface = require('./WebSocketInterface');
 
 
 /**
@@ -13385,6 +12971,7 @@ var JsSIP = module.exports = {
   UA: UA,
   URI: URI,
   NameAddrHeader: NameAddrHeader,
+  WebSocketInterface: WebSocketInterface,
   Grammar: Grammar,
   // Expose the debug module.
   debug: require('debug'),
@@ -13403,7 +12990,7 @@ Object.defineProperties(JsSIP, {
   }
 });
 
-},{"../package.json":48,"./Constants":1,"./Exceptions":5,"./Grammar":6,"./NameAddrHeader":9,"./UA":22,"./URI":23,"./Utils":24,"debug":27,"rtcninja":36}],8:[function(require,module,exports){
+},{"../package.json":47,"./Constants":1,"./Exceptions":5,"./Grammar":6,"./NameAddrHeader":9,"./UA":23,"./URI":24,"./Utils":25,"./WebSocketInterface":26,"debug":29,"rtcninja":38}],8:[function(require,module,exports){
 module.exports = Message;
 
 
@@ -13622,7 +13209,7 @@ Message.prototype.newMessage = function(originator, request) {
   });
 };
 
-},{"./Constants":1,"./Exceptions":5,"./RequestSender":17,"./SIPMessage":18,"./Transactions":20,"./Utils":24,"events":30,"util":44}],9:[function(require,module,exports){
+},{"./Constants":1,"./Exceptions":5,"./RequestSender":17,"./SIPMessage":18,"./Transactions":21,"./Utils":25,"events":32,"util":46}],9:[function(require,module,exports){
 module.exports = NameAddrHeader;
 
 
@@ -13732,7 +13319,7 @@ NameAddrHeader.parse = function(name_addr_header) {
   }
 };
 
-},{"./Grammar":6,"./URI":23}],10:[function(require,module,exports){
+},{"./Grammar":6,"./URI":24}],10:[function(require,module,exports){
 var Parser = {};
 
 module.exports = Parser;
@@ -14014,7 +13601,7 @@ Parser.parseMessage = function(data, ua) {
   return message;
 };
 
-},{"./Grammar":6,"./SIPMessage":18,"debug":27}],11:[function(require,module,exports){
+},{"./Grammar":6,"./SIPMessage":18,"debug":29}],11:[function(require,module,exports){
 module.exports = RTCSession;
 
 
@@ -16961,7 +16548,7 @@ function onunmute(options) {
   });
 }
 
-},{"./Constants":1,"./Dialog":2,"./Exceptions":5,"./RTCSession/DTMF":12,"./RTCSession/ReferNotifier":13,"./RTCSession/ReferSubscriber":14,"./RTCSession/Request":15,"./RequestSender":17,"./SIPMessage":18,"./Timers":19,"./Transactions":20,"./Utils":24,"debug":27,"events":30,"rtcninja":36,"sdp-transform":40,"util":44}],12:[function(require,module,exports){
+},{"./Constants":1,"./Dialog":2,"./Exceptions":5,"./RTCSession/DTMF":12,"./RTCSession/ReferNotifier":13,"./RTCSession/ReferSubscriber":14,"./RTCSession/Request":15,"./RequestSender":17,"./SIPMessage":18,"./Timers":20,"./Transactions":21,"./Utils":25,"debug":29,"events":32,"rtcninja":38,"sdp-transform":42,"util":46}],12:[function(require,module,exports){
 module.exports = DTMF;
 
 
@@ -17125,7 +16712,7 @@ DTMF.prototype.init_incoming = function(request) {
   }
 };
 
-},{"../Constants":1,"../Exceptions":5,"../RTCSession":11,"debug":27}],13:[function(require,module,exports){
+},{"../Constants":1,"../Exceptions":5,"../RTCSession":11,"debug":29}],13:[function(require,module,exports){
 module.exports = ReferNotifier;
 
 
@@ -17187,7 +16774,7 @@ ReferNotifier.prototype.notify = function(code, reason) {
   });
 };
 
-},{"../Constants":1,"./Request":15,"debug":27}],14:[function(require,module,exports){
+},{"../Constants":1,"./Request":15,"debug":29}],14:[function(require,module,exports){
 module.exports = ReferSubscriber;
 
 
@@ -17351,7 +16938,7 @@ function removeSubscriber() {
   this.session.referSubscriber = null;
 }
 
-},{"../Constants":1,"../Grammar":6,"./Request":15,"debug":27,"events":30,"util":44}],15:[function(require,module,exports){
+},{"../Constants":1,"../Grammar":6,"./Request":15,"debug":29,"events":32,"util":46}],15:[function(require,module,exports){
 module.exports = Request;
 
 /**
@@ -17442,7 +17029,7 @@ Request.prototype.onDialogError = function() {
   if (this.eventHandlers.onDialogError) { this.eventHandlers.onDialogError(); }
 };
 
-},{"../Constants":1,"../Exceptions":5,"../RTCSession":11,"debug":27}],16:[function(require,module,exports){
+},{"../Constants":1,"../Exceptions":5,"../RTCSession":11,"debug":29}],16:[function(require,module,exports){
 module.exports = Registrator;
 
 
@@ -17750,7 +17337,7 @@ Registrator.prototype = {
 };
 
 
-},{"./Constants":1,"./RequestSender":17,"./SIPMessage":18,"./Utils":24,"debug":27}],17:[function(require,module,exports){
+},{"./Constants":1,"./RequestSender":17,"./SIPMessage":18,"./Utils":25,"debug":29}],17:[function(require,module,exports){
 module.exports = RequestSender;
 
 
@@ -17878,8 +17465,11 @@ RequestSender.prototype = {
           cseq = this.request.dialog.local_seqnum += 1;
         } else {
           cseq = this.request.cseq + 1;
-          this.request.cseq = cseq;
         }
+
+        this.request = this.request.clone();
+
+        this.request.cseq = cseq;
         this.request.setHeader('cseq', cseq +' '+ this.method);
 
         this.request.setHeader(authorization_header_name, this.auth.toString());
@@ -17893,7 +17483,7 @@ RequestSender.prototype = {
   }
 };
 
-},{"./Constants":1,"./DigestAuthentication":4,"./Transactions":20,"./UA":22,"debug":27}],18:[function(require,module,exports){
+},{"./Constants":1,"./DigestAuthentication":4,"./Transactions":21,"./UA":23,"debug":29}],18:[function(require,module,exports){
 module.exports = {
   OutgoingRequest: OutgoingRequest,
   IncomingRequest: IncomingRequest,
@@ -17948,8 +17538,8 @@ function OutgoingRequest(method, ruri, ua, params, extraHeaders, body) {
   // Route
   if (params.route_set) {
     this.setHeader('route', params.route_set);
-  } else if (ua.configuration.use_preloaded_route){
-    this.setHeader('route', ua.transport.server.sip_uri);
+  } else if (ua.configuration.use_preloaded_route) {
+    this.setHeader('route', '<' + ua.transport.sip_uri + ';lr>');
   }
 
   // Via
@@ -18161,6 +17751,24 @@ OutgoingRequest.prototype = {
     }
 
     return msg;
+  },
+
+  clone: function() {
+    var request = new OutgoingRequest(this.method, this.ruri, this.ua);
+
+    Object.keys(this.headers).forEach(function(name) {
+      request.headers[name] = this.headers[name].slice();
+    }, this);
+
+    request.body = this.body;
+    request.extraHeaders = this.extraHeaders && this.extraHeaders.slice() || [];
+
+    request.to = this.to;
+    request.from = this.from;
+    request.call_id = this.call_id;
+    request.cseq = this.cseq;
+
+    return request;
   }
 };
 
@@ -18501,7 +18109,80 @@ function IncomingResponse() {
 
 IncomingResponse.prototype = new IncomingMessage();
 
-},{"./Constants":1,"./Grammar":6,"./NameAddrHeader":9,"./Utils":24,"debug":27,"sdp-transform":40}],19:[function(require,module,exports){
+},{"./Constants":1,"./Grammar":6,"./NameAddrHeader":9,"./Utils":25,"debug":29,"sdp-transform":42}],19:[function(require,module,exports){
+module.exports = Socket;
+
+/**
+ * Interface documentation: http://jssip.net/documentation/$last_version/api/socket/
+ *
+ * interface Socket {
+ *  attribute String via_transport
+ *  attribute String url
+ *  attribute String sip_uri
+ *
+ *  method connect();
+ *  method disconnect();
+ *  method send(data);
+ *
+ *  attribute EventHandler onconnect
+ *  attribute EventHandler ondisconnect
+ *  attribute EventHandler ondata
+ * }
+ *
+ */
+
+
+/**
+ * Dependencies.
+ */
+var Utils = require('./Utils');
+var Grammar = require('./Grammar');
+var debugerror = require('debug')('JsSIP:ERROR:Socket');
+
+function Socket() {}
+
+Socket.isSocket = function(socket) {
+  if (typeof socket === 'undefined') {
+    debugerror('undefined JsSIP.Socket instance');
+    return false;
+  }
+
+  // Check Properties
+  try {
+    if (!Utils.isString(socket.url)) {
+      debugerror('missing or invalid JsSIP.Socket url property');
+      throw new Error();
+    }
+
+    if (!Utils.isString(socket.via_transport)) {
+      debugerror('missing or invalid JsSIP.Socket via_transport property');
+      throw new Error();
+    }
+
+    if (Grammar.parse(socket.sip_uri, 'SIP_URI') === -1) {
+      debugerror('missing or invalid JsSIP.Socket sip_uri property');
+      throw new Error();
+    }
+  } catch(e) {
+    return false;
+  }
+
+  // Check Methods
+  try {
+    ['connect', 'disconnect', 'send'].forEach(function(method) {
+      if (!Utils.isFunction(socket[method])) {
+        debugerror('missing or invalid JsSIP.Socket method: ' + method);
+        throw new Error();
+      }
+    });
+  } catch(e) {
+    return false;
+  }
+
+  return true;
+};
+
+},{"./Grammar":6,"./Utils":25,"debug":29}],20:[function(require,module,exports){
 var T1 = 500,
   T2 = 4000,
   T4 = 5000;
@@ -18526,7 +18207,7 @@ var Timers = {
 
 module.exports = Timers;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 module.exports = {
   C: null,
   NonInviteClientTransaction: NonInviteClientTransaction,
@@ -18576,8 +18257,7 @@ var Timers = require('./Timers');
 
 
 function NonInviteClientTransaction(request_sender, request, transport) {
-  var via,
-    via_transport;
+  var via;
 
   this.type = C.NON_INVITE_CLIENT;
   this.transport = transport;
@@ -18585,17 +18265,7 @@ function NonInviteClientTransaction(request_sender, request, transport) {
   this.request_sender = request_sender;
   this.request = request;
 
-  if (request_sender.ua.configuration.hack_via_tcp) {
-    via_transport = 'TCP';
-  }
-  else if (request_sender.ua.configuration.hack_via_ws) {
-    via_transport = 'WS';
-  }
-  else {
-    via_transport = transport.server.scheme;
-  }
-
-  via = 'SIP/2.0/' + via_transport;
+  via = 'SIP/2.0/' + transport.via_transport;
   via += ' ' + request_sender.ua.configuration.via_host + ';branch=' + this.id;
 
   this.request.setHeader('via', via);
@@ -18681,8 +18351,7 @@ NonInviteClientTransaction.prototype.receiveResponse = function(response) {
 
 function InviteClientTransaction(request_sender, request, transport) {
   var via,
-    tr = this,
-    via_transport;
+    tr = this;
 
   this.type = C.INVITE_CLIENT;
   this.transport = transport;
@@ -18690,17 +18359,7 @@ function InviteClientTransaction(request_sender, request, transport) {
   this.request_sender = request_sender;
   this.request = request;
 
-  if (request_sender.ua.configuration.hack_via_tcp) {
-    via_transport = 'TCP';
-  }
-  else if (request_sender.ua.configuration.hack_via_ws) {
-    via_transport = 'WS';
-  }
-  else {
-    via_transport = transport.server.scheme;
-  }
-
-  via = 'SIP/2.0/' + via_transport;
+  via = 'SIP/2.0/' + transport.via_transport;
   via += ' ' + request_sender.ua.configuration.via_host + ';branch=' + this.id;
 
   this.request.setHeader('via', via);
@@ -18874,25 +18533,14 @@ InviteClientTransaction.prototype.receiveResponse = function(response) {
 
 
 function AckClientTransaction(request_sender, request, transport) {
-  var via,
-    via_transport;
+  var via;
 
   this.transport = transport;
   this.id = 'z9hG4bK' + Math.floor(Math.random() * 10000000);
   this.request_sender = request_sender;
   this.request = request;
 
-  if (request_sender.ua.configuration.hack_via_tcp) {
-    via_transport = 'TCP';
-  }
-  else if (request_sender.ua.configuration.hack_via_ws) {
-    via_transport = 'WS';
-  }
-  else {
-    via_transport = transport.server.scheme;
-  }
-
-  via = 'SIP/2.0/' + via_transport;
+  via = 'SIP/2.0/' + transport.via_transport;
   via += ' ' + request_sender.ua.configuration.via_host + ';branch=' + this.id;
 
   this.request.setHeader('via', via);
@@ -19249,304 +18897,299 @@ function checkTransaction(ua, request) {
   }
 }
 
-},{"./Constants":1,"./Timers":19,"debug":27,"events":30,"util":44}],21:[function(require,module,exports){
-(function (global){
+},{"./Constants":1,"./Timers":20,"debug":29,"events":32,"util":46}],22:[function(require,module,exports){
 module.exports = Transport;
-
-
-var C = {
-  // Transport status codes
-  STATUS_READY:        0,
-  STATUS_DISCONNECTED: 1,
-  STATUS_ERROR:        2
-};
-
-
-/**
- * Expose C object.
- */
-Transport.C = C;
-
 
 /**
  * Dependencies.
  */
+var Socket = require('./Socket');
 var debug = require('debug')('JsSIP:Transport');
 var debugerror = require('debug')('JsSIP:ERROR:Transport');
-debugerror.log = console.warn.bind(console);
-var JsSIP_C = require('./Constants');
-var Parser = require('./Parser');
-var UA = require('./UA');
-var SIPMessage = require('./SIPMessage');
-var sanityCheck = require('./sanityCheck');
-// 'websocket' module uses the native WebSocket interface when bundled to run in a browser.
-var W3CWebSocket = require('websocket').w3cwebsocket;
-if ( typeof global.keevioWebSocket !== 'undefined' ) {
-	W3CWebSocket = global.keevioWebSocket;
-}
 
-function Transport(ua, server) {
-  this.ua = ua;
-  this.ws = null;
-  this.server = server;
-  this.reconnection_attempts = 0;
-  this.closed = false;
-  this.connected = false;
-  this.reconnectTimer = null;
-  this.lastTransportError = {};
+/**
+ * Constants
+ */
+var C = {
+  // Transport status
+  STATUS_CONNECTED:           0,
+  STATUS_CONNECTING:          1,
+  STATUS_DISCONNECTED:        2,
 
-  /**
-   * Options for the Node "websocket" library.
-   */
+  // Socket status
+  SOCKET_STATUS_READY:        0,
+  SOCKET_STATUS_ERROR:        1,
 
-  this.node_websocket_options = this.ua.configuration.node_websocket_options || {};
-
-  // Add our User-Agent header.
-  this.node_websocket_options.headers = this.node_websocket_options.headers || {};
-  this.node_websocket_options.headers['User-Agent'] = JsSIP_C.USER_AGENT;
-}
-
-Transport.prototype = {
-
-  /**
-  * Connect socket.
-  */
-  connect: function() {
-    var transport = this;
-
-    if(this.ws && (this.ws.readyState === this.ws.OPEN || this.ws.readyState === this.ws.CONNECTING)) {
-      debug('WebSocket ' + this.server.ws_uri + ' is already connected');
-      return false;
-    }
-
-    if(this.ws) {
-      this.ws.close();
-    }
-
-    debug('connecting to WebSocket ' + this.server.ws_uri);
-    this.ua.onTransportConnecting(this,
-      (this.reconnection_attempts === 0)?1:this.reconnection_attempts);
-
-    try {
-      // Hack in case W3CWebSocket is not the class exported by Node-WebSocket
-      // (may just happen if the above `var W3CWebSocket` line is overriden by
-      // `var W3CWebSocket = global.W3CWebSocket`).
-      if (W3CWebSocket.length > 3) {
-        this.ws = new W3CWebSocket(this.server.ws_uri, 'sip', this.node_websocket_options.origin, this.node_websocket_options.headers, this.node_websocket_options.requestOptions, this.node_websocket_options.clientConfig);
-      } else {
-        this.ws = new W3CWebSocket(this.server.ws_uri, 'sip');
-      }
-
-      this.ws.binaryType = 'arraybuffer';
-
-      this.ws.onopen = function() {
-        transport.onOpen();
-      };
-
-      this.ws.onclose = function(e) {
-        transport.onClose(e);
-      };
-
-      this.ws.onmessage = function(e) {
-        transport.onMessage(e);
-      };
-
-      this.ws.onerror = function(e) {
-        transport.onError(e);
-      };
-    } catch(e) {
-      debugerror('error connecting to WebSocket ' + this.server.ws_uri + ': ' + e);
-      this.lastTransportError.code = null;
-      this.lastTransportError.reason = e.message;
-      this.ua.onTransportError(this);
-    }
-  },
-
-  /**
-  * Disconnect socket.
-  */
-  disconnect: function() {
-    if(this.ws) {
-      // Clear reconnectTimer
-      clearTimeout(this.reconnectTimer);
-      // TODO: should make this.reconnectTimer = null here?
-
-      this.closed = true;
-      debug('closing WebSocket ' + this.server.ws_uri);
-      this.ws.close();
-    }
-
-    // TODO: Why this??
-    if (this.reconnectTimer !== null) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = null;
-      this.ua.onTransportDisconnected({
-        transport: this,
-        code: this.lastTransportError.code,
-        reason: this.lastTransportError.reason
-      });
-    }
-  },
-
-  /**
-   * Send a message.
-   */
-  send: function(msg) {
-    var message = msg.toString();
-
-    if(this.ws && this.ws.readyState === this.ws.OPEN) {
-      debug('sending WebSocket message:\n%s\n', message);
-      this.ws.send(message);
-      return true;
-    } else {
-      debugerror('unable to send message, WebSocket is not open');
-      return false;
-    }
-  },
-
-  // Transport Event Handlers
-
-  onOpen: function() {
-    this.connected = true;
-
-    debug('WebSocket ' + this.server.ws_uri + ' connected');
-    // Clear reconnectTimer since we are not disconnected
-    if (this.reconnectTimer !== null) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = null;
-    }
-    // Reset reconnection_attempts
-    this.reconnection_attempts = 0;
-    // Disable closed
-    this.closed = false;
-    // Trigger onTransportConnected callback
-    this.ua.onTransportConnected(this);
-  },
-
-  onClose: function(e) {
-    var connected_before = this.connected;
-
-    this.connected = false;
-    this.lastTransportError.code = e.code;
-    this.lastTransportError.reason = e.reason;
-    debug('WebSocket disconnected (code: ' + e.code + (e.reason? '| reason: ' + e.reason : '') +')');
-
-    if(e.wasClean === false) {
-      debugerror('WebSocket abrupt disconnection');
-    }
-    // Transport was connected
-    if (connected_before === true) {
-      this.ua.onTransportClosed(this);
-
-      // Check whether the user requested to close.
-      if(!this.closed) {
-        this.reConnect();
-      }
-    } else {
-      // This is the first connection attempt
-      // May be a network error (or may be UA.stop() was called)
-      this.ua.onTransportError(this);
-    }
-  },
-
-  onMessage: function(e) {
-    var message, transaction,
-      data = e.data;
-
-    // CRLF Keep Alive response from server. Ignore it.
-    if(data === '\r\n') {
-      debug('received WebSocket message with CRLF Keep Alive response');
-      return;
-    }
-
-    // WebSocket binary message.
-    else if (typeof data !== 'string') {
-      try {
-        data = String.fromCharCode.apply(null, new Uint8Array(data));
-      } catch(evt) {
-        debugerror('received WebSocket binary message failed to be converted into string, message discarded');
-        return;
-      }
-
-      debug('received WebSocket binary message:\n%s\n', data);
-    }
-
-    // WebSocket text message.
-    else {
-      debug('received WebSocket text message:\n%s\n', data);
-    }
-
-    message = Parser.parseMessage(data, this.ua);
-
-    if (! message) {
-      return;
-    }
-
-    if(this.ua.status === UA.C.STATUS_USER_CLOSED && message instanceof SIPMessage.IncomingRequest) {
-      return;
-    }
-
-    // Do some sanity check
-    if(! sanityCheck(message, this.ua, this)) {
-      return;
-    }
-
-    if(message instanceof SIPMessage.IncomingRequest) {
-      message.transport = this;
-      this.ua.receiveRequest(message);
-    } else if(message instanceof SIPMessage.IncomingResponse) {
-      /* Unike stated in 18.1.2, if a response does not match
-      * any transaction, it is discarded here and no passed to the core
-      * in order to be discarded there.
-      */
-      switch(message.method) {
-        case JsSIP_C.INVITE:
-          transaction = this.ua.transactions.ict[message.via_branch];
-          if(transaction) {
-            transaction.receiveResponse(message);
-          }
-          break;
-        case JsSIP_C.ACK:
-          // Just in case ;-)
-          break;
-        default:
-          transaction = this.ua.transactions.nict[message.via_branch];
-          if(transaction) {
-            transaction.receiveResponse(message);
-          }
-          break;
-      }
-    }
-  },
-
-  onError: function(e) {
-    debugerror('WebSocket connection error: %o', e);
-  },
-
-  /**
-  * Reconnection attempt logic.
-  */
-  reConnect: function() {
-    var transport = this;
-
-    this.reconnection_attempts += 1;
-
-    if(this.reconnection_attempts > this.ua.configuration.ws_server_max_reconnection) {
-      debugerror('maximum reconnection attempts for WebSocket ' + this.server.ws_uri);
-      this.ua.onTransportError(this);
-    } else {
-      debug('trying to reconnect to WebSocket ' + this.server.ws_uri + ' (reconnection attempt ' + this.reconnection_attempts + ')');
-
-      this.reconnectTimer = setTimeout(function() {
-        transport.connect();
-        transport.reconnectTimer = null;
-      }, this.ua.configuration.ws_server_reconnection_timeout * 1000);
-    }
+  // Recovery options
+  recovery_options: {
+    min_interval: 2, // minimum interval in seconds between recover attempts
+    max_interval: 30 // maximum interval in seconds between recover attempts
   }
 };
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./Constants":1,"./Parser":10,"./SIPMessage":18,"./UA":22,"./sanityCheck":25,"debug":27,"websocket":45}],22:[function(require,module,exports){
+/*
+ * Manages one or multiple JsSIP.Socket instances.
+ * Is reponsible for transport recovery logic among all socket instances.
+ *
+ * @socket JsSIP::Socket instance
+ */
+
+function Transport(sockets, recovery_options) {
+  debug('new()');
+
+  this.status = C.STATUS_DISCONNECTED;
+
+  // current socket
+  this.socket = null;
+
+  // socket collection
+  this.sockets = [];
+
+  this.recovery_options = recovery_options || C.recovery_options;
+  this.recover_attempts = 0;
+  this.recovery_timer = null;
+
+  this.close_requested = false;
+
+  if (typeof sockets === 'undefined') {
+    throw new TypeError('Invalid argument.' +
+                        ' undefined \'sockets\' argument');
+  }
+
+  if (!(sockets instanceof Array)) {
+    sockets = [ sockets ];
+  }
+
+  sockets.forEach(function(socket) {
+    if (!Socket.isSocket(socket.socket)) {
+      throw new TypeError('Invalid argument.' +
+                          ' invalid \'JsSIP.Socket\' instance');
+    }
+
+    if (socket.weight && !Number(socket.weight)) {
+      throw new TypeError('Invalid argument.' +
+                          ' \'weight\' attribute is not a number');
+    }
+
+    this.sockets.push({
+      socket: socket.socket,
+      weight: socket.weight || 0,
+      status: C.SOCKET_STATUS_READY
+    });
+  }, this);
+
+  // read only properties
+  Object.defineProperties(this, {
+    via_transport:   { get: function() { return this.socket.via_transport; } },
+    url:      { get: function() { return this.socket.url;       } },
+    sip_uri:  { get: function() { return this.socket.sip_uri;   } }
+  });
+
+  // get the socket with higher weight
+  getSocket.call(this);
+}
+
+/**
+ * Instance Methods
+ */
+
+Transport.prototype.connect = function() {
+  debug('connect()');
+
+  if (this.isConnected()) {
+    debug('Transport is already connected');
+    return;
+  } else if (this.isConnecting()) {
+    debug('Transport is connecting');
+    return;
+  }
+
+  this.close_requested = false;
+  this.status = C.STATUS_CONNECTING;
+  this.onconnecting({ socket:this.socket, attempts:this.recover_attempts });
+
+  if (!this.close_requested) {
+    // bind socket event callbacks
+    this.socket.onconnect     = onConnect.bind(this);
+    this.socket.ondisconnect  = onDisconnect.bind(this);
+    this.socket.ondata        = onData.bind(this);
+
+    this.socket.connect();
+  }
+
+  return;
+};
+
+Transport.prototype.disconnect = function() {
+  debug('close()');
+
+  this.close_requested = true;
+  this.recover_attempts = 0;
+  this.status = C.STATUS_DISCONNECTED;
+
+  // clear recovery_timer
+  if (this.recovery_timer !== null) {
+    clearTimeout(this.recovery_timer);
+    this.recovery_timer = null;
+  }
+
+  // unbind socket event callbacks
+  this.socket.onconnect     = function() {};
+  this.socket.ondisconnect  = function() {};
+  this.socket.ondata        = function() {};
+
+  this.socket.disconnect();
+  this.ondisconnect();
+};
+
+Transport.prototype.send = function(data) {
+  debug('send()');
+
+  if (!this.isConnected()) {
+    debugerror('unable to send message, transport is not connected');
+    return false;
+  }
+
+  var message = data.toString();
+
+  debug('sending message:\n\n' + message + '\n');
+  return this.socket.send(message);
+};
+
+Transport.prototype.isConnected = function() {
+  return this.status === C.STATUS_CONNECTED;
+};
+
+Transport.prototype.isConnecting = function() {
+  return this.status === C.STATUS_CONNECTING;
+};
+
+/**
+ * Socket Event Handlers
+ */
+
+function onConnect() {
+  this.recover_attempts = 0;
+  this.status = C.STATUS_CONNECTED;
+
+  // clear recovery_timer
+  if (this.recovery_timer !== null) {
+    clearTimeout(this.recovery_timer);
+    this.recovery_timer = null;
+  }
+
+  this.onconnect( {socket:this} );
+}
+
+function onDisconnect(error, code, reason) {
+  this.status = C.STATUS_DISCONNECTED;
+  this.ondisconnect({ socket:this.socket, error:error, code:code, reason:reason });
+
+  if (this.close_requested) {
+    return;
+  }
+
+  // update socket status
+  if (error) {
+    this.socket.status = C.SOCKET_STATUS_ERROR;
+  }
+
+  reconnect.call(this, error);
+}
+
+function onData(data) {
+  // CRLF Keep Alive response from server. Ignore it.
+  if(data === '\r\n') {
+    debug('received message with CRLF Keep Alive response');
+    return;
+  }
+
+  // binary message.
+  else if (typeof data !== 'string') {
+    try {
+      data = String.fromCharCode.apply(null, new Uint8Array(data));
+    } catch(evt) {
+      debug('received binary message failed to be converted into string,' +
+            ' message discarded');
+      return;
+    }
+
+    debug('received binary message:\n\n' + data + '\n');
+  }
+
+  // text message.
+  else {
+    debug('received text message:\n\n' + data + '\n');
+  }
+
+  this.ondata({ transport:this, message:data });
+}
+
+function reconnect() {
+  var k,
+  self = this;
+
+  this.recover_attempts+=1;
+
+  k = Math.floor((Math.random() * Math.pow(2,this.recover_attempts)) +1);
+
+  if (k < this.recovery_options.min_interval) {
+    k = this.recovery_options.min_interval;
+  }
+
+  else if (k > this.recovery_options.max_interval) {
+    k = this.recovery_options.max_interval;
+  }
+
+  debug('reconnection attempt: '+ this.recover_attempts +
+        '. next connection attempt in '+ k +' seconds');
+
+  this.recovery_timer = setTimeout(function() {
+    if (!self.close_requested && !(self.isConnected() || self.isConnecting())) {
+      // get the next available socket with higher weight
+      getSocket.call(self);
+
+      // connect the socket
+      self.connect();
+    }
+  }, k * 1000);
+}
+
+/**
+ * get the next available socket with higher weight
+ */
+function getSocket() {
+
+  var candidates = [];
+
+  this.sockets.forEach(function(socket) {
+    if (socket.status === C.SOCKET_STATUS_ERROR) {
+      return; // continue the array iteration
+    } else if (candidates.length === 0) {
+      candidates.push(socket);
+    } else if (socket.weight > candidates[0].weight) {
+      candidates = [socket];
+    } else if (socket.weight === candidates[0].weight) {
+      candidates.push(socket);
+    }
+  });
+
+  if (candidates.length === 0) {
+    // all sockets have failed. reset sockets status
+    this.sockets.forEach(function(socket) {
+      socket.status = C.SOCKET_STATUS_READY;
+    });
+
+    // get next available socket
+    getSocket.call(this);
+    return;
+  }
+
+  var idx = Math.floor((Math.random()* candidates.length));
+  this.socket = candidates[idx].socket;
+}
+
+},{"./Socket":19,"debug":29}],23:[function(require,module,exports){
 module.exports = UA;
 
 
@@ -19581,13 +19224,17 @@ var JsSIP_C = require('./Constants');
 var Registrator = require('./Registrator');
 var RTCSession = require('./RTCSession');
 var Message = require('./Message');
+var Transactions = require('./Transactions');
 var Transport = require('./Transport');
-var Transactions = require('./Transactions');
-var Transactions = require('./Transactions');
+var WebSocketInterface = require('./WebSocketInterface');
+var Socket = require('./Socket');
 var Utils = require('./Utils');
 var Exceptions = require('./Exceptions');
 var URI = require('./URI');
 var Grammar = require('./Grammar');
+var Parser = require('./Parser');
+var SIPMessage = require('./SIPMessage');
+var sanityCheck = require('./sanityCheck');
 
 
 
@@ -19624,9 +19271,6 @@ function UA(configuration) {
 
   // Custom UA empty object for high level use
   this.data = {};
-
-  this.transportRecoverAttempts = 0;
-  this.transportRecoveryTimer = null;
 
   Object.defineProperties(this, {
     transactionsCount: {
@@ -19703,14 +19347,13 @@ util.inherits(UA, events.EventEmitter);
 //=================
 
 /**
- * Connect to the WS server if status = STATUS_INIT.
+ * Connect to the server if status = STATUS_INIT.
  * Resume UA after being closed.
  */
 UA.prototype.start = function() {
   debug('start()');
 
-  var server,
-      self = this;
+  var self = this;
 
   function connect() {
     debug('restarting UA');
@@ -19719,8 +19362,6 @@ UA.prototype.start = function() {
   }
 
   if (this.status === C.STATUS_INIT) {
-    server = this.getNextWsServer();
-    this.transport = new Transport(this, server);
     this.transport.connect();
   } else if(this.status === C.STATUS_USER_CLOSED) {
     if (!this.isConnected()) {
@@ -19780,11 +19421,7 @@ UA.prototype.isRegistered = function() {
  * Connection state.
  */
 UA.prototype.isConnected = function() {
-  if(this.transport) {
-    return this.transport.connected;
-  } else {
-    return false;
-  }
+  return this.transport.isConnected();
 };
 
 /**
@@ -19860,9 +19497,6 @@ UA.prototype.stop = function() {
     return;
   }
 
-  // Clear transportRecoveryTimer
-  clearTimeout(this.transportRecoveryTimer);
-
   // Close registrator
   this._registrator.close();
 
@@ -19882,18 +19516,18 @@ UA.prototype.stop = function() {
 
   this.status = C.STATUS_USER_CLOSED;
 
-  // If there are no pending non-INVITE client or server transactions and no
-  // sessions, then disconnect now. Otherwise wait for 2 seconds.
-  // TODO: This fails if sotp() is called once an outgoing is cancelled (no time
-  // to send ACK for 487), so leave 2 seconds until properly re-designed.
-  // if (this.nistTransactionsCount === 0 && this.nictTransactionsCount === 0 && num_sessions === 0) {
-    // ua.transport.disconnect();
-  // }
-  // else {
+  if (this.nistTransactionsCount  === 0 &&
+      this.nictTransactionsCount  === 0 &&
+      this.ictTransactionsCount   === 0 &&
+      this.istTransactionsCount   === 0 &&
+      num_sessions === 0) {
+    ua.transport.disconnect();
+  }
+  else {
     setTimeout(function() {
       ua.transport.disconnect();
     }, 2000);
-  // }
+  }
 };
 
 /**
@@ -19991,119 +19625,6 @@ UA.prototype.set = function(parameter, value) {
 //==========================
 // Event Handlers
 //==========================
-
-/**
- * Transport Close event.
- */
-UA.prototype.onTransportClosed = function(transport) {
-  // Run _onTransportError_ callback on every client transaction using _transport_
-  var type, idx, length,
-  client_transactions = ['nict', 'ict', 'nist', 'ist'];
-
-  transport.server.status = Transport.C.STATUS_DISCONNECTED;
-
-  length = client_transactions.length;
-  for (type = 0; type < length; type++) {
-    for(idx in this.transactions[client_transactions[type]]) {
-      this.transactions[client_transactions[type]][idx].onTransportError();
-    }
-  }
-
-  this.emit('disconnected', {
-    transport: transport,
-    code: transport.lastTransportError.code,
-    reason: transport.lastTransportError.reason
-  });
-
-  // Call registrator _onTransportClosed_
-  this._registrator.onTransportClosed();
-};
-
-/**
- * Unrecoverable transport event.
- * Connection reattempt logic has been done and didn't success.
- */
-UA.prototype.onTransportError = function(transport) {
-  var server;
-
-  debug('transport ' + transport.server.ws_uri + ' failed | connection state set to '+ Transport.C.STATUS_ERROR);
-
-  // Close sessions.
-  // Mark this transport as 'down' and try the next one
-  transport.server.status = Transport.C.STATUS_ERROR;
-
-  this.emit('disconnected', {
-    transport: transport,
-    code: transport.lastTransportError.code,
-    reason: transport.lastTransportError.reason
-  });
-
-  // Don't attempt to recover the connection if the user closes the UA.
-  if (this.status === C.STATUS_USER_CLOSED) {
-    return;
-  }
-
-  server = this.getNextWsServer();
-
-  if(server) {
-    this.transport = new Transport(this, server);
-    this.transport.connect();
-  } else {
-    this.closeSessionsOnTransportError();
-    if (!this.error || this.error !== C.NETWORK_ERROR) {
-      this.status = C.STATUS_NOT_READY;
-      this.error = C.NETWORK_ERROR;
-    }
-    // Transport Recovery process
-    this.recoverTransport();
-  }
-};
-
-/**
- * Transport connection event.
- */
-UA.prototype.onTransportConnected = function(transport) {
-  this.transport = transport;
-
-  // Reset transport recovery counter
-  this.transportRecoverAttempts = 0;
-
-  transport.server.status = Transport.C.STATUS_READY;
-
-  if(this.status === C.STATUS_USER_CLOSED) {
-    return;
-  }
-
-  this.status = C.STATUS_READY;
-  this.error = null;
-
-  this.emit('connected', {
-    transport: transport
-  });
-
-  if(this.dynConfiguration.register) {
-    this._registrator.register();
-  }
-};
-
-
-/**
- * Transport connecting event
- */
-UA.prototype.onTransportConnecting = function(transport, attempts) {
-  this.emit('connecting', {
-    transport: transport,
-    attempts: attempts
-  });
-};
-
-/**
- * Transport connected event
- */
-UA.prototype.onTransportDisconnected = function(data) {
-  this.emit('disconnected', data);
-};
-
 
 /**
  * new Transaction
@@ -20347,76 +19868,6 @@ UA.prototype.findDialog = function(call_id, from_tag, to_tag) {
   }
 };
 
-/**
- * Retrieve the next server to which connect.
- */
-UA.prototype.getNextWsServer = function() {
-  // Order servers by weight
-  var idx, length, ws_server,
-  candidates = [];
-
-  length = this.configuration.ws_servers.length;
-  for (idx = 0; idx < length; idx++) {
-    ws_server = this.configuration.ws_servers[idx];
-
-    if (ws_server.status === Transport.C.STATUS_ERROR) {
-      continue;
-    } else if (candidates.length === 0) {
-      candidates.push(ws_server);
-    } else if (ws_server.weight > candidates[0].weight) {
-      candidates = [ws_server];
-    } else if (ws_server.weight === candidates[0].weight) {
-      candidates.push(ws_server);
-    }
-  }
-
-  idx = Math.floor((Math.random()* candidates.length));
-  return candidates[idx];
-};
-
-/**
- * Close all sessions on transport error.
- */
-UA.prototype.closeSessionsOnTransportError = function() {
-  var idx;
-
-  // Run _transportError_ for every Session
-  for(idx in this.sessions) {
-    this.sessions[idx].onTransportError();
-  }
-};
-
-UA.prototype.recoverTransport = function(ua) {
-  var idx, length, k, nextRetry, count, server;
-
-  ua = ua || this;
-  count = ua.transportRecoverAttempts;
-
-  length = ua.configuration.ws_servers.length;
-  for (idx = 0; idx < length; idx++) {
-    ua.configuration.ws_servers[idx].status = 0;
-  }
-
-  server = ua.getNextWsServer();
-
-  k = Math.floor((Math.random() * Math.pow(2,count)) +1);
-  nextRetry = k * ua.configuration.connection_recovery_min_interval;
-
-  if (nextRetry > ua.configuration.connection_recovery_max_interval) {
-    debug('time for next connection attempt exceeds connection_recovery_max_interval, resetting counter');
-    nextRetry = ua.configuration.connection_recovery_min_interval;
-    count = 0;
-  }
-
-  debug('next connection attempt in '+ nextRetry +' seconds');
-
-  this.transportRecoveryTimer = setTimeout(function() {
-    ua.transportRecoverAttempts = count + 1;
-    ua.transport = new Transport(ua, server);
-    ua.transport.connect();
-  }, nextRetry * 1000);
-};
-
 UA.prototype.loadConfig = function(configuration) {
   // Settings and default values
   var parameter, value, checked_value, hostport_params, registrar_server,
@@ -20425,6 +19876,9 @@ UA.prototype.loadConfig = function(configuration) {
     * Value to be set in Via sent_by and host part of Contact FQDN
     */
     via_host: Utils.createRandomToken(12) + '.invalid',
+
+    // SIP Contact URI
+    contact_uri: null,
 
     // SIP authentication password
     password: null,
@@ -20440,26 +19894,11 @@ UA.prototype.loadConfig = function(configuration) {
     register: true,
     registrar_server: null,
 
-    // Transport related parameters
-    ws_server_max_reconnection: 3,
-    ws_server_reconnection_timeout: 4,
-
-    connection_recovery_min_interval: 2,
-    connection_recovery_max_interval: 30,
-
     use_preloaded_route: false,
 
     // Session parameters
     no_answer_timeout: 60,
     session_timers: true,
-
-    // Hacks
-    hack_via_tcp: false,
-    hack_via_ws: false,
-    hack_ip_in_contact: false,
-
-    // Options for Node.
-    node_websocket_options: {}
   };
 
   // Pre-Configuration
@@ -20491,20 +19930,13 @@ UA.prototype.loadConfig = function(configuration) {
         continue;
       }
 
-      checked_value = UA.configuration_check.optional[parameter].call(this, value);
+      checked_value = UA.configuration_check.optional[parameter].call(this, value, configuration);
       if (checked_value !== undefined) {
         settings[parameter] = checked_value;
       } else {
         throw new Exceptions.ConfigurationError(parameter, value);
       }
     }
-  }
-
-  // Sanity Checks
-
-  // Connection recovery intervals.
-  if(settings.connection_recovery_max_interval < settings.connection_recovery_min_interval) {
-    throw new Exceptions.ConfigurationError('connection_recovery_max_interval', settings.connection_recovery_max_interval);
   }
 
   // Post Configuration Process
@@ -20527,6 +19959,42 @@ UA.prototype.loadConfig = function(configuration) {
   hostport_params.user = null;
   settings.hostport_params = hostport_params.toString().replace(/^sip:/i, '');
 
+  // Transport
+  var sockets = [];
+  if (settings.ws_servers && Array.isArray(settings.ws_servers)) {
+    sockets = sockets.concat(settings.ws_servers);
+  }
+
+  if (settings.sockets && Array.isArray(settings.sockets)) {
+    sockets = sockets.concat(settings.sockets);
+  }
+
+  if (sockets.length === 0) {
+    throw new Exceptions.ConfigurationError('sockets');
+  }
+
+  try {
+    this.transport = new Transport(sockets, { /* recovery options */
+      max_interval: settings.connection_recovery_max_interval,
+      min_interval: settings.connection_recovery_min_interval
+    });
+
+    // Transport event callbacks
+    this.transport.onconnecting = onTransportConnecting.bind(this);
+    this.transport.onconnect    = onTransportConnect.bind(this);
+    this.transport.ondisconnect = onTransportDisconnect.bind(this);
+    this.transport.ondata       = onTransportData.bind(this);
+
+    // transport options not needed here anymore
+    delete settings.connection_recovery_max_interval;
+    delete settings.connection_recovery_min_interval;
+    delete settings.ws_servers;
+    delete settings.sockets;
+  } catch (e) {
+    debugerror(e);
+    throw new Exceptions.ConfigurationError('sockets', sockets);
+  }
+
   // Check whether authorization_user is explicitly defined.
   // Take 'settings.uri.user' value if not.
   if (!settings.authorization_user) {
@@ -20547,14 +20015,19 @@ UA.prototype.loadConfig = function(configuration) {
   settings.no_answer_timeout = settings.no_answer_timeout * 1000;
 
   // Via Host
-  if (settings.hack_ip_in_contact) {
-    settings.via_host = Utils.getRandomTestNetIP();
+  if (settings.contact_uri) {
+    settings.via_host = settings.contact_uri.host;
+  }
+
+  // Contact URI
+  else {
+    settings.contact_uri = new URI('sip', Utils.createRandomToken(8), settings.via_host, null, {transport: 'ws'});
   }
 
   this.contact = {
     pub_gruu: null,
     temp_gruu: null,
-    uri: new URI('sip', Utils.createRandomToken(8), settings.via_host, null, {transport: 'ws'}),
+    uri: settings.contact_uri,
     toString: function(options) {
       options = options || {};
 
@@ -20620,32 +20093,27 @@ UA.configuration_skeleton = (function() {
     parameters = [
       // Internal parameters
       'jssip_id',
-      'ws_server_max_reconnection',
-      'ws_server_reconnection_timeout',
       'hostport_params',
 
       // Mandatory user configurable parameters
       'uri',
-      'ws_servers',
 
       // Optional user configurable parameters
       'authorization_user',
-      'connection_recovery_max_interval',
-      'connection_recovery_min_interval',
+      'contact_uri',
       'display_name',
-      'hack_via_tcp', // false
-      'hack_via_ws', // false
-      'hack_ip_in_contact', //false
       'instance_id',
       'no_answer_timeout', // 30 seconds
       'session_timers', // true
-      'node_websocket_options',
       'password',
       'realm',
       'ha1',
       'register_expires', // 600 seconds
       'registrar_server',
+      'sockets',
       'use_preloaded_route',
+      'ws_servers',
+
 
       // Post-configuration generated parameters
       'via_core_value',
@@ -20702,65 +20170,6 @@ UA.configuration_check = {
       } else {
         return parsed;
       }
-    },
-
-    ws_servers: function(ws_servers) {
-      var idx, length, url;
-
-      /* Allow defining ws_servers parameter as:
-       *  String: "host"
-       *  Array of Strings: ["host1", "host2"]
-       *  Array of Objects: [{ws_uri:"host1", weight:1}, {ws_uri:"host2", weight:0}]
-       *  Array of Objects and Strings: [{ws_uri:"host1"}, "host2"]
-       */
-      if (typeof ws_servers === 'string') {
-        ws_servers = [{ws_uri: ws_servers}];
-      } else if (Array.isArray(ws_servers)) {
-        length = ws_servers.length;
-        for (idx = 0; idx < length; idx++) {
-          if (typeof ws_servers[idx] === 'string') {
-            ws_servers[idx] = {ws_uri: ws_servers[idx]};
-          }
-        }
-      } else {
-        return;
-      }
-
-      if (ws_servers.length === 0) {
-        return false;
-      }
-
-      length = ws_servers.length;
-      for (idx = 0; idx < length; idx++) {
-        if (!ws_servers[idx].ws_uri) {
-          debug('ERROR: missing "ws_uri" attribute in ws_servers parameter');
-          return;
-        }
-        if (ws_servers[idx].weight && !Number(ws_servers[idx].weight)) {
-          debug('ERROR: "weight" attribute in ws_servers parameter must be a Number');
-          return;
-        }
-
-        url = Grammar.parse(ws_servers[idx].ws_uri, 'absoluteURI');
-
-        if(url === -1) {
-          debug('ERROR: invalid "ws_uri" attribute in ws_servers parameter: ' + ws_servers[idx].ws_uri);
-          return;
-        } else if(url.scheme !== 'wss' && url.scheme !== 'ws') {
-          debug('ERROR: invalid URI scheme in ws_servers parameter: ' + url.scheme);
-          return;
-        } else {
-          ws_servers[idx].sip_uri = '<sip:' + url.host + (url.port ? ':' + url.port : '') + ';transport=ws;lr>';
-
-          if (!ws_servers[idx].weight) {
-            ws_servers[idx].weight = 0;
-          }
-
-          ws_servers[idx].status = 0;
-          ws_servers[idx].scheme = url.scheme.toUpperCase();
-        }
-      }
-      return ws_servers;
     }
   },
 
@@ -20794,29 +20203,20 @@ UA.configuration_check = {
       }
     },
 
+    contact_uri: function(contact_uri) {
+      if (typeof contact_uri === 'string') {
+        var uri = Grammar.parse(contact_uri,'SIP_URI');
+        if (uri !== -1) {
+          return uri;
+        }
+      }
+    },
+
     display_name: function(display_name) {
       if (Grammar.parse('"' + display_name + '"', 'display_name') === -1) {
         return;
       } else {
         return display_name;
-      }
-    },
-
-    hack_via_tcp: function(hack_via_tcp) {
-      if (typeof hack_via_tcp === 'boolean') {
-        return hack_via_tcp;
-      }
-    },
-
-    hack_via_ws: function(hack_via_ws) {
-      if (typeof hack_via_ws === 'boolean') {
-        return hack_via_ws;
-      }
-    },
-
-    hack_ip_in_contact: function(hack_ip_in_contact) {
-      if (typeof hack_ip_in_contact === 'boolean') {
-        return hack_ip_in_contact;
       }
     },
 
@@ -20846,10 +20246,6 @@ UA.configuration_check = {
       if (typeof session_timers === 'boolean') {
         return session_timers;
       }
-    },
-
-    node_websocket_options: function(node_websocket_options) {
-      return (typeof node_websocket_options === 'object') ? node_websocket_options : {};
     },
 
     password: function(password) {
@@ -20897,15 +20293,177 @@ UA.configuration_check = {
       }
     },
 
+    sockets: function(sockets) {
+      var idx, length;
+
+      /* Allow defining sockets parameter as:
+       *  Socket: socket
+       *  Array of Socket: [socket1, socket2]
+       *  Array of Objects: [{socket: socket1, weight:1}, {socket: Socket2, weight:0}]
+       *  Array of Objects and Socket: [{socket: socket1}, socket2]
+       */
+      if (Socket.isSocket(sockets)) {
+        sockets = [{socket: sockets}];
+      } else if (Array.isArray(sockets) && sockets.length) {
+        length = sockets.length;
+        for (idx = 0; idx < length; idx++) {
+          if (Socket.isSocket(sockets[idx])) {
+            sockets[idx] = {socket: sockets[idx]};
+          }
+        }
+      } else {
+        return;
+      }
+
+      return sockets;
+    },
+
     use_preloaded_route: function(use_preloaded_route) {
       if (typeof use_preloaded_route === 'boolean') {
         return use_preloaded_route;
       }
+    },
+
+    ws_servers: function(ws_servers) {
+      var idx, length, sockets = [];
+
+      /* Allow defining ws_servers parameter as:
+       *  String: "host"
+       *  Array of Strings: ["host1", "host2"]
+       *  Array of Objects: [{ws_uri:"host1", weight:1}, {ws_uri:"host2", weight:0}]
+       *  Array of Objects and Strings: [{ws_uri:"host1"}, "host2"]
+       */
+      if (typeof ws_servers === 'string') {
+        ws_servers = [{ws_uri: ws_servers}];
+      } else if (Array.isArray(ws_servers) && ws_servers.length) {
+        length = ws_servers.length;
+        for (idx = 0; idx < length; idx++) {
+          if (typeof ws_servers[idx] === 'string') {
+            ws_servers[idx] = {ws_uri: ws_servers[idx]};
+          }
+        }
+      } else {
+        return;
+      }
+
+      length = ws_servers.length;
+      for (idx = 0; idx < length; idx++) {
+        try {
+          sockets.push({
+            socket: new WebSocketInterface(ws_servers[idx].ws_uri),
+            weight: ws_servers[idx].weight || 0
+          });
+        } catch(e) {
+          debugerror(e);
+          return;
+        }
+      }
+
+      return sockets;
     }
   }
 };
 
-},{"./Constants":1,"./Exceptions":5,"./Grammar":6,"./Message":8,"./RTCSession":11,"./Registrator":16,"./Transactions":20,"./Transport":21,"./URI":23,"./Utils":24,"debug":27,"events":30,"rtcninja":36,"util":44}],23:[function(require,module,exports){
+/**
+ * Transport event handlers
+ */
+
+// Transport connecting event
+function onTransportConnecting(data) {
+  this.emit('connecting', data);
+}
+
+// Transport connected event.
+function onTransportConnect(data) {
+  if(this.status === C.STATUS_USER_CLOSED) {
+    return;
+  }
+
+  this.status = C.STATUS_READY;
+  this.error = null;
+
+  this.emit('connected', data);
+
+  if(this.dynConfiguration.register) {
+    this._registrator.register();
+  }
+}
+
+// Transport disconnected event.
+function onTransportDisconnect(data) {
+  // Run _onTransportError_ callback on every client transaction using _transport_
+  var type, idx, length,
+  client_transactions = ['nict', 'ict', 'nist', 'ist'];
+
+  length = client_transactions.length;
+  for (type = 0; type < length; type++) {
+    for(idx in this.transactions[client_transactions[type]]) {
+      this.transactions[client_transactions[type]][idx].onTransportError();
+    }
+  }
+
+  this.emit('disconnected', data);
+
+  // Call registrator _onTransportClosed_
+  this._registrator.onTransportClosed();
+
+  if (this.status !== C.STATUS_USER_CLOSED) {
+    this.status = C.STATUS_NOT_READY;
+    this.error = C.NETWORK_ERROR;
+  }
+}
+
+// Transport data event
+function onTransportData(data) {
+ var transaction,
+  transport = data.transport,
+  message = data.message;
+
+ message = Parser.parseMessage(message, this);
+
+ if (! message) {
+   return;
+ }
+
+ if (this.status === UA.C.STATUS_USER_CLOSED &&
+     message instanceof SIPMessage.IncomingRequest) {
+   return;
+ }
+
+ // Do some sanity check
+ if(! sanityCheck(message, this, transport)) {
+   return;
+ }
+
+ if(message instanceof SIPMessage.IncomingRequest) {
+   message.transport = transport;
+   this.receiveRequest(message);
+ } else if(message instanceof SIPMessage.IncomingResponse) {
+   /* Unike stated in 18.1.2, if a response does not match
+   * any transaction, it is discarded here and no passed to the core
+   * in order to be discarded there.
+   */
+   switch(message.method) {
+     case JsSIP_C.INVITE:
+       transaction = this.transactions.ict[message.via_branch];
+       if(transaction) {
+         transaction.receiveResponse(message);
+       }
+       break;
+     case JsSIP_C.ACK:
+       // Just in case ;-)
+       break;
+     default:
+       transaction = this.transactions.nict[message.via_branch];
+       if(transaction) {
+         transaction.receiveResponse(message);
+       }
+       break;
+   }
+ }
+}
+
+},{"./Constants":1,"./Exceptions":5,"./Grammar":6,"./Message":8,"./Parser":10,"./RTCSession":11,"./Registrator":16,"./SIPMessage":18,"./Socket":19,"./Transactions":21,"./Transport":22,"./URI":24,"./Utils":25,"./WebSocketInterface":26,"./sanityCheck":27,"debug":29,"events":32,"rtcninja":38,"util":46}],24:[function(require,module,exports){
 module.exports = URI;
 
 
@@ -21117,7 +20675,7 @@ URI.parse = function(uri) {
   }
 };
 
-},{"./Constants":1,"./Grammar":6,"./Utils":24}],24:[function(require,module,exports){
+},{"./Constants":1,"./Grammar":6,"./Utils":25}],25:[function(require,module,exports){
 var Utils = {};
 
 module.exports = Utils;
@@ -21143,6 +20701,14 @@ Utils.isFunction = function(fn) {
   }
 };
 
+Utils.isString = function(str) {
+  if (str !== undefined) {
+    return (Object.prototype.toString.call(str) === '[object String]')? true : false;
+  } else {
+    return false;
+  }
+};
+
 Utils.isDecimal = function(num) {
   return !isNaN(num) && (parseFloat(num) === parseInt(num,10));
 };
@@ -21151,6 +20717,16 @@ Utils.isEmpty = function(value) {
   if (value === null || value === '' || value === undefined || (Array.isArray(value) && value.length === 0) || (typeof(value) === 'number' && isNaN(value))) {
     return true;
   }
+};
+
+Utils.hasMethods = function(obj /*, method list as strings */){
+  var i = 1, methodName;
+  while((methodName = arguments[i++])){
+    if(this.isFunction(obj[methodName])) {
+      return false;
+    }
+  }
+  return true;
 };
 
 Utils.createRandomToken = function(size, base) {
@@ -21514,7 +21090,148 @@ Utils.calculateMD5 = function(string) {
   return temp.toLowerCase();
 };
 
-},{"./Constants":1,"./Grammar":6,"./URI":23}],25:[function(require,module,exports){
+},{"./Constants":1,"./Grammar":6,"./URI":24}],26:[function(require,module,exports){
+(function (global){
+module.exports = WebSocketInterface;
+
+/**
+ * Dependencies.
+ */
+var Grammar = require('./Grammar');
+var debug = require('debug')('JsSIP:WebSocketInterface');
+var debugerror = require('debug')('JsSIP:ERROR:WebSocketInterface');
+if ( typeof global.keevioWebSocket !== 'undefined' && typeof global.WebSocket) {
+        global.WebSocket = global.keevioWebSocket;
+}
+
+function WebSocketInterface(url) {
+  debug('new()');
+
+  var sip_uri = null;
+  var via_transport = null;
+
+  this.ws = null;
+
+  // setting the 'scheme' alters the sip_uri too (used in SIP Route header field)
+  Object.defineProperties(this, {
+    via_transport: {
+      get: function() { return via_transport; },
+      set: function(transport) {
+        via_transport = transport.toUpperCase();
+      }
+    },
+    sip_uri:  { get: function() { return sip_uri; }},
+    url:      { get: function() { return url; }}
+  });
+
+  var parsed_url = Grammar.parse(url, 'absoluteURI');
+
+  if (parsed_url === -1) {
+    debugerror('invalid WebSocket URI: ' + url);
+    throw new TypeError('Invalid argument: ' + url);
+  } else if(parsed_url.scheme !== 'wss' && parsed_url.scheme !== 'ws') {
+    debugerror('invalid WebSocket URI scheme: ' + parsed_url.scheme);
+    throw new TypeError('Invalid argument: ' + url);
+  } else {
+    sip_uri = 'sip:' + parsed_url.host +
+      (parsed_url.port ? ':' + parsed_url.port : '') + ';transport=ws';
+    this.via_transport = parsed_url.scheme;
+  }
+}
+
+WebSocketInterface.prototype.connect = function () {
+  debug('connect()');
+
+  if (this.isConnected()) {
+    debug('WebSocket ' + this.url + ' is already connected');
+    return;
+  } else if (this.isConnecting()) {
+    debug('WebSocket ' + this.url + ' is connecting');
+    return;
+  }
+
+  if (this.ws) {
+    this.ws.close();
+  }
+
+  debug('connecting to WebSocket ' + this.url);
+
+  try {
+    this.ws = new WebSocket(this.url, 'sip');
+
+    this.ws.binaryType = 'arraybuffer';
+
+    this.ws.onopen    = onOpen.bind(this);
+    this.ws.onclose   = onClose.bind(this);
+    this.ws.onmessage = onMessage.bind(this);
+    this.ws.onerror   = onError.bind(this);
+  } catch(e) {
+    onError.call(this, e);
+  }
+};
+
+WebSocketInterface.prototype.disconnect = function() {
+  debug('disconnect()');
+
+  if (this.ws) {
+    this.ws.close();
+    this.ws = null;
+  }
+};
+
+WebSocketInterface.prototype.send = function(message) {
+  debug('send()');
+
+  if (this.isConnected()) {
+    this.ws.send(message);
+    return true;
+  } else {
+    debugerror('unable to send message, WebSocket is not open');
+    return false;
+  }
+};
+
+WebSocketInterface.prototype.isConnected = function() {
+  return this.ws && this.ws.readyState === this.ws.OPEN;
+};
+
+WebSocketInterface.prototype.isConnecting = function() {
+  return this.ws && this.ws.readyState === this.ws.CONNECTING;
+};
+
+
+/**
+ * WebSocket Event Handlers
+ */
+
+function onOpen() {
+  debug('WebSocket ' + this.url + ' connected');
+
+  this.onconnect();
+}
+
+function onClose(e) {
+  debug('WebSocket ' + this.url + ' closed');
+
+  if (e.wasClean === false) {
+    debug('WebSocket abrupt disconnection');
+  }
+
+  this.ondisconnect(e.wasClean, e.code, e.reason);
+}
+
+function onMessage(e) {
+  debug('received WebSocket message');
+
+  this.ondata(e.data);
+}
+
+function onError(e) {
+  debugerror('WebSocket ' + this.url + ' error: '+ e);
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./Grammar":6,"debug":29}],27:[function(require,module,exports){
 module.exports = sanityCheck;
 
 
@@ -21741,7 +21458,7 @@ function reply(status_code) {
   transport.send(response);
 }
 
-},{"./Constants":1,"./SIPMessage":18,"./Utils":24,"debug":27}],26:[function(require,module,exports){
+},{"./Constants":1,"./SIPMessage":18,"./Utils":25,"debug":29}],28:[function(require,module,exports){
 /*!
  * Bowser - a browser detector
  * https://github.com/ded/bowser
@@ -22147,7 +21864,7 @@ function reply(status_code) {
   return bowser
 });
 
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -22317,7 +22034,7 @@ function localstorage(){
   } catch (e) {}
 }
 
-},{"./debug":28}],28:[function(require,module,exports){
+},{"./debug":30}],30:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -22516,7 +22233,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":29}],29:[function(require,module,exports){
+},{"ms":31}],31:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -22643,7 +22360,7 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22943,7 +22660,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -22968,7 +22685,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 /*!
  * @name JavaScript/NodeJS Merge v1.2.0
  * @author yeikos
@@ -23144,7 +22861,7 @@ if (typeof Object.create === 'function') {
 	}
 
 })(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -23240,7 +22957,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -23546,7 +23263,7 @@ function Adapter(options) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"bowser":26,"debug":27}],35:[function(require,module,exports){
+},{"bowser":28,"debug":29}],37:[function(require,module,exports){
 'use strict';
 
 // Expose the RTCPeerConnection class.
@@ -24297,7 +24014,7 @@ function setProperties() {
 	});
 }
 
-},{"./Adapter":34,"debug":27,"merge":32}],36:[function(require,module,exports){
+},{"./Adapter":36,"debug":29,"merge":34}],38:[function(require,module,exports){
 'use strict';
 
 module.exports = rtcninja;
@@ -24387,14 +24104,14 @@ Object.defineProperty(rtcninja, 'called', {
 rtcninja.debug = require('debug');
 rtcninja.browser = browser;
 
-},{"./Adapter":34,"./RTCPeerConnection":35,"./version":37,"bowser":26,"debug":27}],37:[function(require,module,exports){
+},{"./Adapter":36,"./RTCPeerConnection":37,"./version":39,"bowser":28,"debug":29}],39:[function(require,module,exports){
 'use strict';
 
 // Expose the 'version' field of package.json.
 module.exports = require('../package.json').version;
 
 
-},{"../package.json":38}],38:[function(require,module,exports){
+},{"../package.json":40}],40:[function(require,module,exports){
 module.exports={
   "_args": [
     [
@@ -24500,7 +24217,7 @@ module.exports={
   "version": "0.6.5"
 }
 
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 var grammar = module.exports = {
   v: [{
       name: 'version',
@@ -24759,7 +24476,7 @@ Object.keys(grammar).forEach(function (key) {
   });
 });
 
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 var parser = require('./parser');
 var writer = require('./writer');
 
@@ -24769,7 +24486,7 @@ exports.parseFmtpConfig = parser.parseFmtpConfig;
 exports.parsePayloads = parser.parsePayloads;
 exports.parseRemoteCandidates = parser.parseRemoteCandidates;
 
-},{"./parser":41,"./writer":42}],41:[function(require,module,exports){
+},{"./parser":43,"./writer":44}],43:[function(require,module,exports){
 var toIntIfInt = function (v) {
   return String(Number(v)) === v ? Number(v) : v;
 };
@@ -24864,7 +24581,7 @@ exports.parseRemoteCandidates = function (str) {
   return candidates;
 };
 
-},{"./grammar":39}],42:[function(require,module,exports){
+},{"./grammar":41}],44:[function(require,module,exports){
 var grammar = require('./grammar');
 
 // customized util.format - discards excess arguments and can void middle ones
@@ -24980,14 +24697,14 @@ module.exports = function (session, opts) {
   return sdp.join('\r\n') + '\r\n';
 };
 
-},{"./grammar":39}],43:[function(require,module,exports){
+},{"./grammar":41}],45:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],44:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -25577,131 +25294,12 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":43,"_process":33,"inherits":31}],45:[function(require,module,exports){
-var _global = (function() { return this; })();
-var nativeWebSocket = _global.WebSocket || _global.MozWebSocket;
-var websocket_version = require('./version');
-
-
-/**
- * Expose a W3C WebSocket class with just one or two arguments.
- */
-function W3CWebSocket(uri, protocols) {
-	var native_instance;
-
-	if (protocols) {
-		native_instance = new nativeWebSocket(uri, protocols);
-	}
-	else {
-		native_instance = new nativeWebSocket(uri);
-	}
-
-	/**
-	 * 'native_instance' is an instance of nativeWebSocket (the browser's WebSocket
-	 * class). Since it is an Object it will be returned as it is when creating an
-	 * instance of W3CWebSocket via 'new W3CWebSocket()'.
-	 *
-	 * ECMAScript 5: http://bclary.com/2004/11/07/#a-13.2.2
-	 */
-	return native_instance;
-}
-
-
-/**
- * Module exports.
- */
-module.exports = {
-    'w3cwebsocket' : nativeWebSocket ? W3CWebSocket : null,
-    'version'      : websocket_version
-};
-
-},{"./version":46}],46:[function(require,module,exports){
-module.exports = require('../package.json').version;
-
-},{"../package.json":47}],47:[function(require,module,exports){
-module.exports={
-  "name": "websocket",
-  "description": "Websocket Client & Server Library implementing the WebSocket protocol as specified in RFC 6455.",
-  "keywords": [
-    "websocket",
-    "websockets",
-    "socket",
-    "networking",
-    "comet",
-    "push",
-    "RFC-6455",
-    "realtime",
-    "server",
-    "client"
-  ],
-  "author": {
-    "name": "Brian McKelvey",
-    "email": "brian@worlize.com",
-    "url": "https://www.worlize.com/"
-  },
-  "contributors": [
-    {
-      "name": "Iñaki Baz Castillo",
-      "email": "ibc@aliax.net",
-      "url": "http://dev.sipdoc.net"
-    }
-  ],
-  "version": "1.0.22",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/theturtle32/WebSocket-Node.git"
-  },
-  "homepage": "https://github.com/theturtle32/WebSocket-Node",
-  "engines": {
-    "node": ">=0.8.0"
-  },
-  "dependencies": {
-    "debug": "~2.2.0",
-    "nan": "~2.0.5",
-    "typedarray-to-buffer": "~3.0.3",
-    "yaeti": "~0.0.4"
-  },
-  "devDependencies": {
-    "buffer-equal": "^0.0.1",
-    "faucet": "^0.0.1",
-    "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
-    "gulp-jshint": "^1.11.2",
-    "jshint-stylish": "^1.0.2",
-    "tape": "^4.0.1"
-  },
-  "config": {
-    "verbose": false
-  },
-  "scripts": {
-    "install": "(node-gyp rebuild 2> builderror.log) || (exit 0)",
-    "test": "faucet test/unit",
-    "gulp": "gulp"
-  },
-  "main": "index",
-  "directories": {
-    "lib": "./lib"
-  },
-  "browser": "lib/browser.js",
-  "license": "Apache-2.0",
-  "readme": "WebSocket Client & Server Implementation for Node\n=================================================\n\n[![npm version](https://badge.fury.io/js/websocket.svg)](http://badge.fury.io/js/websocket)\n\n[![NPM Downloads](https://img.shields.io/npm/dm/websocket.svg)](https://www.npmjs.com/package/websocket)\n\n[![NPM](https://nodei.co/npm/websocket.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/websocket/)\n\n[![NPM](https://nodei.co/npm-dl/websocket.png?height=3)](https://nodei.co/npm/websocket/)\n\n[ ![Codeship Status for theturtle32/WebSocket-Node](https://codeship.com/projects/70458270-8ee7-0132-7756-0a0cf4fe8e66/status?branch=master)](https://codeship.com/projects/61106)\n\nOverview\n--------\nThis is a (mostly) pure JavaScript implementation of the WebSocket protocol versions 8 and 13 for Node.  There are some example client and server applications that implement various interoperability testing protocols in the \"test/scripts\" folder.\n\nFor a WebSocket client written in ActionScript 3, see my [AS3WebScocket](https://github.com/theturtle32/AS3WebSocket) project.\n\n\nDocumentation\n=============\n\n[You can read the full API documentation in the docs folder.](docs/index.md)\n\n\nChangelog\n---------\n\n***Current Version: 1.0.22*** — Released 2015-09-28\n\n***Version 1.0.22***\n\n* Updating to work with nan 2.x\n\n\n***Version 1.0.21***\n\n* Incrememnted and re-published to work around an aborted npm publish of v1.0.20.\n\n***Version 1.0.20***\n\n* Added EventTarget to the W3CWebSocket interface (Thanks, [@ibc](https://github.com/ibc)!)\n* Corrected an inaccurate error message. (Thanks, [@lekoaf](https://github.com/lekoaf)!)\n\n***Version 1.0.19***\n\n* Updated to nan v1.8.x (tested with v1.8.4)\n* Added `\"license\": \"Apache-2.0\"` to package.json via [pull request #199](https://github.com/theturtle32/WebSocket-Node/pull/199) by [@pgilad](https://github.com/pgilad). See [npm1k.org](http://npm1k.org/).\n\n[View the full changelog](CHANGELOG.md)\n\nBrowser Support\n---------------\n\nAll current browsers are fully supported.\n\n* Firefox 7-9 (Old) (Protocol Version 8)\n* Firefox 10+ (Protocol Version 13)\n* Chrome 14,15 (Old) (Protocol Version 8)\n* Chrome 16+ (Protocol Version 13)\n* Internet Explorer 10+ (Protocol Version 13)\n* Safari 6+ (Protocol Version 13)\n\n***Safari older than 6.0 is not supported since it uses a very old draft of WebSockets***\n\n***If you need to simultaneously support legacy browser versions that had implemented draft-75/draft-76/draft-00, take a look here: https://gist.github.com/1428579***\n\nBenchmarks\n----------\nThere are some basic benchmarking sections in the Autobahn test suite.  I've put up a [benchmark page](http://theturtle32.github.com/WebSocket-Node/benchmarks/) that shows the results from the Autobahn tests run against AutobahnServer 0.4.10, WebSocket-Node 1.0.2, WebSocket-Node 1.0.4, and ws 0.3.4.\n\nAutobahn Tests\n--------------\nThe very complete [Autobahn Test Suite](http://autobahn.ws/testsuite/) is used by most WebSocket implementations to test spec compliance and interoperability.\n\n- [View Server Test Results](http://theturtle32.github.com/WebSocket-Node/test-report/servers/)\n- [View Client Test Results](http://theturtle32.github.com/WebSocket-Node/test-report/clients/)\n\nNotes\n-----\nThis library has been used in production on [worlize.com](https://www.worlize.com) since April 2011 and seems to be stable.  Your mileage may vary.\n\n**Tested with the following node versions:**\n\n- 0.8.28\n- 0.10.33\n\nIt may work in earlier or later versions but I'm not actively testing it outside of the listed versions.  YMMV.\n\nInstallation\n------------\n\nA few users have reported difficulties building the native extensions without first manually installing node-gyp.  If you have trouble building the native extensions, make sure you've got a C++ compiler, and have done `npm install -g node-gyp` first. \n\nNative extensions are optional, however, and WebSocket-Node will work even if the extensions cannot be compiled.\n\nIn your project root:\n\n    $ npm install websocket\n  \nThen in your code:\n\n```javascript\nvar WebSocketServer = require('websocket').server;\nvar WebSocketClient = require('websocket').client;\nvar WebSocketFrame  = require('websocket').frame;\nvar WebSocketRouter = require('websocket').router;\nvar W3CWebSocket = require('websocket').w3cwebsocket;\n```\n\nNote for Windows Users\n----------------------\nBecause there is a small C++ component used for validating UTF-8 data, you will need to install a few other software packages in addition to Node to be able to build this module:\n\n- [Microsoft Visual C++](http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express)\n- [Python 2.7](http://www.python.org/download/) (NOT Python 3.x)\n\n\nCurrent Features:\n-----------------\n- Licensed under the Apache License, Version 2.0\n- Protocol version \"8\" and \"13\" (Draft-08 through the final RFC) framing and handshake\n- Can handle/aggregate received fragmented messages\n- Can fragment outgoing messages\n- Router to mount multiple applications to various path and protocol combinations\n- TLS supported for outbound connections via WebSocketClient\n- TLS supported for server connections (use https.createServer instead of http.createServer)\n  - Thanks to [pors](https://github.com/pors) for confirming this!\n- Cookie setting and parsing\n- Tunable settings\n  - Max Receivable Frame Size\n  - Max Aggregate ReceivedMessage Size\n  - Whether to fragment outgoing messages\n  - Fragmentation chunk size for outgoing messages\n  - Whether to automatically send ping frames for the purposes of keepalive\n  - Keep-alive ping interval\n  - Whether or not to automatically assemble received fragments (allows application to handle individual fragments directly)\n  - How long to wait after sending a close frame for acknowledgment before closing the socket.\n- [W3C WebSocket API](http://www.w3.org/TR/websockets/) for applications running on both Node and browsers (via the `W3CWebSocket` class). \n\n\nKnown Issues/Missing Features:\n------------------------------\n- No API for user-provided protocol extensions.\n\n\nUsage Examples\n==============\n\nServer Example\n--------------\n\nHere's a short example showing a server that echos back anything sent to it, whether utf-8 or binary.\n\n```javascript\n#!/usr/bin/env node\nvar WebSocketServer = require('websocket').server;\nvar http = require('http');\n\nvar server = http.createServer(function(request, response) {\n    console.log((new Date()) + ' Received request for ' + request.url);\n    response.writeHead(404);\n    response.end();\n});\nserver.listen(8080, function() {\n    console.log((new Date()) + ' Server is listening on port 8080');\n});\n\nwsServer = new WebSocketServer({\n    httpServer: server,\n    // You should not use autoAcceptConnections for production\n    // applications, as it defeats all standard cross-origin protection\n    // facilities built into the protocol and the browser.  You should\n    // *always* verify the connection's origin and decide whether or not\n    // to accept it.\n    autoAcceptConnections: false\n});\n\nfunction originIsAllowed(origin) {\n  // put logic here to detect whether the specified origin is allowed.\n  return true;\n}\n\nwsServer.on('request', function(request) {\n    if (!originIsAllowed(request.origin)) {\n      // Make sure we only accept requests from an allowed origin\n      request.reject();\n      console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');\n      return;\n    }\n    \n    var connection = request.accept('echo-protocol', request.origin);\n    console.log((new Date()) + ' Connection accepted.');\n    connection.on('message', function(message) {\n        if (message.type === 'utf8') {\n            console.log('Received Message: ' + message.utf8Data);\n            connection.sendUTF(message.utf8Data);\n        }\n        else if (message.type === 'binary') {\n            console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');\n            connection.sendBytes(message.binaryData);\n        }\n    });\n    connection.on('close', function(reasonCode, description) {\n        console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');\n    });\n});\n```\n\nClient Example\n--------------\n\nThis is a simple example client that will print out any utf-8 messages it receives on the console, and periodically sends a random number.\n\n*This code demonstrates a client in Node.js, not in the browser*\n\n```javascript\n#!/usr/bin/env node\nvar WebSocketClient = require('websocket').client;\n\nvar client = new WebSocketClient();\n\nclient.on('connectFailed', function(error) {\n    console.log('Connect Error: ' + error.toString());\n});\n\nclient.on('connect', function(connection) {\n    console.log('WebSocket Client Connected');\n    connection.on('error', function(error) {\n        console.log(\"Connection Error: \" + error.toString());\n    });\n    connection.on('close', function() {\n        console.log('echo-protocol Connection Closed');\n    });\n    connection.on('message', function(message) {\n        if (message.type === 'utf8') {\n            console.log(\"Received: '\" + message.utf8Data + \"'\");\n        }\n    });\n    \n    function sendNumber() {\n        if (connection.connected) {\n            var number = Math.round(Math.random() * 0xFFFFFF);\n            connection.sendUTF(number.toString());\n            setTimeout(sendNumber, 1000);\n        }\n    }\n    sendNumber();\n});\n\nclient.connect('ws://localhost:8080/', 'echo-protocol');\n```\n\nClient Example using the *W3C WebSocket API*\n--------------------------------------------\n\nSame example as above but using the [W3C WebSocket API](http://www.w3.org/TR/websockets/).\n\n```javascript\nvar W3CWebSocket = require('websocket').w3cwebsocket;\n\nvar client = new W3CWebSocket('ws://localhost:8080/', 'echo-protocol');\n\nclient.onerror = function() {\n    console.log('Connection Error');\n};\n\nclient.onopen = function() {\n    console.log('WebSocket Client Connected');\n\n    function sendNumber() {\n        if (client.readyState === client.OPEN) {\n            var number = Math.round(Math.random() * 0xFFFFFF);\n            client.send(number.toString());\n            setTimeout(sendNumber, 1000);\n        }\n    }\n    sendNumber();\n};\n\nclient.onclose = function() {\n    console.log('echo-protocol Client Closed');\n};\n\nclient.onmessage = function(e) {\n    if (typeof e.data === 'string') {\n        console.log(\"Received: '\" + e.data + \"'\");\n    }\n};\n```\n    \nRequest Router Example\n----------------------\n\nFor an example of using the request router, see `libwebsockets-test-server.js` in the `test` folder.\n\n\nResources\n---------\n\nA presentation on the state of the WebSockets protocol that I gave on July 23, 2011 at the LA Hacker News meetup.  [WebSockets: The Real-Time Web, Delivered](http://www.scribd.com/doc/60898569/WebSockets-The-Real-Time-Web-Delivered)\n",
-  "readmeFilename": "README.md",
-  "bugs": {
-    "url": "https://github.com/theturtle32/WebSocket-Node/issues"
-  },
-  "_id": "websocket@1.0.22",
-  "dist": {
-    "shasum": "dfd29ac0ba94ae1624ebb067cc7a2a68ceb2e925"
-  },
-  "_from": "websocket@^1.0.22",
-  "_resolved": "https://registry.npmjs.org/websocket/-/websocket-1.0.22.tgz"
-}
-
-},{}],48:[function(require,module,exports){
+},{"./support/isBuffer":45,"_process":35,"inherits":33}],47:[function(require,module,exports){
 module.exports={
   "name": "jssip",
   "title": "JsSIP",
   "description": "the Javascript SIP library",
-  "version": "1.0.0",
+  "version": "2.0.2",
   "homepage": "http://jssip.net",
   "author": "José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)",
   "contributors": [
@@ -25727,22 +25325,21 @@ module.exports={
   },
   "dependencies": {
     "debug": "^2.2.0",
-    "rtcninja": "^0.6.5",
-    "sdp-transform": "~1.5.3",
-    "websocket": "^1.0.22"
+    "rtcninja": "^0.6.7",
+    "sdp-transform": "^1.6.2"
   },
   "devDependencies": {
-    "browserify": "^13.0.0",
+    "browserify": "^13.0.1",
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
     "gulp-expect-file": "0.0.7",
-    "gulp-header": "^1.7.1",
-    "gulp-jshint": "^2.0.0",
+    "gulp-header": "1.8.2",
+    "gulp-jshint": "^2.0.1",
     "gulp-nodeunit-runner": "^0.2.2",
     "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^1.5.1",
+    "gulp-uglify": "^1.5.3",
     "gulp-util": "^3.0.7",
-    "jshint": "^2.9.1",
-    "jshint-stylish": "^2.1.0",
+    "jshint": "^2.9.2",
+    "jshint-stylish": "^2.2.0",
     "pegjs": "0.7.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
