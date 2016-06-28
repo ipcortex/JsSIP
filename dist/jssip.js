@@ -15561,8 +15561,11 @@ function createLocalDescription(type, onSuccess, onFailure, constraints) {
       if (! candidate) {
         connection.onicecandidate = null;
         self.rtcReady = true;
-
-        if (onSuccess) {
+          if (self.iceCandidates.length === 0) {
+            if (onFailure) {
+              onFailure(Error('No ICE candidates! Browser issue?'));
+            }
+        } else if (onSuccess) {
           var e = {originator:'local', type:type, sdp:connection.localDescription.sdp};
           self.emit('sdp', e);
           onSuccess(addIceCandidates.call(self, e.sdp));
@@ -15580,8 +15583,11 @@ function createLocalDescription(type, onSuccess, onFailure, constraints) {
       function() {
         if (connection.iceGatheringState === 'complete') {
           self.rtcReady = true;
-
-          if (onSuccess) {
+          if (self.iceCandidates.length === 0) {
+            if (onFailure) {
+              onFailure(Error('No ICE candidates! Browser issue?'));
+            }
+          } else if (onSuccess) {
             var e = {originator:'local', type:type, sdp:connection.localDescription.sdp};
             self.emit('sdp', e);
             onSuccess(addIceCandidates.call(self, e.sdp));
