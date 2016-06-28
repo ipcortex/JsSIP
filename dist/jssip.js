@@ -21100,8 +21100,8 @@ module.exports = WebSocketInterface;
 var Grammar = require('./Grammar');
 var debug = require('debug')('JsSIP:WebSocketInterface');
 var debugerror = require('debug')('JsSIP:ERROR:WebSocketInterface');
-if ( typeof global.keevioWebSocket !== 'undefined' && typeof global.WebSocket) {
-        global.WebSocket = global.keevioWebSocket;
+if (typeof global.keevioWebSocket !== 'undefined') {
+  global.WebSocket = global.keevioWebSocket;
 }
 
 function WebSocketInterface(url) {
@@ -21652,6 +21652,13 @@ function reply(status_code) {
       , version: getFirstMatch(/phantomjs\/(\d+(\.\d+)?)/i)
       }
     }
+    else if (/slimerjs/i.test(ua)) {
+      result = {
+        name: 'SlimerJS'
+        , slimer: t
+        , version: getFirstMatch(/slimerjs\/(\d+(\.\d+)?)/i)
+      }
+    }
     else if (/blackberry|\bbb\d+/i.test(ua) || /rim\stablet/i.test(ua)) {
       result = {
         name: 'BlackBerry'
@@ -21686,6 +21693,13 @@ function reply(status_code) {
         name: 'QupZilla'
         , qupzilla: t
         , version: getFirstMatch(/(?:qupzilla)[\s\/](\d+(?:\.\d+)+)/i) || versionIdentifier
+      }
+    }
+    else if (/chromium/i.test(ua)) {
+      result = {
+        name: 'Chromium'
+        , chromium: t
+        , version: getFirstMatch(/(?:chromium)[\s\/](\d+(?:\.\d+)?)/i) || versionIdentifier
       }
     }
     else if (/chrome|crios|crmo/i.test(ua)) {
@@ -23239,22 +23253,22 @@ function Adapter(options) {
 
 		// New spec.
 		if (!oldSpecRTCOfferOptions) {
-			if (options.mandatory && options.mandatory.OfferToReceiveAudio) {
-				options.offerToReceiveAudio = 1;
+			if (options.mandatory && options.mandatory.hasOwnProperty('OfferToReceiveAudio')) {
+				options.offerToReceiveAudio = options.mandatory.OfferToReceiveAudio ? 1 : 0;
 			}
-			if (options.mandatory && options.mandatory.OfferToReceiveVideo) {
-				options.offerToReceiveVideo = 1;
+			if (options.mandatory && options.mandatory.hasOwnProperty('OfferToReceiveVideo')) {
+				options.offerToReceiveVideo = options.mandatory.OfferToReceiveVideo ? 1 : 0;
 			}
 			delete options.mandatory;
 		// Old spec.
 		} else {
-			if (options.offerToReceiveAudio) {
+			if (options.hasOwnProperty('offerToReceiveAudio')) {
 				options.mandatory = options.mandatory || {};
-				options.mandatory.OfferToReceiveAudio = true;
+				options.mandatory.OfferToReceiveAudio = options.offerToReceiveAudio ? true : false;
 			}
-			if (options.offerToReceiveVideo) {
+			if (options.hasOwnProperty('offerToReceiveVideo')) {
 				options.mandatory = options.mandatory || {};
-				options.mandatory.OfferToReceiveVideo = true;
+				options.mandatory.OfferToReceiveVideo = options.offerToReceiveVideo ? true : false;
 			}
 		}
 	};
@@ -23297,7 +23311,7 @@ debugerror.log = console.warn.bind(console);
 // Constructor
 
 function RTCPeerConnection(pcConfig, pcConstraints) {
-	debug('new | pcConfig: %o', pcConfig);
+	debug('new | [pcConfig:%o, pcConstraints:%o]', pcConfig, pcConstraints);
 
 	// Set this.pcConfig and this.options.
 	setConfigurationAndOptions.call(this, pcConfig);
@@ -24115,41 +24129,41 @@ module.exports = require('../package.json').version;
 module.exports={
   "_args": [
     [
-      "rtcninja@0.6.5",
+      "rtcninja@^0.6.7",
       "/home/steve/src/git/JsSIP"
     ]
   ],
-  "_from": "rtcninja@0.6.5",
-  "_id": "rtcninja@0.6.5",
+  "_from": "rtcninja@>=0.6.7 <0.7.0",
+  "_id": "rtcninja@0.6.7",
   "_inCache": true,
   "_installable": true,
   "_location": "/rtcninja",
-  "_nodeVersion": "0.12.0",
+  "_nodeVersion": "4.4.1",
   "_npmOperationalInternal": {
-    "host": "packages-5-east.internal.npmjs.com",
-    "tmp": "tmp/rtcninja-0.6.5.tgz_1455126031928_0.529364233603701"
+    "host": "packages-16-east.internal.npmjs.com",
+    "tmp": "tmp/rtcninja-0.6.7.tgz_1464431140092_0.9943081210367382"
   },
   "_npmUser": {
     "email": "ibc@aliax.net",
     "name": "ibc"
   },
-  "_npmVersion": "2.5.1",
+  "_npmVersion": "2.14.20",
   "_phantomChildren": {},
   "_requested": {
     "name": "rtcninja",
-    "raw": "rtcninja@0.6.5",
-    "rawSpec": "0.6.5",
+    "raw": "rtcninja@^0.6.7",
+    "rawSpec": "^0.6.7",
     "scope": null,
-    "spec": "0.6.5",
-    "type": "version"
+    "spec": ">=0.6.7 <0.7.0",
+    "type": "range"
   },
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/rtcninja/-/rtcninja-0.6.5.tgz",
-  "_shasum": "da7d56212307d26ec4d76e5b45df99e922e0d8a3",
+  "_resolved": "https://registry.npmjs.org/rtcninja/-/rtcninja-0.6.7.tgz",
+  "_shasum": "f7c8855f2c0e41ae08c638375bad1dc977369ec2",
   "_shrinkwrap": null,
-  "_spec": "rtcninja@0.6.5",
+  "_spec": "rtcninja@^0.6.7",
   "_where": "/home/steve/src/git/JsSIP",
   "author": {
     "email": "inaki.baz@eface2face.com",
@@ -24166,34 +24180,34 @@ module.exports={
     }
   ],
   "dependencies": {
-    "bowser": "^1.0.0",
+    "bowser": "^1.2.0",
     "debug": "^2.2.0",
     "merge": "^1.2.0"
   },
   "description": "WebRTC API wrapper to deal with different browsers",
   "devDependencies": {
-    "browserify": "^13.0.0",
+    "browserify": "^13.0.1",
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
     "gulp-expect-file": "0.0.7",
     "gulp-filelog": "^0.4.1",
-    "gulp-header": "^1.7.1",
+    "gulp-header": "^1.8.2",
     "gulp-jscs": "^3.0.2",
-    "gulp-jscs-stylish": "^1.1.2",
-    "gulp-jshint": "^2.0.0",
+    "gulp-jscs-stylish": "^1.4.0",
+    "gulp-jshint": "^2.0.1",
     "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^1.5.2",
-    "jshint-stylish": "^2.0.1",
+    "gulp-uglify": "^1.5.3",
+    "jshint-stylish": "^2.2.0",
     "vinyl-source-stream": "^1.1.0"
   },
   "directories": {},
   "dist": {
-    "shasum": "da7d56212307d26ec4d76e5b45df99e922e0d8a3",
-    "tarball": "https://registry.npmjs.org/rtcninja/-/rtcninja-0.6.5.tgz"
+    "shasum": "f7c8855f2c0e41ae08c638375bad1dc977369ec2",
+    "tarball": "https://registry.npmjs.org/rtcninja/-/rtcninja-0.6.7.tgz"
   },
   "engines": {
     "node": ">=0.10.32"
   },
-  "gitHead": "43e97b1b62701128e4dfa6ac0a97d3dfbcd99c0e",
+  "gitHead": "d36b02d0503ca152771692935a4096130f28dc5d",
   "homepage": "https://github.com/eface2face/rtcninja.js",
   "keywords": [
     "webrtc"
@@ -24214,7 +24228,7 @@ module.exports={
     "url": "git+https://github.com/eface2face/rtcninja.js.git"
   },
   "scripts": {},
-  "version": "0.6.5"
+  "version": "0.6.7"
 }
 
 },{}],41:[function(require,module,exports){
@@ -24267,7 +24281,7 @@ var grammar = module.exports = {
   a: [
     { //a=rtpmap:110 opus/48000/2
       push: 'rtp',
-      reg: /^rtpmap:(\d*) ([\w\-]*)(?:\s*\/(\d*)(?:\s*\/(\S*))?)?/,
+      reg: /^rtpmap:(\d*) ([\w\-\.]*)(?:\s*\/(\d*)(?:\s*\/(\S*))?)?/,
       names: ['payload', 'codec', 'rate', 'encoding'],
       format: function (o) {
         return (o.encoding) ?
@@ -24456,6 +24470,16 @@ var grammar = module.exports = {
       name: 'rtcpRsize',
       reg: /^(rtcp-rsize)/
     },
+    { //a=sctpmap:5000 webrtc-datachannel 1024
+      name: 'sctpmap',
+      reg: /^sctpmap:([\w_\/]*) (\S*)(?: (\S*))?/,
+      names: ['sctpmapNumber', 'app', 'maxMessageSize'],
+      format: function (o) {
+        return (o.maxMessageSize != null) ?
+          "sctpmap:%s %s %s" :
+          "sctpmap:%s %s";
+      }
+    },
     { // any a= that we don't understand is kepts verbatim on media.invalid
       push: 'invalid',
       names: ["value"]
@@ -24553,7 +24577,7 @@ exports.parse = function (sdp) {
 };
 
 var fmtpReducer = function (acc, expr) {
-  var s = expr.split('=');
+  var s = expr.split(/=(.+)/, 2);
   if (s.length === 2) {
     acc[s[0]] = toIntIfInt(s[1]);
   }
