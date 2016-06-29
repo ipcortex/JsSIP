@@ -15146,12 +15146,17 @@ function createLocalDescription(type, onSuccess, onFailure, constraints) {
     setIceTimer.call(self);
     connection.onicecandidate = function(event, candidate) {
       if (! candidate) {
+        clearIceTimer.call(self);
         connection.onicecandidate = null;
         self.rtcReady = true;
-          if (self.iceCandidates.length === 0) {
-            if (onFailure) {
-              onFailure(Error('No ICE candidates! Browser issue?'));
-            }
+        if (self.iceCandidates.length === 0) {
+          /* ICE Gathering is happening for us to reach this code,
+           * but we have no candidates. There is a Chrome bug that
+           * can cause this :(
+           */
+          if (onFailure) {
+            onFailure(Error('No ICE candidates! Browser issue?'));
+          }
         } else if (onSuccess) {
           var e = {originator:'local', type:type, sdp:connection.localDescription.sdp};
           self.emit('sdp', e);
@@ -15169,12 +15174,9 @@ function createLocalDescription(type, onSuccess, onFailure, constraints) {
       // success
       function() {
         if (connection.iceGatheringState === 'complete') {
+          clearIceTimer.call(self);
           self.rtcReady = true;
-          if (self.iceCandidates.length === 0) {
-            if (onFailure) {
-              onFailure(Error('No ICE candidates! Browser issue?'));
-            }
-          } else if (onSuccess) {
+          if (onSuccess) {
             var e = {originator:'local', type:type, sdp:connection.localDescription.sdp};
             self.emit('sdp', e);
             onSuccess(addIceCandidates.call(self, e.sdp));
