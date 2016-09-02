@@ -1,5 +1,5 @@
 /*
- * JsSIP v2.0.2
+ * JsSIP v2.0.3
  * the Javascript SIP library
  * Copyright: 2012-2016 José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)
  * Homepage: http://jssip.net
@@ -17469,7 +17469,7 @@ RequestSender.prototype = {
           cseq = this.request.cseq + 1;
         }
 
-        this.request = this.request.clone();
+        this.request = this.applicant.request = this.request.clone();
 
         this.request.cseq = cseq;
         this.request.setHeader('cseq', cseq +' '+ this.method);
@@ -21153,7 +21153,7 @@ WebSocketInterface.prototype.connect = function () {
   }
 
   if (this.ws) {
-    this.ws.close();
+    this.disconnect();
   }
 
   debug('connecting to WebSocket ' + this.url);
@@ -21176,7 +21176,19 @@ WebSocketInterface.prototype.disconnect = function() {
   debug('disconnect()');
 
   if (this.ws) {
+    /* These callbacks may be delayed waiting for the actual close,
+     * which interferes with the smooth running of any replacement
+     * WS, so clear the callbacks and fake the close event instead.
+     */
+    var old_close_fn = this.ws.onclose;
+    this.ws.onopen    = null;
+    this.ws.onclose   = null;
+    this.ws.onmessage = null;
+    this.ws.onerror   = null;
     this.ws.close();
+    if ( old_close_fn ) {
+      old_close_fn({wasClean: true, code: 1000, reason: ''});
+    }
     this.ws = null;
   }
 };
@@ -25325,7 +25337,7 @@ module.exports={
   "name": "jssip",
   "title": "JsSIP",
   "description": "the Javascript SIP library",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "homepage": "http://jssip.net",
   "author": "José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)",
   "contributors": [
