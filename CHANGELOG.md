@@ -1,6 +1,23 @@
 CHANGELOG
 =========
 
+Version 3.0.1 (released in 2017-01-19)
+--------------------------------------
+
+* Close #419. Allow sending the DTMF 'R' key. Used to report a hook flash.
+
+
+Version 3.0.0 (released in 2016-11-19)
+--------------------------------------
+
+* Remove `rtcninja` dependency. Instead use `webrtc-adapter`.
+* `RTCSession:`: Remove `RTCPeerConnection` event wrappers. The app can access them via `session.connection`.
+* `RTCSession:`: Emit WebRTC related events when internal calls to `getUserMedia()`, `createOffer()`, etc. fail.
+* Use debug NPM fixed "2.0.0" version (until a pending bug in such a library is fixed).
+* `UA`: Remove `ws_servers` option.
+* `UA`: Allow immediate restart
+
+
 Version 2.0.6 (released in 2016-09-30)
 --------------------------------------
 
