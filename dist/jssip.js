@@ -1,5 +1,5 @@
 /*
- * JsSIP v3.0.2
+ * JsSIP v3.0.3
  * the Javascript SIP library
  * Copyright: 2012-2017 José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)
  * Homepage: http://jssip.net
@@ -15886,6 +15886,7 @@ function receiveInviteResponse(response) {
         }).catch(function(error) {
           self.emit('peerconnection:setremotedescriptionfailed', error);
           self.earlyDialogs[response.call_id + response.from_tag + response.to_tag].terminate();
+          delete self.earlyDialogs[response.call_id + response.from_tag + response.to_tag];
         });
       break;
 
@@ -16730,7 +16731,7 @@ DTMF.prototype.init_incoming = function(request) {
   }
 };
 
-},{"../Constants":1,"../Exceptions":5,"../RTCSession":11,"debug":28}],13:[function(require,module,exports){
+},{"../Constants":1,"../Exceptions":5,"../RTCSession":11,"debug":28,"events":30,"util":40}],13:[function(require,module,exports){
 module.exports = ReferNotifier;
 
 
@@ -26338,7 +26339,7 @@ module.exports={
   "name": "jssip",
   "title": "JsSIP",
   "description": "the Javascript SIP library",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "homepage": "http://jssip.net",
   "author": "José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)",
   "contributors": [
