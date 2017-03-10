@@ -1,6 +1,19 @@
 CHANGELOG
 =========
 
+
+Version 3.0.3 (released in 2017-02-22)
+--------------------------------------
+
+* Fix #426. Properly emit DTMF events.
+
+
+Version 3.0.2 (released in 2017-02-17)
+--------------------------------------
+
+* Fix #418. Incorrect socket status on failure.
+
+
 Version 3.0.1 (released in 2017-01-19)
 --------------------------------------
 
