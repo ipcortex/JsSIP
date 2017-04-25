@@ -29,7 +29,7 @@
   "dependencies": {
     "debug": "^2.3.3",
     "sdp-transform": "^1.6.2",
-    "webrtc-adapter": "^2.0.8"
+    "webrtc-adapter": "^3.2.0"
   },
   "devDependencies": {
     "browserify": "^13.1.1",
