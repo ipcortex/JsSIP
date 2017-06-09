@@ -1,6 +1,55 @@
 CHANGELOG
 =========
 
+Version 3.0.12 (released in 2017-05-23)
+--------------------------------------
+
+* `UA`: Add `registrationExpiring` event (#442). Credits to @danjenkins.
+
+
+Version 3.0.11 (released in 2017-05-21)
+--------------------------------------
+
+* `RTCSession`: Emit "peerconnection" also for incoming calls.
+
+
+Version 3.0.10 (released in 2017-05-17)
+--------------------------------------
+
+* Emit SDP before new `RTCSessionDescription`. Thanks to @StarLeafRob.
+
+
+Version 3.0.8 (released in 2017-05-03)
+--------------------------------------
+
+* Generic SIP INFO support.
+
+
+Version 3.0.7 (released in 2017-03-24)
+--------------------------------------
+
+* Fix #431. Fix UA's `disconnect` event by properly providing an object with all the documente fields (thanks @nicketson for reporting it).
+
+
+Version 3.0.6 (released in 2017-03-22)
+--------------------------------------
+
+* Fix #428. Don't use `pranswer` for early media. Instead create an `answer` and do a workaround when the 200 arrives.
+
+
+Version 3.0.5 (released in 2017-03-21)
+--------------------------------------
+
+* Update deps.
+* Add more debug logs into `RTCSession` class.
+
+
+Version 3.0.4 (released in 2017-03-13)
+--------------------------------------
+
+* Update deps.
+* If ICE fails, terminate the session with status code 408.
+
 
 Version 3.0.3 (released in 2017-02-22)
 --------------------------------------
