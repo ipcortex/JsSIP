@@ -13664,6 +13664,7 @@ function RTCSession(ua) {
   this.dialog = null;
   this.earlyDialogs = {};
   this.connection = null;  // The RTCPeerConnection instance (public attribute).
+  this.connectionPromise = Promise.resolve();	// Prevent races on PC operations.
 
   // RTCSession confirmation flag
   this.is_confirmed = false;
@@ -14192,7 +14193,10 @@ RTCSession.prototype.answer = function(options) {
 
       var offer = new RTCSessionDescription({type:'offer', sdp:e.sdp});
 
-      self.connection.setRemoteDescription(offer)
+      self.connectionPromise = self.connectionPromise
+        .then(function() {
+          return self.connection.setRemoteDescription(offer);
+        })
         .then(remoteDescriptionSucceededOrNotNeeded)
         .catch(function(error) {
           request.reply(488);
@@ -14884,7 +14888,10 @@ RTCSession.prototype.receiveRequest = function(request) {
 
           this.emit('sdp', e);
 
-          this.connection.setRemoteDescription(answer)
+          this.connectionPromise = this.connectionPromise
+            .then(function() {
+              return self.connection.setRemoteDescription(answer);
+            })
             .then(function() {
               if (!self.is_confirmed) {
                 confirmed.call(self, 'remote', request);
@@ -15135,7 +15142,10 @@ function createLocalDescription(type, onSuccess, onFailure, constraints) {
   this.iceCandidates = [];
 
   if (type === 'offer') {
-    connection.createOffer(constraints)
+    this.connectionPromise = this.connectionPromise
+      .then(function() {
+        return connection.createOffer(constraints);
+      })
       .then(createSucceeded)
       .catch(function(error) {
         self.rtcReady = true;
@@ -15147,7 +15157,10 @@ function createLocalDescription(type, onSuccess, onFailure, constraints) {
       });
   }
   else if (type === 'answer') {
-    connection.createAnswer(constraints)
+    this.connectionPromise = this.connectionPromise
+      .then(function() {
+        return connection.createAnswer(constraints);
+      })
       .then(createSucceeded)
       .catch(function(error) {
         self.rtcReady = true;
@@ -15400,7 +15413,10 @@ function receiveReinvite(request) {
 
     this.emit('sdp', e);
 
-    this.connection.setRemoteDescription(offer)
+    this.connectionPromise = this.connectionPromise
+      .then(function() {
+        return self.connection.setRemoteDescription(offer);
+      })
       .then(doAnswer)
       .catch(function(error) {
         request.reply(488);
@@ -15551,7 +15567,10 @@ function receiveUpdate(request) {
 
   var offer = new RTCSessionDescription({type:'offer', sdp:e.sdp});
 
-  this.connection.setRemoteDescription(offer)
+  this.connectionPromise = this.connectionPromise
+    .then(function() {
+      return self.connection.setRemoteDescription(offer);
+    })
     .then(function() {
       if (self.remoteHold === true && hold === false) {
         self.remoteHold = false;
@@ -15928,7 +15947,10 @@ function receiveInviteResponse(response) {
 
       answer = new RTCSessionDescription({type:'answer', sdp:e.sdp});
 
-      this.connection.setRemoteDescription(answer)
+      this.connectionPromise = this.connectionPromise
+        .then(function() {
+          return self.connection.setRemoteDescription(answer);
+        })
         .catch(function(error) {
           debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
 
@@ -15959,7 +15981,7 @@ function receiveInviteResponse(response) {
 
       answer = new RTCSessionDescription({type:'answer', sdp:e.sdp});
 
-      Promise.resolve()
+      this.connectionPromise = this.connectionPromise
         .then(function() {
           // Be ready for 200 with SDP after a 180/183 with SDP. We created a SDP 'answer'
           // for it, so check the current signaling state.
@@ -15979,7 +16001,7 @@ function receiveInviteResponse(response) {
           }
         })
         .then(function() {
-          self.connection.setRemoteDescription(answer)
+          return self.connection.setRemoteDescription(answer)
             .then(function() {
               // Handle Session Timers.
               handleSessionTimersInIncomingResponse.call(self, response);
@@ -16095,7 +16117,10 @@ function sendReinvite(options) {
 
     var answer = new RTCSessionDescription({type:'answer', sdp:e.sdp});
 
-    self.connection.setRemoteDescription(answer)
+    self.connectionPromise = self.connectionPromise
+      .then(function() {
+        return self.connection.setRemoteDescription(answer);
+      })
       .then(function() {
         if (eventHandlers.succeeded) {
           eventHandlers.succeeded(response);
@@ -16236,7 +16261,10 @@ function sendUpdate(options) {
 
       var answer = new RTCSessionDescription({type:'answer', sdp:e.sdp});
 
-      self.connection.setRemoteDescription(answer)
+      self.connectionPromise = self.connectionPromise
+        .then(function() {
+          return self.connection.setRemoteDescription(answer);
+        })
         .then(function() {
           if (eventHandlers.succeeded) {
             eventHandlers.succeeded(response);
