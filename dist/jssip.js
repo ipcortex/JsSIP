@@ -1,5 +1,5 @@
 /*
- * JsSIP v3.0.13
+ * JsSIP v3.0.15
  * the Javascript SIP library
  * Copyright: 2012-2017 José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)
  * Homepage: http://jssip.net
@@ -15698,8 +15698,21 @@ function receiveNotify(request) {
 
   switch (request.event.event) {
     case 'refer': {
-      var id = request.event.params.id;
-      var referSubscriber = this.referSubscribers[id];
+      var id;
+      var referSubscriber;
+
+      if (request.event.params && request.event.params.id) {
+        id = request.event.params.id;
+        referSubscriber = this.referSubscribers[id];
+      }
+      else if (Object.keys(this.referSubscribers).length === 1) {
+        referSubscriber = Object.keys(this.referSubscribers)[0];
+      }
+      else {
+        request.reply(400, 'Missing event id parameter');
+        return;
+      }
+
 
       if (!referSubscriber) {
         request.reply(481, 'Subscription does not exist');
@@ -27504,7 +27517,7 @@ module.exports={
   "name": "jssip",
   "title": "JsSIP",
   "description": "the Javascript SIP library",
-  "version": "3.0.13",
+  "version": "3.0.15",
   "homepage": "http://jssip.net",
   "author": "José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)",
   "contributors": [
@@ -27529,15 +27542,15 @@ module.exports={
     "url": "https://github.com/versatica/JsSIP/issues"
   },
   "dependencies": {
-    "debug": "^2.6.8",
+    "debug": "^3.0.1",
     "sdp-transform": "^2.3.0",
-    "webrtc-adapter": "^3.4.3"
+    "webrtc-adapter": "^5.0.0"
   },
   "devDependencies": {
     "browserify": "^14.3.0",
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
     "gulp-expect-file": "0.0.7",
-    "gulp-header": "1.8.8",
+    "gulp-header": "1.8.9",
     "gulp-jshint": "^2.0.4",
     "gulp-nodeunit-runner": "^0.2.2",
     "gulp-rename": "^1.2.2",
