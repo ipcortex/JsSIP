@@ -17133,9 +17133,15 @@ module.exports = function (_EventEmitter) {
       this._status = C.STATUS_TERMINATED;
     }
   }, {
-    key: '_cleanDirection',
-    value: function _cleanDirection(sdp, direction) {
-      if (sdp && sdp.direction && direction) {
+    key: '_setDirection',
+    value: function _setDirection(sdp, m, direction) {
+      if (!direction) {
+        return;
+      }
+      if (m && m.direction) {
+        m.direction = direction;
+        delete sdp.direction;
+      } else if (sdp && sdp.direction) {
         sdp.direction = direction;
       }
     }
@@ -17147,6 +17153,8 @@ module.exports = function (_EventEmitter) {
   }, {
     key: '_mangleOffer',
     value: function _mangleOffer(sdp) {
+
+      var direction = void 0;
 
       if (!this._localHold && !this._remoteHold) {
         return sdp;
@@ -17168,14 +17176,15 @@ module.exports = function (_EventEmitter) {
             if (holdMediaTypes.indexOf(m.type) === -1) {
               continue;
             }
-            if (!m.direction) {
-              m.direction = 'sendonly';
-            } else if (m.direction === 'sendrecv') {
-              m.direction = 'sendonly';
-            } else if (m.direction === 'recvonly') {
-              m.direction = 'inactive';
+            direction = m.direction || sdp.direction;
+            if (!direction) {
+              direction = 'sendonly';
+            } else if (direction === 'sendrecv') {
+              direction = 'sendonly';
+            } else if (direction === 'recvonly') {
+              direction = 'inactive';
             }
-            this._cleanDirection(sdp, m.direction);
+            this._setDirection(sdp, m, direction);
           }
         } catch (err) {
           _didIteratorError5 = true;
@@ -17206,8 +17215,8 @@ module.exports = function (_EventEmitter) {
               if (holdMediaTypes.indexOf(_m.type) === -1) {
                 continue;
               }
-              _m.direction = 'inactive';
-              this._cleanDirection(sdp, _m.direction);
+              direction = 'inactive';
+              this._setDirection(sdp, _m, direction);
             }
           } catch (err) {
             _didIteratorError6 = true;
@@ -17238,14 +17247,15 @@ module.exports = function (_EventEmitter) {
                 if (holdMediaTypes.indexOf(_m2.type) === -1) {
                   continue;
                 }
-                if (!_m2.direction) {
-                  _m2.direction = 'recvonly';
-                } else if (_m2.direction === 'sendrecv') {
-                  _m2.direction = 'recvonly';
-                } else if (_m2.direction === 'recvonly') {
-                  _m2.direction = 'inactive';
+                direction = _m2.direction || sdp.direction;
+                if (!direction) {
+                  direction = 'recvonly';
+                } else if (direction === 'sendrecv') {
+                  direction = 'recvonly';
+                } else if (direction === 'recvonly') {
+                  direction = 'inactive';
                 }
-                this._cleanDirection(sdp, _m2.direction);
+                this._setDirection(sdp, _m2, direction);
               }
             } catch (err) {
               _didIteratorError7 = true;
