@@ -14938,7 +14938,8 @@ module.exports = function (_EventEmitter) {
         debug('emit "sdp"');
         _this3.emit('sdp', e);
 
-        var offer = new RTCSessionDescription({ type: 'offer', sdp: e.sdp + 'a=end-of-candidates\r\n' });
+        e.sdp = _this3.last_remote_sdp = fixupSDP(e.sdp, _this3.last_remote_sdp, _this3);
+        var offer = new RTCSessionDescription({ type: 'offer', sdp: '' + e.sdp });
 
         _this3._connectionPromiseQueue = _this3._connectionPromiseQueue.then(function () {
           return _this3._connection.setRemoteDescription(offer);
@@ -15615,7 +15616,8 @@ module.exports = function (_EventEmitter) {
               debug('emit "sdp"');
               this.emit('sdp', e);
 
-              var answer = new RTCSessionDescription({ type: 'answer', sdp: e.sdp + 'a=end-of-candidates\r\n' });
+              e.sdp = this.last_remote_sdp = fixupSDP(e.sdp, this.last_remote_sdp, this);
+              var answer = new RTCSessionDescription({ type: 'answer', sdp: '' + e.sdp });
 
               this._connectionPromiseQueue = this._connectionPromiseQueue.then(function () {
                 return _this10._connection.setRemoteDescription(answer);
@@ -16355,7 +16357,8 @@ module.exports = function (_EventEmitter) {
       debug('emit "sdp"');
       this.emit('sdp', e);
 
-      var offer = new RTCSessionDescription({ type: 'offer', sdp: e.sdp + 'a=end-of-candidates\r\n' });
+      e.sdp = this.last_remote_sdp = fixupSDP(e.sdp, this.last_remote_sdp, this);
+      var offer = new RTCSessionDescription({ type: 'offer', sdp: '' + e.sdp });
 
       this._connectionPromiseQueue = this._connectionPromiseQueue
       // Set remote description.
@@ -16774,7 +16777,8 @@ module.exports = function (_EventEmitter) {
             debug('emit "sdp"');
             this.emit('sdp', e);
 
-            var answer = new RTCSessionDescription({ type: 'answer', sdp: e.sdp + 'a=end-of-candidates\r\n' });
+            e.sdp = this.last_remote_sdp = fixupSDP(e.sdp, this.last_remote_sdp, this);
+            var answer = new RTCSessionDescription({ type: 'answer', sdp: '' + e.sdp });
 
             this._connectionPromiseQueue = this._connectionPromiseQueue.then(function () {
               return _this22._connection.setRemoteDescription(answer);
@@ -16806,7 +16810,8 @@ module.exports = function (_EventEmitter) {
             debug('emit "sdp"');
             this.emit('sdp', _e);
 
-            var _answer = new RTCSessionDescription({ type: 'answer', sdp: _e.sdp + 'a=end-of-candidates\r\n' });
+            _e.sdp = this.last_remote_sdp = fixupSDP(_e.sdp, this.last_remote_sdp, this);
+            var _answer = new RTCSessionDescription({ type: 'answer', sdp: '' + _e.sdp });
 
             this._connectionPromiseQueue = this._connectionPromiseQueue.then(function () {
               // Be ready for 200 with SDP after a 180/183 with SDP.
@@ -16939,7 +16944,8 @@ module.exports = function (_EventEmitter) {
         debug('emit "sdp"');
         this.emit('sdp', e);
 
-        var answer = new RTCSessionDescription({ type: 'answer', sdp: e.sdp + 'a=end-of-candidates\r\n' });
+        e.sdp = this.last_remote_sdp = fixupSDP(e.sdp, this.last_remote_sdp, this);
+        var answer = new RTCSessionDescription({ type: 'answer', sdp: '' + e.sdp });
 
         this._connectionPromiseQueue = this._connectionPromiseQueue.then(function () {
           return _this24._connection.setRemoteDescription(answer);
@@ -17081,7 +17087,8 @@ module.exports = function (_EventEmitter) {
           debug('emit "sdp"');
           this.emit('sdp', e);
 
-          var answer = new RTCSessionDescription({ type: 'answer', sdp: e.sdp + 'a=end-of-candidates\r\n' });
+          e.sdp = this.last_remote_sdp = fixupSDP(e.sdp, this.last_remote_sdp, this);
+          var answer = new RTCSessionDescription({ type: 'answer', sdp: '' + e.sdp });
 
           this._connectionPromiseQueue = this._connectionPromiseQueue.then(function () {
             return _this26._connection.setRemoteDescription(answer);
@@ -17738,6 +17745,52 @@ module.exports = function (_EventEmitter) {
 
   return RTCSession;
 }(EventEmitter);
+
+function fixupSDP(sdp, osdp, parent) {
+  /* global webrtcDetectedBrowser:true */
+  var msids = parent.msids = parent.msids || {};
+
+  if (sdp.indexOf('a=end-of-candidates') === -1) {
+    sdp += 'a=end-of-candidates\r\n';
+  }
+
+  /* Check for missing bundle directives */
+  if (sdp.indexOf('a=msid-semantic:') !== -1 || typeof webrtcDetectedBrowser === 'string' && webrtcDetectedBrowser !== 'firefox') {
+    return sdp; /* msid present */
+  }
+  msids.s = msids.s || '';
+  while (msids.s.length < 32) {
+    msids.s += Math.floor(Math.random() * 65536).toString(16);
+  }
+  sdp = sdp.replace(/^(.*)?(m=\w+)/m, '$1a=msid-semantic:WMS *\r\n$2');
+
+  var lines = sdp.split('\r\n');
+  var l = void 0,
+      s = void 0,
+      s2 = void 0,
+      m = null;
+
+  while (lines.length) {
+    l = lines.shift();
+    if (l.substr(0, 2) === 'm=') {
+      m = l.match(/^(m=\w+).*/)[1];
+      msids[m] = msids[m] || '';
+      while (msids[m].length < 32) {
+        msids[m] += Math.floor(Math.random() * 65536).toString(16);
+      }
+
+      s = sdp.split(m);
+      s2 = s[1].split('m=');
+      s2[0] += 'a=msid:{' + msids.s + '} {' + msids[m] + '}\r\n';
+      s2[0] += 'a=mslabel:{' + msids.s + '}\r\n';
+      s2[0] += 'a=label:{' + msids[m] + '}\r\n';
+      s[1] = s2.join('m=');
+      sdp = s.shift() + m + s.join(m);
+    }
+  }
+
+  return sdp;
+}
 },{"./Constants":2,"./Dialog":3,"./Exceptions":6,"./RTCSession/DTMF":13,"./RTCSession/Info":14,"./RTCSession/ReferNotifier":15,"./RTCSession/ReferSubscriber":16,"./RequestSender":18,"./SIPMessage":19,"./Timers":21,"./Transactions":22,"./Utils":26,"debug":29,"events":31,"sdp-transform":36}],13:[function(require,module,exports){
 'use strict';
 
