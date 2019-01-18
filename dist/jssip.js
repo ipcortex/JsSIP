@@ -1,7 +1,7 @@
 /*
  * JsSIP v3.2.16
  * the Javascript SIP library
- * Copyright: 2012-2018 José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)
+ * Copyright: 2012-2019 José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)
  * Homepage: http://jssip.net
  * License: MIT
  */
@@ -18514,7 +18514,9 @@ function (_EventEmitter) {
       return Promise.resolve() // Create Offer or Answer.
       .then(function () {
         if (type === 'offer') {
-          return connection.createOffer(constraints).catch(function (error) {
+          return connection.createOffer(constraints).then(function (offer) {
+            return fixupLocalSDP(offer);
+          }).catch(function (error) {
             debugerror('emit "peerconnection:createofferfailed" [error:%o]', error);
 
             _this13.emit('peerconnection:createofferfailed', error);
@@ -19324,6 +19326,8 @@ function (_EventEmitter) {
               // We created a SDP 'answer' for it, so check the current signaling state.
               if (_this22._connection.signalingState === 'stable') {
                 return _this22._connection.createOffer().then(function (offer) {
+                  return fixupLocalSDP(offer);
+                }).then(function (offer) {
                   return _this22._connection.setLocalDescription(offer);
                 }).catch(function (error) {
                   _this22._acceptAndTerminate(response, 500, error.toString());
@@ -20225,10 +20229,44 @@ function (_EventEmitter) {
 }(EventEmitter); // function fixupSDP(sdp /*, osdp, parent */)
 
 
+function fixupLocalSDP(offer) {
+  /*
+  let sdp = offer.sdp;
+  if (sdp.indexOf('a=extmap') !== -1)
+  {
+    const lines = sdp.split('\r\n');
+    let l, r = [];
+    while (lines.length)
+    {
+      l = lines.shift();
+      if ( l.substr(0, 9) !== 'a=extmap:' )
+        r.push(l)
+    }
+    sdp = r.join('\r\n');
+    offer.sdp = sdp;
+  }
+  */
+  return Promise.resolve(offer);
+}
+
 function fixupSDP(sdp) {
   if (sdp.indexOf('a=end-of-candidates') === -1) {
     sdp += 'a=end-of-candidates\r\n';
-  } //  const msids = parent.msids = parent.msids || {};
+  } //  if (sdp.match(/.*\na=ssrc:\s*\d+\s+msid:/) != null)
+  //        return sdp;
+  //  let msids = sdp.match(/.*\na=msid:\s*([^\s]+)\s+([^\s]+)\r\n/);
+  //  if (!msids || msids.length != 3)
+  //        return sdp;
+  //  let parts = sdp.match(/^(.*a=ssrc:\s*)(\d+)(\s+cname:[^\r\n]+\r\n)(.*)$/s);
+  //  if (!parts || parts.length != 5)
+  //        return sdp;
+  //  sdp = parts[1] + parts[2] + parts[3] +
+  //     'a=ssrc:' + parts[2] + ' msid:' + msids[1] + ' ' + msids[2] + '\r\n' +
+  //     'a=ssrc:' + parts[2] + ' mslabel:' + msids[1] + '\r\n' +
+  //     'a=ssrc:' + parts[2] + ' label:' + msids[2] + '\r\n' +
+  //     parts[4];
+  //  sdp = sdp.replace(/a=msid-semantic:\s*WMS \*/s, 'a=msid-semantic: WMS ' + msids[1]);
+  //  const msids = parent.msids = parent.msids || {};
   //
   //  /* Check for missing bundle directives */
   //  if (sdp.indexOf('a=msid-semantic:') !== -1 ||
