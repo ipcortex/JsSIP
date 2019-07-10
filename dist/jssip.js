@@ -16176,6 +16176,7 @@ module.exports = class RTCSession extends EventEmitter
 
             if (candidate)
             {
+              this.iceCandidates.push(candidate.candidate);
               this.emit('icecandidate', {
                 candidate,
                 ready
