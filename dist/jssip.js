@@ -17846,6 +17846,8 @@ function fixupLocalSDP(offer)
   }
   sdp = r.join('\r\n');
   sdp = sdp.replace(/a=group:BUNDLE .*/m, `a=group:BUNDLE ${ midval}`);
+  if (!keep)
+    sdp += '\r\n';
   
   offer = new RTCSessionDescription({ type: 'offer', sdp: `${sdp}` });
   
