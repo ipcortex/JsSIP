@@ -1,6 +1,122 @@
 CHANGELOG
 =========
 
+Version 3.5.0 (released in 2020-06-01)
+---------------------------------------
+
+* Typescript typings (#627).
+
+Version 3.4.4 (released in 2020-05-08)
+---------------------------------------
+
+* Clone optional objects (#625). Credits to @acharlop.
+* RTCSession: fix, allow initial INVITE no SDP/offer (#624). Credits to @mgoodenUK.
+
+Version 3.4.3 (released in 2020-04-22)
+---------------------------------------
+
+* Transactions: destroy transaction in Timer I after terminating. Thanks Juha Heinanen for reporting the issue.
+
+Version 3.4.2 (released in 2020-04-03)
+---------------------------------------
+
+* RTCSession: disable remote hold state when receiving an INVITE without SDP (#613). Credits to @RobyMcAndrew.
+
+
+Version 3.4.1 (released in 2020-03-30)
+---------------------------------------
+
+* RequestSender: fix Authorization header addition for jwt use.
+
+
+Version 3.4.0 (released in 2020-03-29)
+---------------------------------------
+
+* Add `authorization_jwt` configuration parameter (#610). Credits to @voicenter.
+
+
+Version 3.3.11 (released in 2019-10-24)
+---------------------------------------
+
+* RTCSession: don't relay on 'icecandidate' event with null candidate (#598). Thanks @skanizaj.
+
+
+Version 3.3.10 (released in 2019-10-16)
+---------------------------------------
+
+* RTCSession: honor BYE while in WAITING_FOR_ACK state (#597). Thanks @Egorikhin.
+
+
+Version 3.3.9 (released in 2019-09-24)
+---------------------------------------
+
+* Added NOTIFY to allowed methods (#593). Credits to @ikq.
+
+
+Version 3.3.8 (released in 2019-09-24)
+---------------------------------------
+
+* Move connection recovery defaults to Constants (#593). Credits to @KraftyKraft.
+
+
+Version 3.3.7 (released in 2019-08-12)
+---------------------------------------
+
+* Add referred-by header to refer messages (#572). Credits to @swysor.
+
+
+Version 3.3.6 (released in 2019-04-12)
+---------------------------------------
+
+* Fix NameAddrHeader `display_name` handling (#573). Credits to @nicketson.
+
+
+Version 3.3.5 (released in 2019-02-26)
+---------------------------------------
+
+* Add `.babelrc` into `.npmignore` (related to #489).
+* Update deps.
+
+
+Version 3.3.4 (released in 2019-01-15)
+---------------------------------------
+
+* Add debugging logs in DigestAuthentication.js (related to #561).
+* Update deps.
+
+
+Version 3.3.3 (released in 2019-01-02)
+---------------------------------------
+
+* Registrator: Don't check Contact header if final response is not 2XX (#558). Thanks @ikq for reporting.
+* Update deps.
+
+
+Version 3.3.2 (released in 2018-12-19)
+---------------------------------------
+
+* Registrator. Support multiple entries in the same Contact header field (#544).
+
+
+Version 3.3.1 (released in 2018-12-19)
+---------------------------------------
+
+* RTCSession: fire 'sdp' event on renegotiation (#543).
+
+
+Version 3.3.0 (released in 2018-12-19)
+---------------------------------------
+
+* UA: new 'sipEvent' event for out of dialog NOTIFY requests.
+
+
+Version 3.2.17 (released in 2018-12-18)
+---------------------------------------
+
+* InviteClientTransaction: Add full route set to ACK and CANCEL requests. Thanks @nicketson.
+* RTCSession: switch to tracks from deprecated stream API. Thanks @nicketson.
+
+
 Version 3.2.16 (released in 2018-11-28)
 ---------------------------------------
 
@@ -767,16 +883,16 @@ Version 0.4.2 (released in 2014-10-24)
 Version 0.4.1 (released in 2014-10-21)
 --------------------------------------
 
-* This version is included into the [Bower](http://bower.io/) registry which means `$ bower install jssip`.
+* This version is included into the [Bower](https://bower.io/) registry which means `$ bower install jssip`.
 
 
 Version 0.4.0 (released in 2014-10-21)
 --------------------------------------
 
-* (http://jssip.net/documentation/0.4.x/api/session) Hold/Unhold implementation
-* (http://jssip.net/documentation/0.4.x/api/session) Mute/Unmute implementation
-* (http://jssip.net/documentation/0.4.x/api/ua_configuration_parameters/#instance_id) New 'instance_id' configuration parameter
-* (http://jssip.net/documentation/0.4.x/api/ua_configuration_parameters/#log) New 'log' configuration parameter
+* (https://jssip.net/documentation/0.4.x/api/session) Hold/Unhold implementation
+* (https://jssip.net/documentation/0.4.x/api/session) Mute/Unmute implementation
+* (https://jssip.net/documentation/0.4.x/api/ua_configuration_parameters/#instance_id) New 'instance_id' configuration parameter
+* (https://jssip.net/documentation/0.4.x/api/ua_configuration_parameters/#log) New 'log' configuration parameter
 * [(34b235c)](https://github.com/versatica/JsSIP/commit/34b235c) Fix #246. Increase the event emiter max listener number to 50
 * [(9a1ebdf)](https://github.com/versatica/JsSIP/commit/9a1ebdf) Late SDP implementation. Handle SDP-less incoming INVITEs
 * [(f0cc4c1)](https://github.com/versatica/JsSIP/commit/f0cc4c1) Fix #253. RTCSession: instead of "started" emit "accepted" when 2XX and "confirmed" when ACK

@@ -1,5 +1,5 @@
 /*
- * JsSIP v3.2.16
+ * JsSIP v3.5.0
  * the Javascript SIP library
  * Copyright: 2012-2019 José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)
  * Homepage: http://jssip.net
@@ -8,6 +8,12 @@
 
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.JsSIP = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
+
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var Utils = require('./Utils');
 
@@ -46,8 +52,8 @@ exports.settings = {
   registrar_server: null,
   // Connection options.
   sockets: null,
-  connection_recovery_max_interval: null,
-  connection_recovery_min_interval: null,
+  connection_recovery_max_interval: JsSIP_C.CONNECTION_RECOVERY_MAX_INTERVAL,
+  connection_recovery_min_interval: JsSIP_C.CONNECTION_RECOVERY_MIN_INTERVAL,
 
   /*
    * Host address.
@@ -72,12 +78,11 @@ var checks = {
           socket: _sockets2
         });
       } else if (Array.isArray(_sockets2) && _sockets2.length) {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+        var _iterator = _createForOfIteratorHelper(_sockets2),
+            _step;
 
         try {
-          for (var _iterator = _sockets2[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
             var socket = _step.value;
 
             if (Object.prototype.hasOwnProperty.call(socket, 'socket') && Socket.isSocket(socket.socket)) {
@@ -89,18 +94,9 @@ var checks = {
             }
           }
         } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
+          _iterator.e(err);
         } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
+          _iterator.f();
         }
       } else {
         return;
@@ -130,6 +126,11 @@ var checks = {
         return;
       } else {
         return _authorization_user;
+      }
+    },
+    authorization_jwt: function authorization_jwt(_authorization_jwt) {
+      if (typeof _authorization_jwt === 'string') {
+        return _authorization_jwt;
       }
     },
     user_agent: function user_agent(_user_agent) {
@@ -165,11 +166,7 @@ var checks = {
       }
     },
     display_name: function display_name(_display_name) {
-      if (Grammar.parse("\"".concat(_display_name, "\""), 'display_name') === -1) {
-        return;
-      } else {
-        return _display_name;
-      }
+      return _display_name;
     },
     instance_id: function instance_id(_instance_id) {
       if (/^uuid:/i.test(_instance_id)) {
@@ -352,9 +349,14 @@ module.exports = {
   REFER: 'REFER',
   UPDATE: 'UPDATE',
   SUBSCRIBE: 'SUBSCRIBE',
+  // DTMF transport methods.
+  DTMF_TRANSPORT: {
+    INFO: 'INFO',
+    RFC2833: 'RFC2833'
+  },
 
   /* SIP Response Reasons
-   * DOC: http://www.iana.org/assignments/sip-parameters
+   * DOC: https://www.iana.org/assignments/sip-parameters
    * Copied from https://github.com/versatica/OverSIP/blob/master/lib/oversip/sip/constants.rb#L7
    */
   REASON_PHRASE: {
@@ -453,11 +455,13 @@ module.exports = {
     604: 'Does Not Exist Anywhere',
     606: 'Not Acceptable'
   },
-  ALLOWED_METHODS: 'INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO',
+  ALLOWED_METHODS: 'INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY',
   ACCEPTED_BODY_TYPES: 'application/sdp, application/dtmf-relay',
   MAX_FORWARDS: 69,
   SESSION_EXPIRES: 90,
-  MIN_SESSION_EXPIRES: 60
+  MIN_SESSION_EXPIRES: 60,
+  CONNECTION_RECOVERY_MAX_INTERVAL: 30,
+  CONNECTION_RECOVERY_MIN_INTERVAL: 2
 };
 },{"../package.json":38}],3:[function(require,module,exports){
 "use strict";
@@ -486,9 +490,7 @@ var C = {
   STATUS_CONFIRMED: 2
 }; // RFC 3261 12.1.
 
-module.exports =
-/*#__PURE__*/
-function () {
+module.exports = /*#__PURE__*/function () {
   _createClass(Dialog, null, [{
     key: "C",
     // Expose C object.
@@ -584,7 +586,7 @@ function () {
 
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var extraHeaders = Utils.cloneArray(options.extraHeaders);
-      var eventHandlers = options.eventHandlers || {};
+      var eventHandlers = Utils.cloneObject(options.eventHandlers);
       var body = options.body || null;
 
       var request = this._createRequest(method, extraHeaders, body); // Increase the local CSeq on authentication.
@@ -766,9 +768,7 @@ var EventHandlers = {
   onDialogError: function onDialogError() {}
 };
 
-module.exports =
-/*#__PURE__*/
-function () {
+module.exports = /*#__PURE__*/function () {
   function DialogRequestSender(dialog, request, eventHandlers) {
     _classCallCheck(this, DialogRequestSender);
 
@@ -881,9 +881,7 @@ var debugerror = require('debug')('JsSIP:ERROR:DigestAuthentication');
 
 debugerror.log = console.warn.bind(console);
 
-module.exports =
-/*#__PURE__*/
-function () {
+module.exports = /*#__PURE__*/function () {
   function DigestAuthentication(credentials) {
     _classCallCheck(this, DigestAuthentication);
 
@@ -1011,21 +1009,28 @@ function () {
           this._ha1 = this._credentials.ha1;
         }
 
+      var a2;
       var ha2;
 
       if (this._qop === 'auth') {
         // HA2 = MD5(A2) = MD5(method:digestURI).
-        ha2 = Utils.calculateMD5("".concat(this._method, ":").concat(this._uri)); // Response = MD5(HA1:nonce:nonceCount:credentialsNonce:qop:HA2).
+        a2 = "".concat(this._method, ":").concat(this._uri);
+        ha2 = Utils.calculateMD5(a2);
+        debug('authenticate() | using qop=auth [a2:"%s"]', a2); // Response = MD5(HA1:nonce:nonceCount:credentialsNonce:qop:HA2).
 
         this._response = Utils.calculateMD5("".concat(this._ha1, ":").concat(this._nonce, ":").concat(this._ncHex, ":").concat(this._cnonce, ":auth:").concat(ha2));
       } else if (this._qop === 'auth-int') {
         // HA2 = MD5(A2) = MD5(method:digestURI:MD5(entityBody)).
-        ha2 = Utils.calculateMD5("".concat(this._method, ":").concat(this._uri, ":").concat(Utils.calculateMD5(body ? body : ''))); // Response = MD5(HA1:nonce:nonceCount:credentialsNonce:qop:HA2).
+        a2 = "".concat(this._method, ":").concat(this._uri, ":").concat(Utils.calculateMD5(body ? body : ''));
+        ha2 = Utils.calculateMD5(a2);
+        debug('authenticate() | using qop=auth-int [a2:"%s"]', a2); // Response = MD5(HA1:nonce:nonceCount:credentialsNonce:qop:HA2).
 
         this._response = Utils.calculateMD5("".concat(this._ha1, ":").concat(this._nonce, ":").concat(this._ncHex, ":").concat(this._cnonce, ":auth-int:").concat(ha2));
       } else if (this._qop === null) {
         // HA2 = MD5(A2) = MD5(method:digestURI).
-        ha2 = Utils.calculateMD5("".concat(this._method, ":").concat(this._uri)); // Response = MD5(HA1:nonce:HA2).
+        a2 = "".concat(this._method, ":").concat(this._uri);
+        ha2 = Utils.calculateMD5(a2);
+        debug('authenticate() | using qop=null [a2:"%s"]', a2); // Response = MD5(HA1:nonce:HA2).
 
         this._response = Utils.calculateMD5("".concat(this._ha1, ":").concat(this._nonce, ":").concat(ha2));
       }
@@ -1072,9 +1077,11 @@ function () {
 },{"./Utils":26,"debug":30}],6:[function(require,module,exports){
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
@@ -1084,9 +1091,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _wrapNativeSuper(Class) { var _cache = typeof Map === "function" ? new Map() : undefined; _wrapNativeSuper = function _wrapNativeSuper(Class) { if (Class === null || !_isNativeFunction(Class)) return Class; if (typeof Class !== "function") { throw new TypeError("Super expression must either be null or a function"); } if (typeof _cache !== "undefined") { if (_cache.has(Class)) return _cache.get(Class); _cache.set(Class, Wrapper); } function Wrapper() { return _construct(Class, arguments, _getPrototypeOf(this).constructor); } Wrapper.prototype = Object.create(Class.prototype, { constructor: { value: Wrapper, enumerable: false, writable: true, configurable: true } }); return _setPrototypeOf(Wrapper, Class); }; return _wrapNativeSuper(Class); }
 
-function isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
 
-function _construct(Parent, args, Class) { if (isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _isNativeFunction(fn) { return Function.toString.call(fn).indexOf("[native code]") !== -1; }
 
@@ -1094,17 +1101,17 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var ConfigurationError =
-/*#__PURE__*/
-function (_Error) {
+var ConfigurationError = /*#__PURE__*/function (_Error) {
   _inherits(ConfigurationError, _Error);
+
+  var _super = _createSuper(ConfigurationError);
 
   function ConfigurationError(parameter, value) {
     var _this;
 
     _classCallCheck(this, ConfigurationError);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ConfigurationError).call(this));
+    _this = _super.call(this);
     _this.code = 1;
     _this.name = 'CONFIGURATION_ERROR';
     _this.parameter = parameter;
@@ -1114,19 +1121,19 @@ function (_Error) {
   }
 
   return ConfigurationError;
-}(_wrapNativeSuper(Error));
+}( /*#__PURE__*/_wrapNativeSuper(Error));
 
-var InvalidStateError =
-/*#__PURE__*/
-function (_Error2) {
+var InvalidStateError = /*#__PURE__*/function (_Error2) {
   _inherits(InvalidStateError, _Error2);
+
+  var _super2 = _createSuper(InvalidStateError);
 
   function InvalidStateError(status) {
     var _this2;
 
     _classCallCheck(this, InvalidStateError);
 
-    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(InvalidStateError).call(this));
+    _this2 = _super2.call(this);
     _this2.code = 2;
     _this2.name = 'INVALID_STATE_ERROR';
     _this2.status = status;
@@ -1135,19 +1142,19 @@ function (_Error2) {
   }
 
   return InvalidStateError;
-}(_wrapNativeSuper(Error));
+}( /*#__PURE__*/_wrapNativeSuper(Error));
 
-var NotSupportedError =
-/*#__PURE__*/
-function (_Error3) {
+var NotSupportedError = /*#__PURE__*/function (_Error3) {
   _inherits(NotSupportedError, _Error3);
+
+  var _super3 = _createSuper(NotSupportedError);
 
   function NotSupportedError(message) {
     var _this3;
 
     _classCallCheck(this, NotSupportedError);
 
-    _this3 = _possibleConstructorReturn(this, _getPrototypeOf(NotSupportedError).call(this));
+    _this3 = _super3.call(this);
     _this3.code = 3;
     _this3.name = 'NOT_SUPPORTED_ERROR';
     _this3.message = message;
@@ -1155,19 +1162,19 @@ function (_Error3) {
   }
 
   return NotSupportedError;
-}(_wrapNativeSuper(Error));
+}( /*#__PURE__*/_wrapNativeSuper(Error));
 
-var NotReadyError =
-/*#__PURE__*/
-function (_Error4) {
+var NotReadyError = /*#__PURE__*/function (_Error4) {
   _inherits(NotReadyError, _Error4);
+
+  var _super4 = _createSuper(NotReadyError);
 
   function NotReadyError(message) {
     var _this4;
 
     _classCallCheck(this, NotReadyError);
 
-    _this4 = _possibleConstructorReturn(this, _getPrototypeOf(NotReadyError).call(this));
+    _this4 = _super4.call(this);
     _this4.code = 4;
     _this4.name = 'NOT_READY_ERROR';
     _this4.message = message;
@@ -1175,7 +1182,7 @@ function (_Error4) {
   }
 
   return NotReadyError;
-}(_wrapNativeSuper(Error));
+}( /*#__PURE__*/_wrapNativeSuper(Error));
 
 module.exports = {
   ConfigurationError: ConfigurationError,
@@ -4449,7 +4456,9 @@ module.exports = function () {
 
         if (result0 !== null) {
           result0 = function (offset) {
-            return input.substring(pos - 1, offset + 1);
+            var trimmed = input.substring(pos, offset).trim();
+            return trimmed.substring(1, trimmed.length - 1) // remove outer quotes
+            .replace(/\\([\x00-\x09\x0b-\x0c\x0e-\x7f])/g, '$1');
           }(pos0);
         }
 
@@ -10904,18 +10913,20 @@ module.exports = function () {
         }
 
         if (result0 === null) {
-          result0 = parse_quoted_string();
+          result0 = parse_quoted_string_clean();
         }
 
         if (result0 !== null) {
           result0 = function (offset, display_name) {
-            display_name = input.substring(pos, offset).trim();
-
-            if (display_name[0] === '\"') {
-              display_name = display_name.substring(1, display_name.length - 1);
+            if (typeof display_name === 'string') {
+              // quoted_string_clean
+              data.display_name = display_name;
+            } else {
+              // token ( LWS token )*
+              data.display_name = display_name[1].reduce(function (acc, cur) {
+                return acc + cur[0] + cur[1];
+              }, display_name[0]);
             }
-
-            data.display_name = display_name;
           }(pos0, result0);
         }
 
@@ -16088,7 +16099,7 @@ module.exports = {
 },{"../package.json":38,"./Constants":2,"./Exceptions":6,"./Grammar":7,"./NameAddrHeader":10,"./UA":24,"./URI":25,"./Utils":26,"./WebSocketInterface":27,"debug":30}],9:[function(require,module,exports){
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -16096,9 +16107,13 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -16120,17 +16135,17 @@ var Exceptions = require('./Exceptions');
 
 var debug = require('debug')('JsSIP:Message');
 
-module.exports =
-/*#__PURE__*/
-function (_EventEmitter) {
+module.exports = /*#__PURE__*/function (_EventEmitter) {
   _inherits(Message, _EventEmitter);
+
+  var _super = _createSuper(Message);
 
   function Message(ua) {
     var _this;
 
     _classCallCheck(this, Message);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Message).call(this));
+    _this = _super.call(this);
     _this._ua = ua;
     _this._request = null;
     _this._closed = false;
@@ -16165,7 +16180,7 @@ function (_EventEmitter) {
 
 
       var extraHeaders = Utils.cloneArray(options.extraHeaders);
-      var eventHandlers = options.eventHandlers || {};
+      var eventHandlers = Utils.cloneObject(options.eventHandlers);
       var contentType = options.contentType || 'text/plain'; // Set event handlers.
 
       for (var event in eventHandlers) {
@@ -16400,9 +16415,7 @@ var URI = require('./URI');
 
 var Grammar = require('./Grammar');
 
-module.exports =
-/*#__PURE__*/
-function () {
+module.exports = /*#__PURE__*/function () {
   _createClass(NameAddrHeader, null, [{
     key: "parse",
 
@@ -16432,7 +16445,7 @@ function () {
 
     this._uri = uri;
     this._parameters = {};
-    this._display_name = display_name;
+    this.display_name = display_name;
 
     for (var param in parameters) {
       if (Object.prototype.hasOwnProperty.call(parameters, param)) {
@@ -16484,9 +16497,14 @@ function () {
       return new NameAddrHeader(this._uri.clone(), this._display_name, JSON.parse(JSON.stringify(this._parameters)));
     }
   }, {
+    key: "_quote",
+    value: function _quote(str) {
+      return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    }
+  }, {
     key: "toString",
     value: function toString() {
-      var body = this._display_name || this._display_name === 0 ? "\"".concat(this._display_name, "\" ") : '';
+      var body = this._display_name ? "\"".concat(this._quote(this._display_name), "\" ") : '';
       body += "<".concat(this._uri.toString(), ">");
 
       for (var parameter in this._parameters) {
@@ -16520,6 +16538,12 @@ function () {
 }();
 },{"./Grammar":7,"./URI":25}],11:[function(require,module,exports){
 "use strict";
+
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var Grammar = require('./Grammar');
 
@@ -16691,29 +16715,19 @@ function parseHeader(message, data, headerStart, headerEnd) {
       if (parsed === -1) {
         parsed = undefined;
       } else {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+        var _iterator = _createForOfIteratorHelper(parsed),
+            _step;
 
         try {
-          for (var _iterator = parsed[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
             var header = _step.value;
             message.addHeader('record-route', headerValue.substring(header.possition, header.offset));
             message.headers['Record-Route'][message.getHeaders('record-route').length - 1].parsed = header.parsed;
           }
         } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
+          _iterator.e(err);
         } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
+          _iterator.f();
         }
       }
 
@@ -16737,29 +16751,19 @@ function parseHeader(message, data, headerStart, headerEnd) {
       if (parsed === -1) {
         parsed = undefined;
       } else {
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
+        var _iterator2 = _createForOfIteratorHelper(parsed),
+            _step2;
 
         try {
-          for (var _iterator2 = parsed[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
             var _header = _step2.value;
             message.addHeader('contact', headerValue.substring(_header.possition, _header.offset));
             message.headers.Contact[message.getHeaders('contact').length - 1].parsed = _header.parsed;
           }
         } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
+          _iterator2.e(err);
         } finally {
-          try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-              _iterator2.return();
-            }
-          } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
-            }
-          }
+          _iterator2.f();
         }
       }
 
@@ -16867,19 +16871,29 @@ function parseHeader(message, data, headerStart, headerEnd) {
 },{"./Grammar":7,"./SIPMessage":19,"debug":30}],12:[function(require,module,exports){
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
@@ -16914,6 +16928,8 @@ var RTCSession_ReferNotifier = require('./RTCSession/ReferNotifier');
 
 var RTCSession_ReferSubscriber = require('./RTCSession/ReferSubscriber');
 
+var URI = require('./URI');
+
 var debug = require('debug')('JsSIP:RTCSession');
 
 var debugerror = require('debug')('JsSIP:ERROR:RTCSession');
@@ -16938,10 +16954,10 @@ var C = {
 
 var holdMediaTypes = ['audio', 'video'];
 
-module.exports =
-/*#__PURE__*/
-function (_EventEmitter) {
+module.exports = /*#__PURE__*/function (_EventEmitter) {
   _inherits(RTCSession, _EventEmitter);
+
+  var _super = _createSuper(RTCSession);
 
   _createClass(RTCSession, null, [{
     key: "C",
@@ -16960,7 +16976,7 @@ function (_EventEmitter) {
     _classCallCheck(this, RTCSession);
 
     debug('new');
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(RTCSession).call(this));
+    _this = _super.call(this);
     _this._id = null;
     _this._ua = ua;
     _this._status = C.STATUS_NULL;
@@ -17095,16 +17111,16 @@ function (_EventEmitter) {
       var initCallback = arguments.length > 2 ? arguments[2] : undefined;
       debug('connect()');
       var originalTarget = target;
-      var eventHandlers = options.eventHandlers || {};
+      var eventHandlers = Utils.cloneObject(options.eventHandlers);
       var extraHeaders = Utils.cloneArray(options.extraHeaders);
-      var mediaConstraints = options.mediaConstraints || {
+      var mediaConstraints = Utils.cloneObject(options.mediaConstraints, {
         audio: true,
         video: true
-      };
+      });
       var mediaStream = options.mediaStream || null;
-      var pcConfig = options.pcConfig || {
+      var pcConfig = Utils.cloneObject(options.pcConfig, {
         iceServers: []
-      };
+      });
       var rtcConstraints = options.rtcConstraints || null;
       var rtcOfferConstraints = options.rtcOfferConstraints || null;
       this._rtcOfferConstraints = rtcOfferConstraints;
@@ -17164,7 +17180,7 @@ function (_EventEmitter) {
 
       if (anonymous) {
         requestParams.from_display_name = 'Anonymous';
-        requestParams.from_uri = 'sip:anonymous@anonymous.invalid';
+        requestParams.from_uri = new URI('sip', 'anonymous', 'anonymous.invalid');
         extraHeaders.push("P-Preferred-Identity: ".concat(this._ua.configuration.uri.toString()));
         extraHeaders.push('Privacy: id');
       }
@@ -17293,13 +17309,14 @@ function (_EventEmitter) {
       debug('answer()');
       var request = this._request;
       var extraHeaders = Utils.cloneArray(options.extraHeaders);
-      var mediaConstraints = options.mediaConstraints || {};
+      var mediaConstraints = Utils.cloneObject(options.mediaConstraints);
       var mediaStream = options.mediaStream || null;
-      var pcConfig = options.pcConfig || {
+      var pcConfig = Utils.cloneObject(options.pcConfig, {
         iceServers: []
-      };
+      });
       var rtcConstraints = options.rtcConstraints || null;
       var rtcAnswerConstraints = options.rtcAnswerConstraints || null;
+      var rtcOfferConstraints = Utils.cloneObject(options.rtcOfferConstraints);
       var tracks;
       var peerHasAudioLine = false;
       var peerHasVideoLine = false;
@@ -17346,12 +17363,11 @@ function (_EventEmitter) {
       } // Go through all medias in SDP to find offered capabilities to answer with.
 
 
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
+      var _iterator = _createForOfIteratorHelper(sdp.media),
+          _step;
 
       try {
-        for (var _iterator = sdp.media[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var m = _step.value;
 
           if (m.type === 'audio') {
@@ -17372,72 +17388,45 @@ function (_EventEmitter) {
         } // Remove audio from mediaStream if suggested by mediaConstraints.
 
       } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
+        _iterator.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return != null) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
+        _iterator.f();
       }
 
       if (mediaStream && mediaConstraints.audio === false) {
         tracks = mediaStream.getAudioTracks();
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
+
+        var _iterator2 = _createForOfIteratorHelper(tracks),
+            _step2;
 
         try {
-          for (var _iterator2 = tracks[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
             var track = _step2.value;
             mediaStream.removeTrack(track);
           }
         } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
+          _iterator2.e(err);
         } finally {
-          try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-              _iterator2.return();
-            }
-          } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
-            }
-          }
+          _iterator2.f();
         }
       } // Remove video from mediaStream if suggested by mediaConstraints.
 
 
       if (mediaStream && mediaConstraints.video === false) {
         tracks = mediaStream.getVideoTracks();
-        var _iteratorNormalCompletion3 = true;
-        var _didIteratorError3 = false;
-        var _iteratorError3 = undefined;
+
+        var _iterator3 = _createForOfIteratorHelper(tracks),
+            _step3;
 
         try {
-          for (var _iterator3 = tracks[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
             var _track = _step3.value;
             mediaStream.removeTrack(_track);
           }
         } catch (err) {
-          _didIteratorError3 = true;
-          _iteratorError3 = err;
+          _iterator3.e(err);
         } finally {
-          try {
-            if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-              _iterator3.return();
-            }
-          } finally {
-            if (_didIteratorError3) {
-              throw _iteratorError3;
-            }
-          }
+          _iterator3.f();
         }
       } // Set audio constraints based on incoming stream if not supplied.
 
@@ -17452,12 +17441,12 @@ function (_EventEmitter) {
       } // Don't ask for audio if the incoming offer has no audio section.
 
 
-      if (!mediaStream && !peerHasAudioLine) {
+      if (!mediaStream && !peerHasAudioLine && !rtcOfferConstraints.offerToReceiveAudio) {
         mediaConstraints.audio = false;
       } // Don't ask for video if the incoming offer has no video section.
 
 
-      if (!mediaStream && !peerHasVideoLine) {
+      if (!mediaStream && !peerHasVideoLine && !rtcOfferConstraints.offerToReceiveVideo) {
         mediaConstraints.video = false;
       } // Create a new RTCPeerConnection instance.
       // TODO: This may throw an error, should react.
@@ -17473,7 +17462,7 @@ function (_EventEmitter) {
         } // Audio and/or video requested, prompt getUserMedia.
         else if (mediaConstraints.audio || mediaConstraints.video) {
             _this3._localMediaStreamLocallyGenerated = true;
-            return navigator.mediaDevices.getUserMedia(mediaConstraints).catch(function (error) {
+            return navigator.mediaDevices.getUserMedia(mediaConstraints)["catch"](function (error) {
               if (_this3._status === C.STATUS_TERMINATED) {
                 throw new Error('terminated');
               }
@@ -17498,7 +17487,9 @@ function (_EventEmitter) {
         _this3._localMediaStream = stream;
 
         if (stream) {
-          _this3._connection.addStream(stream);
+          stream.getTracks().forEach(function (track) {
+            _this3._connection.addTrack(track, stream);
+          });
         }
       }) // Set remote description.
       .then(function () {
@@ -17522,7 +17513,7 @@ function (_EventEmitter) {
         });
         _this3._connectionPromiseQueue = _this3._connectionPromiseQueue.then(function () {
           return _this3._connection.setRemoteDescription(offer);
-        }).catch(function (error) {
+        })["catch"](function (error) {
           request.reply(488);
 
           _this3._failed('system', null, JsSIP_C.causes.WEBRTC_ERROR);
@@ -17544,12 +17535,12 @@ function (_EventEmitter) {
         _this3._connecting(request);
 
         if (!_this3._late_sdp) {
-          return _this3._createLocalDescription('answer', rtcAnswerConstraints).catch(function () {
+          return _this3._createLocalDescription('answer', rtcAnswerConstraints)["catch"](function () {
             request.reply(500);
             throw new Error('_createLocalDescription() failed');
           });
         } else {
-          return _this3._createLocalDescription('offer', _this3._rtcOfferConstraints).catch(function () {
+          return _this3._createLocalDescription('offer', _this3._rtcOfferConstraints)["catch"](function () {
             request.reply(500);
             throw new Error('_createLocalDescription() failed');
           });
@@ -17573,7 +17564,7 @@ function (_EventEmitter) {
         }, function () {
           _this3._failed('system', null, JsSIP_C.causes.CONNECTION_ERROR);
         });
-      }).catch(function (error) {
+      })["catch"](function (error) {
         if (_this3._status === C.STATUS_TERMINATED) {
           return;
         }
@@ -17719,6 +17710,7 @@ function (_EventEmitter) {
       var position = 0;
       var duration = options.duration || null;
       var interToneGap = options.interToneGap || null;
+      var transportType = options.transportType || JsSIP_C.DTMF_TRANSPORT.INFO;
 
       if (tones === undefined) {
         throw new TypeError('Not enough arguments');
@@ -17794,14 +17786,37 @@ function (_EventEmitter) {
         if (tone === ',') {
           timeout = 2000;
         } else {
-          var dtmf = new RTCSession_DTMF(this);
-          options.eventHandlers = {
-            onFailed: function onFailed() {
-              _this5._tones = null;
-            }
-          };
-          dtmf.send(tone, options);
-          timeout = duration + interToneGap;
+          if (transportType !== JsSIP_C.DTMF_TRANSPORT.INFO && transportType !== JsSIP_C.DTMF_TRANSPORT.RFC2833) {
+            throw new TypeError("invalid transportType: ".concat(transportType));
+          } // Send DTMF according to transport config.
+
+
+          switch (transportType) {
+            case JsSIP_C.DTMF_TRANSPORT.RFC2833:
+              {
+                // Send DTMF in current audio RTP stream.
+                var sender = this._getDTMFRTPSender();
+
+                if (sender) {
+                  sender.insertDTMF(tone, duration, interToneGap);
+                }
+
+                break;
+              }
+
+            case JsSIP_C.DTMF_TRANSPORT.INFO:
+              {
+                // Send DTMF via SIP INFO messages.
+                var dtmf = new RTCSession_DTMF(this);
+                options.eventHandlers = {
+                  onFailed: function onFailed() {
+                    _this5._tones = null;
+                  }
+                };
+                dtmf.send(tone, options);
+                timeout = duration + interToneGap;
+              }
+          }
         } // Set timeout for the next tone.
 
 
@@ -17840,14 +17855,14 @@ function (_EventEmitter) {
         audioMuted = true;
         this._audioMuted = true;
 
-        this._toogleMuteAudio(true);
+        this._toggleMuteAudio(true);
       }
 
       if (this._videoMuted === false && options.video) {
         videoMuted = true;
         this._videoMuted = true;
 
-        this._toogleMuteVideo(true);
+        this._toggleMuteVideo(true);
       }
 
       if (audioMuted === true || videoMuted === true) {
@@ -17877,7 +17892,7 @@ function (_EventEmitter) {
         this._audioMuted = false;
 
         if (this._localHold === false) {
-          this._toogleMuteAudio(false);
+          this._toggleMuteAudio(false);
         }
       }
 
@@ -17886,7 +17901,7 @@ function (_EventEmitter) {
         this._videoMuted = false;
 
         if (this._localHold === false) {
-          this._toogleMuteVideo(false);
+          this._toggleMuteVideo(false);
         }
       }
 
@@ -18183,7 +18198,7 @@ function (_EventEmitter) {
                 if (!_this10._is_confirmed) {
                   _this10._confirmed('remote', request);
                 }
-              }).catch(function (error) {
+              })["catch"](function (error) {
                 _this10.terminate({
                   cause: JsSIP_C.causes.BAD_MEDIA_DESCRIPTION,
                   status_code: 488
@@ -18200,7 +18215,7 @@ function (_EventEmitter) {
             break;
 
           case JsSIP_C.BYE:
-            if (this._status === C.STATUS_CONFIRMED) {
+            if (this._status === C.STATUS_CONFIRMED || this._status === C.STATUS_WAITING_FOR_ACK) {
               request.reply(200);
 
               this._ended('remote', request, JsSIP_C.causes.BYE);
@@ -18524,7 +18539,7 @@ function (_EventEmitter) {
             return Promise.reject(error);
           });
         } else {
-          return connection.createAnswer(constraints).catch(function (error) {
+          return connection.createAnswer(constraints)["catch"](function (error) {
             debugerror('emit "peerconnection:createanswerfailed" [error:%o]', error);
 
             _this13.emit('peerconnection:createanswerfailed', error);
@@ -18534,7 +18549,7 @@ function (_EventEmitter) {
         }
       }) // Set local description.
       .then(function (desc) {
-        return connection.setLocalDescription(desc).catch(function (error) {
+        return connection.setLocalDescription(desc)["catch"](function (error) {
           _this13._rtcReady = true;
           debugerror('emit "peerconnection:setlocaldescriptionfailed" [error:%o]', error);
 
@@ -18597,6 +18612,11 @@ function (_EventEmitter) {
                 ready: ready
               });
             } else if (!finished) {
+              ready();
+            }
+          });
+          connection.addEventListener('icegatheringstatechange', iceGatheringStateListener = function iceGatheringStateListener() {
+            if (connection.iceGatheringState === 'complete' && !finished) {
               ready();
             }
           });
@@ -18706,11 +18726,18 @@ function (_EventEmitter) {
 
       if (!request.body) {
         this._late_sdp = true;
+
+        if (this._remoteHold) {
+          this._remoteHold = false;
+
+          this._onunhold('remote');
+        }
+
         this._connectionPromiseQueue = this._connectionPromiseQueue.then(function () {
           return _this14._createLocalDescription('offer', _this14._rtcOfferConstraints);
         }).then(function (sdp) {
           sendAnswer.call(_this14, sdp);
-        }).catch(function () {
+        })["catch"](function () {
           request.reply(500);
         });
         return;
@@ -18730,7 +18757,7 @@ function (_EventEmitter) {
         }
 
         sendAnswer.call(_this14, desc);
-      }).catch(function (error) {
+      })["catch"](function (error) {
         debugerror(error);
       });
 
@@ -18819,7 +18846,7 @@ function (_EventEmitter) {
         }
 
         sendAnswer.call(_this16, desc);
-      }).catch(function (error) {
+      })["catch"](function (error) {
         debugerror(error);
       });
 
@@ -18843,12 +18870,12 @@ function (_EventEmitter) {
       debug('_processInDialogSdpOffer()');
       var sdp = request.parseSDP();
       var hold = false;
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
+
+      var _iterator4 = _createForOfIteratorHelper(sdp.media),
+          _step4;
 
       try {
-        for (var _iterator4 = sdp.media[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
           var m = _step4.value;
 
           if (holdMediaTypes.indexOf(m.type) === -1) {
@@ -18866,18 +18893,9 @@ function (_EventEmitter) {
             }
         }
       } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
+        _iterator4.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-            _iterator4.return();
-          }
-        } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
-          }
-        }
+        _iterator4.f();
       }
 
       var e = {
@@ -18898,7 +18916,7 @@ function (_EventEmitter) {
           throw new Error('terminated');
         }
 
-        return _this17._connection.setRemoteDescription(offer).catch(function (error) {
+        return _this17._connection.setRemoteDescription(offer)["catch"](function (error) {
           request.reply(488);
           debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
 
@@ -18926,7 +18944,7 @@ function (_EventEmitter) {
           throw new Error('terminated');
         }
 
-        return _this17._createLocalDescription('answer', _this17._rtcAnswerConstraints).catch(function () {
+        return _this17._createLocalDescription('answer', _this17._rtcAnswerConstraints)["catch"](function () {
           request.reply(500);
           throw new Error('_createLocalDescription() failed');
         });
@@ -18988,7 +19006,7 @@ function (_EventEmitter) {
           var response = _ref3.response;
           notifier.notify(response.status_code, response.reason_phrase);
         });
-        session.on('failed', function (_ref4) {
+        session.on('_failed', function (_ref4) {
           var message = _ref4.message,
               cause = _ref4.cause;
 
@@ -19133,7 +19151,7 @@ function (_EventEmitter) {
         } // Request for user media access.
         else if (mediaConstraints.audio || mediaConstraints.video) {
             _this21._localMediaStreamLocallyGenerated = true;
-            return navigator.mediaDevices.getUserMedia(mediaConstraints).catch(function (error) {
+            return navigator.mediaDevices.getUserMedia(mediaConstraints)["catch"](function (error) {
               if (_this21._status === C.STATUS_TERMINATED) {
                 throw new Error('terminated');
               }
@@ -19155,13 +19173,15 @@ function (_EventEmitter) {
         _this21._localMediaStream = stream;
 
         if (stream) {
-          _this21._connection.addStream(stream);
+          stream.getTracks().forEach(function (track) {
+            _this21._connection.addTrack(track, stream);
+          });
         } // TODO: should this be triggered here?
 
 
         _this21._connecting(_this21._request);
 
-        return _this21._createLocalDescription('offer', rtcOfferConstraints).catch(function (error) {
+        return _this21._createLocalDescription('offer', rtcOfferConstraints)["catch"](function (error) {
           _this21._failed('local', null, JsSIP_C.causes.WEBRTC_ERROR);
 
           throw error;
@@ -19180,13 +19200,31 @@ function (_EventEmitter) {
         });
 
         request_sender.send();
-      }).catch(function (error) {
+      })["catch"](function (error) {
         if (_this21._status === C.STATUS_TERMINATED) {
           return;
         }
 
         debugerror(error);
       });
+    }
+    /**
+     * Get DTMF RTCRtpSender.
+     */
+
+  }, {
+    key: "_getDTMFRTPSender",
+    value: function _getDTMFRTPSender() {
+      var sender = this._connection.getSenders().find(function (rtpSender) {
+        return rtpSender.track && rtpSender.track.kind === 'audio';
+      });
+
+      if (!(sender && sender.dtmf)) {
+        debugerror('sendDTMF() | no local audio track to send DTMF with');
+        return;
+      }
+
+      return sender.dtmf;
     }
     /**
      * Reception of Response for Initial INVITE
@@ -19282,7 +19320,7 @@ function (_EventEmitter) {
             });
             this._connectionPromiseQueue = this._connectionPromiseQueue.then(function () {
               return _this22._connection.setRemoteDescription(answer);
-            }).catch(function (error) {
+            })["catch"](function (error) {
               debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
 
               _this22.emit('peerconnection:setremotedescriptionfailed', error);
@@ -19329,7 +19367,7 @@ function (_EventEmitter) {
                   return fixupLocalSDP(offer);
                 }).then(function (offer) {
                   return _this22._connection.setLocalDescription(offer);
-                }).catch(function (error) {
+                })["catch"](function (error) {
                   _this22._acceptAndTerminate(response, 500, error.toString());
 
                   _this22._failed('local', response, JsSIP_C.causes.WEBRTC_ERROR);
@@ -19345,7 +19383,7 @@ function (_EventEmitter) {
                 _this22.sendRequest(JsSIP_C.ACK);
 
                 _this22._confirmed('local', null);
-              }).catch(function (error) {
+              })["catch"](function (error) {
                 _this22._acceptAndTerminate(response, 488, 'Not Acceptable Here');
 
                 _this22._failed('remote', response, JsSIP_C.causes.BAD_MEDIA_DESCRIPTION);
@@ -19378,7 +19416,7 @@ function (_EventEmitter) {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       debug('sendReinvite()');
       var extraHeaders = Utils.cloneArray(options.extraHeaders);
-      var eventHandlers = options.eventHandlers || {};
+      var eventHandlers = Utils.cloneObject(options.eventHandlers);
       var rtcOfferConstraints = options.rtcOfferConstraints || this._rtcOfferConstraints || null;
       var succeeded = false;
       extraHeaders.push("Contact: ".concat(this._contact));
@@ -19392,6 +19430,14 @@ function (_EventEmitter) {
         return _this23._createLocalDescription('offer', rtcOfferConstraints);
       }).then(function (sdp) {
         sdp = _this23._mangleOffer(sdp);
+        var e = {
+          originator: 'local',
+          type: 'offer',
+          sdp: sdp
+        };
+        debug('emit "sdp"');
+
+        _this23.emit('sdp', e);
 
         _this23.sendRequest(JsSIP_C.INVITE, {
           extraHeaders: extraHeaders,
@@ -19418,7 +19464,7 @@ function (_EventEmitter) {
             }
           }
         });
-      }).catch(function () {
+      })["catch"](function () {
         onFailed();
       });
 
@@ -19465,7 +19511,7 @@ function (_EventEmitter) {
           if (eventHandlers.succeeded) {
             eventHandlers.succeeded(response);
           }
-        }).catch(function (error) {
+        })["catch"](function (error) {
           onFailed.call(_this24);
           debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
 
@@ -19491,7 +19537,7 @@ function (_EventEmitter) {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       debug('sendUpdate()');
       var extraHeaders = Utils.cloneArray(options.extraHeaders);
-      var eventHandlers = options.eventHandlers || {};
+      var eventHandlers = Utils.cloneObject(options.eventHandlers);
       var rtcOfferConstraints = options.rtcOfferConstraints || this._rtcOfferConstraints || null;
       var sdpOffer = options.sdpOffer || false;
       var succeeded = false;
@@ -19507,6 +19553,14 @@ function (_EventEmitter) {
           return _this25._createLocalDescription('offer', rtcOfferConstraints);
         }).then(function (sdp) {
           sdp = _this25._mangleOffer(sdp);
+          var e = {
+            originator: 'local',
+            type: 'offer',
+            sdp: sdp
+          };
+          debug('emit "sdp"');
+
+          _this25.emit('sdp', e);
 
           _this25.sendRequest(JsSIP_C.UPDATE, {
             extraHeaders: extraHeaders,
@@ -19533,7 +19587,7 @@ function (_EventEmitter) {
               }
             }
           });
-        }).catch(function () {
+        })["catch"](function () {
           onFailed.call(_this25);
         });
       } // No SDP.
@@ -19606,7 +19660,7 @@ function (_EventEmitter) {
             if (eventHandlers.succeeded) {
               eventHandlers.succeeded(response);
             }
-          }).catch(function (error) {
+          })["catch"](function (error) {
             onFailed.call(_this26);
             debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
 
@@ -19677,12 +19731,12 @@ function (_EventEmitter) {
 
       if (this._localHold && !this._remoteHold) {
         debug('mangleOffer() | me on hold, mangling offer');
-        var _iteratorNormalCompletion5 = true;
-        var _didIteratorError5 = false;
-        var _iteratorError5 = undefined;
+
+        var _iterator5 = _createForOfIteratorHelper(sdp.media),
+            _step5;
 
         try {
-          for (var _iterator5 = sdp.media[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+          for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
             var m = _step5.value;
 
             if (holdMediaTypes.indexOf(m.type) === -1) {
@@ -19702,28 +19756,19 @@ function (_EventEmitter) {
             this._setDirection(sdp, m, direction);
           }
         } catch (err) {
-          _didIteratorError5 = true;
-          _iteratorError5 = err;
+          _iterator5.e(err);
         } finally {
-          try {
-            if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-              _iterator5.return();
-            }
-          } finally {
-            if (_didIteratorError5) {
-              throw _iteratorError5;
-            }
-          }
+          _iterator5.f();
         }
       } // Local and remote hold.
       else if (this._localHold && this._remoteHold) {
           debug('mangleOffer() | both on hold, mangling offer');
-          var _iteratorNormalCompletion6 = true;
-          var _didIteratorError6 = false;
-          var _iteratorError6 = undefined;
+
+          var _iterator6 = _createForOfIteratorHelper(sdp.media),
+              _step6;
 
           try {
-            for (var _iterator6 = sdp.media[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+            for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
               var _m = _step6.value;
 
               if (holdMediaTypes.indexOf(_m.type) === -1) {
@@ -19735,28 +19780,19 @@ function (_EventEmitter) {
               this._setDirection(sdp, _m, direction);
             }
           } catch (err) {
-            _didIteratorError6 = true;
-            _iteratorError6 = err;
+            _iterator6.e(err);
           } finally {
-            try {
-              if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-                _iterator6.return();
-              }
-            } finally {
-              if (_didIteratorError6) {
-                throw _iteratorError6;
-              }
-            }
+            _iterator6.f();
           }
         } // Remote hold.
         else if (this._remoteHold) {
             debug('mangleOffer() | remote on hold, mangling offer');
-            var _iteratorNormalCompletion7 = true;
-            var _didIteratorError7 = false;
-            var _iteratorError7 = undefined;
+
+            var _iterator7 = _createForOfIteratorHelper(sdp.media),
+                _step7;
 
             try {
-              for (var _iterator7 = sdp.media[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+              for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
                 var _m2 = _step7.value;
 
                 if (holdMediaTypes.indexOf(_m2.type) === -1) {
@@ -19776,18 +19812,9 @@ function (_EventEmitter) {
                 this._setDirection(sdp, _m2, direction);
               }
             } catch (err) {
-              _didIteratorError7 = true;
-              _iteratorError7 = err;
+              _iterator7.e(err);
             } finally {
-              try {
-                if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
-                  _iterator7.return();
-                }
-              } finally {
-                if (_didIteratorError7) {
-                  throw _iteratorError7;
-                }
-              }
+              _iterator7.f();
             }
           }
 
@@ -19812,9 +19839,9 @@ function (_EventEmitter) {
         enableVideo = false;
       }
 
-      this._toogleMuteAudio(!enableAudio);
+      this._toggleMuteAudio(!enableAudio);
 
-      this._toogleMuteVideo(!enableVideo);
+      this._toggleMuteVideo(!enableVideo);
     }
     /**
      * Handle SessionTimers for an incoming INVITE or UPDATE.
@@ -19911,107 +19938,45 @@ function (_EventEmitter) {
         }
     }
   }, {
-    key: "_toogleMuteAudio",
-    value: function _toogleMuteAudio(mute) {
-      var streams = this._connection.getLocalStreams();
+    key: "_toggleMuteAudio",
+    value: function _toggleMuteAudio(mute) {
+      var senders = this._connection.getSenders().filter(function (sender) {
+        return sender.track && sender.track.kind === 'audio';
+      });
 
-      var _iteratorNormalCompletion8 = true;
-      var _didIteratorError8 = false;
-      var _iteratorError8 = undefined;
+      var _iterator8 = _createForOfIteratorHelper(senders),
+          _step8;
 
       try {
-        for (var _iterator8 = streams[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-          var stream = _step8.value;
-          var tracks = stream.getAudioTracks();
-          var _iteratorNormalCompletion9 = true;
-          var _didIteratorError9 = false;
-          var _iteratorError9 = undefined;
-
-          try {
-            for (var _iterator9 = tracks[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-              var track = _step9.value;
-              track.enabled = !mute;
-            }
-          } catch (err) {
-            _didIteratorError9 = true;
-            _iteratorError9 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-                _iterator9.return();
-              }
-            } finally {
-              if (_didIteratorError9) {
-                throw _iteratorError9;
-              }
-            }
-          }
+        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+          var sender = _step8.value;
+          sender.track.enabled = !mute;
         }
       } catch (err) {
-        _didIteratorError8 = true;
-        _iteratorError8 = err;
+        _iterator8.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
-            _iterator8.return();
-          }
-        } finally {
-          if (_didIteratorError8) {
-            throw _iteratorError8;
-          }
-        }
+        _iterator8.f();
       }
     }
   }, {
-    key: "_toogleMuteVideo",
-    value: function _toogleMuteVideo(mute) {
-      var streams = this._connection.getLocalStreams();
+    key: "_toggleMuteVideo",
+    value: function _toggleMuteVideo(mute) {
+      var senders = this._connection.getSenders().filter(function (sender) {
+        return sender.track && sender.track.kind === 'video';
+      });
 
-      var _iteratorNormalCompletion10 = true;
-      var _didIteratorError10 = false;
-      var _iteratorError10 = undefined;
+      var _iterator9 = _createForOfIteratorHelper(senders),
+          _step9;
 
       try {
-        for (var _iterator10 = streams[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-          var stream = _step10.value;
-          var tracks = stream.getVideoTracks();
-          var _iteratorNormalCompletion11 = true;
-          var _didIteratorError11 = false;
-          var _iteratorError11 = undefined;
-
-          try {
-            for (var _iterator11 = tracks[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-              var track = _step11.value;
-              track.enabled = !mute;
-            }
-          } catch (err) {
-            _didIteratorError11 = true;
-            _iteratorError11 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion11 && _iterator11.return != null) {
-                _iterator11.return();
-              }
-            } finally {
-              if (_didIteratorError11) {
-                throw _iteratorError11;
-              }
-            }
-          }
+        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+          var sender = _step9.value;
+          sender.track.enabled = !mute;
         }
       } catch (err) {
-        _didIteratorError10 = true;
-        _iteratorError10 = err;
+        _iterator9.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
-            _iterator10.return();
-          }
-        } finally {
-          if (_didIteratorError10) {
-            throw _iteratorError10;
-          }
-        }
+        _iterator9.f();
       }
     }
   }, {
@@ -20094,7 +20059,14 @@ function (_EventEmitter) {
   }, {
     key: "_failed",
     value: function _failed(originator, message, cause) {
-      debug('session failed');
+      debug('session failed'); // Emit private '_failed' event first.
+
+      debug('emit "_failed"');
+      this.emit('_failed', {
+        originator: originator,
+        message: message || null,
+        cause: cause
+      });
 
       this._close();
 
@@ -20313,7 +20285,7 @@ function fixupSDP(sdp) {
 },{"./Constants":2,"./Dialog":3,"./Exceptions":6,"./RTCSession/DTMF":13,"./RTCSession/Info":14,"./RTCSession/ReferNotifier":15,"./RTCSession/ReferSubscriber":16,"./RequestSender":18,"./SIPMessage":19,"./Timers":21,"./Transactions":22,"./Utils":26,"debug":30,"events":29,"sdp-transform":35}],13:[function(require,module,exports){
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -20321,9 +20293,13 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -20352,17 +20328,17 @@ var C = {
   DEFAULT_INTER_TONE_GAP: 500
 };
 
-module.exports =
-/*#__PURE__*/
-function (_EventEmitter) {
+module.exports = /*#__PURE__*/function (_EventEmitter) {
   _inherits(DTMF, _EventEmitter);
+
+  var _super = _createSuper(DTMF);
 
   function DTMF(session) {
     var _this;
 
     _classCallCheck(this, DTMF);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(DTMF).call(this));
+    _this = _super.call(this);
     _this._session = session;
     _this._direction = null;
     _this._tone = null;
@@ -20389,7 +20365,7 @@ function (_EventEmitter) {
       }
 
       var extraHeaders = Utils.cloneArray(options.extraHeaders);
-      this.eventHandlers = options.eventHandlers || {}; // Check tone type.
+      this.eventHandlers = Utils.cloneObject(options.eventHandlers); // Check tone type.
 
       if (typeof tone === 'string') {
         tone = tone.toUpperCase();
@@ -20512,7 +20488,7 @@ module.exports.C = C;
 },{"../Constants":2,"../Exceptions":6,"../Utils":26,"debug":30,"events":29}],14:[function(require,module,exports){
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -20520,9 +20496,13 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -20542,17 +20522,17 @@ var Exceptions = require('../Exceptions');
 
 var Utils = require('../Utils');
 
-module.exports =
-/*#__PURE__*/
-function (_EventEmitter) {
+module.exports = /*#__PURE__*/function (_EventEmitter) {
   _inherits(Info, _EventEmitter);
+
+  var _super = _createSuper(Info);
 
   function Info(session) {
     var _this;
 
     _classCallCheck(this, Info);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Info).call(this));
+    _this = _super.call(this);
     _this._session = session;
     _this._direction = null;
     _this._contentType = null;
@@ -20664,9 +20644,7 @@ var C = {
   expires: 300
 };
 
-module.exports =
-/*#__PURE__*/
-function () {
+module.exports = /*#__PURE__*/function () {
   function ReferNotifier(session, id, expires) {
     _classCallCheck(this, ReferNotifier);
 
@@ -20715,7 +20693,7 @@ function () {
 },{"../Constants":2,"debug":30}],16:[function(require,module,exports){
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -20723,9 +20701,13 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -20743,17 +20725,17 @@ var Utils = require('../Utils');
 
 var debug = require('debug')('JsSIP:RTCSession:ReferSubscriber');
 
-module.exports =
-/*#__PURE__*/
-function (_EventEmitter) {
+module.exports = /*#__PURE__*/function (_EventEmitter) {
   _inherits(ReferSubscriber, _EventEmitter);
+
+  var _super = _createSuper(ReferSubscriber);
 
   function ReferSubscriber(session) {
     var _this;
 
     _classCallCheck(this, ReferSubscriber);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ReferSubscriber).call(this));
+    _this = _super.call(this);
     _this._id = null;
     _this._session = session;
     return _this;
@@ -20767,7 +20749,7 @@ function (_EventEmitter) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       debug('sendRefer()');
       var extraHeaders = Utils.cloneArray(options.extraHeaders);
-      var eventHandlers = options.eventHandlers || {}; // Set event handlers.
+      var eventHandlers = Utils.cloneObject(options.eventHandlers); // Set event handlers.
 
       for (var event in eventHandlers) {
         if (Object.prototype.hasOwnProperty.call(eventHandlers, event)) {
@@ -20787,7 +20769,10 @@ function (_EventEmitter) {
 
 
       var referTo = "Refer-To: <".concat(target).concat(replaces ? "?Replaces=".concat(replaces) : '', ">");
-      extraHeaders.push(referTo);
+      extraHeaders.push(referTo); // Referred-By header field.
+
+      var referredBy = "Referred-By: <".concat(this._session._ua._configuration.uri._scheme, ":").concat(this._session._ua._configuration.uri._user, "@").concat(this._session._ua._configuration.uri._host, ">");
+      extraHeaders.push(referredBy);
       extraHeaders.push("Contact: ".concat(this._session.contact));
 
       var request = this._session.sendRequest(JsSIP_C.REFER, {
@@ -20908,9 +20893,7 @@ var debug = require('debug')('JsSIP:Registrator');
 
 var MIN_REGISTER_EXPIRES = 10; // In seconds.
 
-module.exports =
-/*#__PURE__*/
-function () {
+module.exports = /*#__PURE__*/function () {
   function Registrator(ua, transport) {
     _classCallCheck(this, Registrator);
 
@@ -21005,10 +20988,7 @@ function () {
           _this._cseq += 1;
         },
         onReceiveResponse: function onReceiveResponse(response) {
-          var contact;
-          var expires;
-          var numContacts = response.getHeaders('contact').length; // Discard responses to older REGISTER/un-REGISTER requests.
-
+          // Discard responses to older REGISTER/un-REGISTER requests.
           if (response.cseq !== _this._cseq) {
             return;
           } // Clear registration timer.
@@ -21021,90 +21001,95 @@ function () {
 
           switch (true) {
             case /^1[0-9]{2}$/.test(response.status_code):
-              // Ignore provisional responses.
-              break;
+              {
+                // Ignore provisional responses.
+                break;
+              }
 
             case /^2[0-9]{2}$/.test(response.status_code):
-              _this._registering = false; // Search the Contact pointing to us and update the expires value accordingly.
+              {
+                _this._registering = false;
 
-              if (!numContacts) {
-                debug('no Contact header in response to REGISTER, response ignored');
-                break;
-              }
-
-              while (numContacts--) {
-                contact = response.parseHeader('contact', numContacts);
-
-                if (contact.uri.user === _this._ua.contact.uri.user) {
-                  expires = contact.getParam('expires');
+                if (!response.hasHeader('Contact')) {
+                  debug('no Contact header in response to REGISTER, response ignored');
                   break;
-                } else {
-                  contact = null;
                 }
-              }
 
-              if (!contact) {
-                debug('no Contact header pointing to us, response ignored');
+                var contacts = response.headers['Contact'].reduce(function (a, b) {
+                  return a.concat(b.parsed);
+                }, []); // Get the Contact pointing to us and update the expires value accordingly.
+
+                var contact = contacts.find(function (element) {
+                  return element.uri.user === _this._ua.contact.uri.user;
+                });
+
+                if (!contact) {
+                  debug('no Contact header pointing to us, response ignored');
+                  break;
+                }
+
+                var expires = contact.getParam('expires');
+
+                if (!expires && response.hasHeader('expires')) {
+                  expires = response.getHeader('expires');
+                }
+
+                if (!expires) {
+                  expires = _this._expires;
+                }
+
+                expires = Number(expires);
+                if (expires < MIN_REGISTER_EXPIRES) expires = MIN_REGISTER_EXPIRES; // Re-Register or emit an event before the expiration interval has elapsed.
+                // For that, decrease the expires value. ie: 3 seconds.
+
+                _this._registrationTimer = setTimeout(function () {
+                  _this._registrationTimer = null; // If there are no listeners for registrationExpiring, renew registration.
+                  // If there are listeners, let the function listening do the register call.
+
+                  if (_this._ua.listeners('registrationExpiring').length === 0) {
+                    _this.register();
+                  } else {
+                    _this._ua.emit('registrationExpiring');
+                  }
+                }, expires * 1000 - 5000); // Save gruu values.
+
+                if (contact.hasParam('temp-gruu')) {
+                  _this._ua.contact.temp_gruu = contact.getParam('temp-gruu').replace(/"/g, '');
+                }
+
+                if (contact.hasParam('pub-gruu')) {
+                  _this._ua.contact.pub_gruu = contact.getParam('pub-gruu').replace(/"/g, '');
+                }
+
+                if (!_this._registered) {
+                  _this._registered = true;
+
+                  _this._ua.registered({
+                    response: response
+                  });
+                }
+
                 break;
               }
-
-              if (!expires && response.hasHeader('expires')) {
-                expires = response.getHeader('expires');
-              }
-
-              if (!expires) {
-                expires = _this._expires;
-              }
-
-              expires = Number(expires);
-              if (expires < MIN_REGISTER_EXPIRES) expires = MIN_REGISTER_EXPIRES; // Re-Register or emit an event before the expiration interval has elapsed.
-              // For that, decrease the expires value. ie: 3 seconds.
-
-              _this._registrationTimer = setTimeout(function () {
-                _this._registrationTimer = null; // If there are no listeners for registrationExpiring, renew registration.
-                // If there are listeners, let the function listening do the register call.
-
-                if (_this._ua.listeners('registrationExpiring').length === 0) {
-                  _this.register();
-                } else {
-                  _this._ua.emit('registrationExpiring');
-                }
-              }, expires * 1000 - 5000); // Save gruu values.
-
-              if (contact.hasParam('temp-gruu')) {
-                _this._ua.contact.temp_gruu = contact.getParam('temp-gruu').replace(/"/g, '');
-              }
-
-              if (contact.hasParam('pub-gruu')) {
-                _this._ua.contact.pub_gruu = contact.getParam('pub-gruu').replace(/"/g, '');
-              }
-
-              if (!_this._registered) {
-                _this._registered = true;
-
-                _this._ua.registered({
-                  response: response
-                });
-              }
-
-              break;
             // Interval too brief RFC3261 10.2.8.
 
             case /^423$/.test(response.status_code):
-              if (response.hasHeader('min-expires')) {
-                // Increase our registration interval to the suggested minimum.
-                _this._expires = Number(response.getHeader('min-expires'));
-                if (_this._expires < MIN_REGISTER_EXPIRES) _this._expires = MIN_REGISTER_EXPIRES; // Attempt the registration again immediately.
+              {
+                if (response.hasHeader('min-expires')) {
+                  // Increase our registration interval to the suggested minimum.
+                  _this._expires = Number(response.getHeader('min-expires'));
+                  if (_this._expires < MIN_REGISTER_EXPIRES) _this._expires = MIN_REGISTER_EXPIRES; // Attempt the registration again immediately.
 
-                _this.register();
-              } else {
-                // This response MUST contain a Min-Expires header field
-                debug('423 response received for REGISTER without Min-Expires');
+                  _this.register();
+                } else {
+                  // This response MUST contain a Min-Expires header field.
+                  debug('423 response received for REGISTER without Min-Expires');
 
-                _this._registrationFailure(response, JsSIP_C.causes.SIP_FAILURE_CODE);
+                  _this._registrationFailure(response, JsSIP_C.causes.SIP_FAILURE_CODE);
+                }
+
+                break;
               }
-
-              break;
 
             default:
               {
@@ -21271,9 +21256,7 @@ var EventHandlers = {
   onAuthenticated: function onAuthenticated() {}
 };
 
-module.exports =
-/*#__PURE__*/
-function () {
+module.exports = /*#__PURE__*/function () {
   function RequestSender(ua, request, eventHandlers) {
     _classCallCheck(this, RequestSender);
 
@@ -21331,6 +21314,11 @@ function () {
 
         default:
           this.clientTransaction = new Transactions.NonInviteClientTransaction(this._ua, this._ua.transport, this._request, eventHandlers);
+      } // If authorization JWT is present, use it.
+
+
+      if (this._ua._configuration.authorization_jwt) {
+        this._request.setHeader('Authorization', this._ua._configuration.authorization_jwt);
       }
 
       this.clientTransaction.send();
@@ -21421,17 +21409,27 @@ function () {
 },{"./Constants":2,"./DigestAuthentication":5,"./Transactions":22,"debug":30}],19:[function(require,module,exports){
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -21462,9 +21460,7 @@ var debug = require('debug')('JsSIP:SIPMessage');
  */
 
 
-var OutgoingRequest =
-/*#__PURE__*/
-function () {
+var OutgoingRequest = /*#__PURE__*/function () {
   function OutgoingRequest(method, ruri, ua, params, extraHeaders, body) {
     _classCallCheck(this, OutgoingRequest);
 
@@ -21494,26 +21490,30 @@ function () {
 
     this.setHeader('max-forwards', JsSIP_C.MAX_FORWARDS); // To
 
-    var to = params.to_display_name || params.to_display_name === 0 ? "\"".concat(params.to_display_name, "\" ") : '';
-    to += "<".concat(params.to_uri || ruri, ">");
-    to += params.to_tag ? ";tag=".concat(params.to_tag) : '';
-    this.to = NameAddrHeader.parse(to);
-    this.setHeader('to', to); // From.
+    var to_uri = params.to_uri || ruri;
+    var to_params = params.to_tag ? {
+      tag: params.to_tag
+    } : null;
+    var to_display_name = typeof params.to_display_name !== 'undefined' ? params.to_display_name : null;
+    this.to = new NameAddrHeader(to_uri, to_display_name, to_params);
+    this.setHeader('to', this.to.toString()); // From.
 
-    var from;
+    var from_uri = params.from_uri || ua.configuration.uri;
+    var from_params = {
+      tag: params.from_tag || Utils.newTag()
+    };
+    var display_name;
 
-    if (params.from_display_name || params.from_display_name === 0) {
-      from = "\"".concat(params.from_display_name, "\" ");
+    if (typeof params.from_display_name !== 'undefined') {
+      display_name = params.from_display_name;
     } else if (ua.configuration.display_name) {
-      from = "\"".concat(ua.configuration.display_name, "\" ");
+      display_name = ua.configuration.display_name;
     } else {
-      from = '';
+      display_name = null;
     }
 
-    from += "<".concat(params.from_uri || ua.configuration.uri, ">;tag=");
-    from += params.from_tag || Utils.newTag();
-    this.from = NameAddrHeader.parse(from);
-    this.setHeader('from', from); // Call-ID.
+    this.from = new NameAddrHeader(from_uri, display_name, from_params);
+    this.setHeader('from', this.from.toString()); // Call-ID.
 
     var call_id = params.call_id || ua.configuration.jssip_id + Utils.createRandomToken(15);
     this.call_id = call_id;
@@ -21561,12 +21561,12 @@ function () {
         }
       } else {
         var regexp = new RegExp("^\\s*".concat(name, "\\s*:"), 'i');
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+
+        var _iterator = _createForOfIteratorHelper(this.extraHeaders),
+            _step;
 
         try {
-          for (var _iterator = this.extraHeaders[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
             var header = _step.value;
 
             if (regexp.test(header)) {
@@ -21574,18 +21574,9 @@ function () {
             }
           }
         } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
+          _iterator.e(err);
         } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
+          _iterator.f();
         }
       }
 
@@ -21604,39 +21595,29 @@ function () {
       var result = [];
 
       if (headers) {
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
+        var _iterator2 = _createForOfIteratorHelper(headers),
+            _step2;
 
         try {
-          for (var _iterator2 = headers[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
             var header = _step2.value;
             result.push(header);
           }
         } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
+          _iterator2.e(err);
         } finally {
-          try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-              _iterator2.return();
-            }
-          } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
-            }
-          }
+          _iterator2.f();
         }
 
         return result;
       } else {
         var regexp = new RegExp("^\\s*".concat(name, "\\s*:"), 'i');
-        var _iteratorNormalCompletion3 = true;
-        var _didIteratorError3 = false;
-        var _iteratorError3 = undefined;
+
+        var _iterator3 = _createForOfIteratorHelper(this.extraHeaders),
+            _step3;
 
         try {
-          for (var _iterator3 = this.extraHeaders[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
             var _header = _step3.value;
 
             if (regexp.test(_header)) {
@@ -21644,18 +21625,9 @@ function () {
             }
           }
         } catch (err) {
-          _didIteratorError3 = true;
-          _iteratorError3 = err;
+          _iterator3.e(err);
         } finally {
-          try {
-            if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-              _iterator3.return();
-            }
-          } finally {
-            if (_didIteratorError3) {
-              throw _iteratorError3;
-            }
-          }
+          _iterator3.f();
         }
 
         return result;
@@ -21674,12 +21646,12 @@ function () {
         return true;
       } else {
         var regexp = new RegExp("^\\s*".concat(name, "\\s*:"), 'i');
-        var _iteratorNormalCompletion4 = true;
-        var _didIteratorError4 = false;
-        var _iteratorError4 = undefined;
+
+        var _iterator4 = _createForOfIteratorHelper(this.extraHeaders),
+            _step4;
 
         try {
-          for (var _iterator4 = this.extraHeaders[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
             var header = _step4.value;
 
             if (regexp.test(header)) {
@@ -21687,18 +21659,9 @@ function () {
             }
           }
         } catch (err) {
-          _didIteratorError4 = true;
-          _iteratorError4 = err;
+          _iterator4.e(err);
         } finally {
-          try {
-            if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-              _iterator4.return();
-            }
-          } finally {
-            if (_didIteratorError4) {
-              throw _iteratorError4;
-            }
-          }
+          _iterator4.f();
         }
       }
 
@@ -21729,55 +21692,35 @@ function () {
 
       for (var headerName in this.headers) {
         if (Object.prototype.hasOwnProperty.call(this.headers, headerName)) {
-          var _iteratorNormalCompletion5 = true;
-          var _didIteratorError5 = false;
-          var _iteratorError5 = undefined;
+          var _iterator5 = _createForOfIteratorHelper(this.headers[headerName]),
+              _step5;
 
           try {
-            for (var _iterator5 = this.headers[headerName][Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+            for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
               var headerValue = _step5.value;
               msg += "".concat(headerName, ": ").concat(headerValue, "\r\n");
             }
           } catch (err) {
-            _didIteratorError5 = true;
-            _iteratorError5 = err;
+            _iterator5.e(err);
           } finally {
-            try {
-              if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-                _iterator5.return();
-              }
-            } finally {
-              if (_didIteratorError5) {
-                throw _iteratorError5;
-              }
-            }
+            _iterator5.f();
           }
         }
       }
 
-      var _iteratorNormalCompletion6 = true;
-      var _didIteratorError6 = false;
-      var _iteratorError6 = undefined;
+      var _iterator6 = _createForOfIteratorHelper(this.extraHeaders),
+          _step6;
 
       try {
-        for (var _iterator6 = this.extraHeaders[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
           var header = _step6.value;
           msg += "".concat(header.trim(), "\r\n");
         } // Supported.
 
       } catch (err) {
-        _didIteratorError6 = true;
-        _iteratorError6 = err;
+        _iterator6.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-            _iterator6.return();
-          }
-        } finally {
-          if (_didIteratorError6) {
-            throw _iteratorError6;
-          }
-        }
+        _iterator6.f();
       }
 
       var supported = [];
@@ -21845,17 +21788,17 @@ function () {
   return OutgoingRequest;
 }();
 
-var InitialOutgoingInviteRequest =
-/*#__PURE__*/
-function (_OutgoingRequest) {
+var InitialOutgoingInviteRequest = /*#__PURE__*/function (_OutgoingRequest) {
   _inherits(InitialOutgoingInviteRequest, _OutgoingRequest);
+
+  var _super = _createSuper(InitialOutgoingInviteRequest);
 
   function InitialOutgoingInviteRequest(ruri, ua, params, extraHeaders, body) {
     var _this;
 
     _classCallCheck(this, InitialOutgoingInviteRequest);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(InitialOutgoingInviteRequest).call(this, JsSIP_C.INVITE, ruri, ua, params, extraHeaders, body));
+    _this = _super.call(this, JsSIP_C.INVITE, ruri, ua, params, extraHeaders, body);
     _this.transaction = null;
     return _this;
   }
@@ -21886,9 +21829,7 @@ function (_OutgoingRequest) {
   return InitialOutgoingInviteRequest;
 }(OutgoingRequest);
 
-var IncomingMessage =
-/*#__PURE__*/
-function () {
+var IncomingMessage = /*#__PURE__*/function () {
   function IncomingMessage() {
     _classCallCheck(this, IncomingMessage);
 
@@ -21957,28 +21898,18 @@ function () {
         return [];
       }
 
-      var _iteratorNormalCompletion7 = true;
-      var _didIteratorError7 = false;
-      var _iteratorError7 = undefined;
+      var _iterator7 = _createForOfIteratorHelper(headers),
+          _step7;
 
       try {
-        for (var _iterator7 = headers[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+        for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
           var header = _step7.value;
           result.push(header.raw);
         }
       } catch (err) {
-        _didIteratorError7 = true;
-        _iteratorError7 = err;
+        _iterator7.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
-            _iterator7.return();
-          }
-        } finally {
-          if (_didIteratorError7) {
-            throw _iteratorError7;
-          }
-        }
+        _iterator7.f();
       }
 
       return result;
@@ -22092,17 +22023,17 @@ function () {
   return IncomingMessage;
 }();
 
-var IncomingRequest =
-/*#__PURE__*/
-function (_IncomingMessage) {
+var IncomingRequest = /*#__PURE__*/function (_IncomingMessage) {
   _inherits(IncomingRequest, _IncomingMessage);
+
+  var _super2 = _createSuper(IncomingRequest);
 
   function IncomingRequest(ua) {
     var _this2;
 
     _classCallCheck(this, IncomingRequest);
 
-    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(IncomingRequest).call(this));
+    _this2 = _super2.call(this);
     _this2.ua = ua;
     _this2.headers = {};
     _this2.ruri = null;
@@ -22141,54 +22072,36 @@ function (_IncomingMessage) {
 
       if (this.method === JsSIP_C.INVITE && code > 100 && code <= 200) {
         var headers = this.getHeaders('record-route');
-        var _iteratorNormalCompletion8 = true;
-        var _didIteratorError8 = false;
-        var _iteratorError8 = undefined;
+
+        var _iterator8 = _createForOfIteratorHelper(headers),
+            _step8;
 
         try {
-          for (var _iterator8 = headers[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+          for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
             var header = _step8.value;
             response += "Record-Route: ".concat(header, "\r\n");
           }
         } catch (err) {
-          _didIteratorError8 = true;
-          _iteratorError8 = err;
+          _iterator8.e(err);
         } finally {
-          try {
-            if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
-              _iterator8.return();
-            }
-          } finally {
-            if (_didIteratorError8) {
-              throw _iteratorError8;
-            }
-          }
+          _iterator8.f();
         }
       }
 
       var vias = this.getHeaders('via');
-      var _iteratorNormalCompletion9 = true;
-      var _didIteratorError9 = false;
-      var _iteratorError9 = undefined;
+
+      var _iterator9 = _createForOfIteratorHelper(vias),
+          _step9;
 
       try {
-        for (var _iterator9 = vias[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
           var via = _step9.value;
           response += "Via: ".concat(via, "\r\n");
         }
       } catch (err) {
-        _didIteratorError9 = true;
-        _iteratorError9 = err;
+        _iterator9.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-            _iterator9.return();
-          }
-        } finally {
-          if (_didIteratorError9) {
-            throw _iteratorError9;
-          }
-        }
+        _iterator9.f();
       }
 
       if (!this.to_tag && code > 100) {
@@ -22201,29 +22114,20 @@ function (_IncomingMessage) {
       response += "From: ".concat(this.getHeader('From'), "\r\n");
       response += "Call-ID: ".concat(this.call_id, "\r\n");
       response += "CSeq: ".concat(this.cseq, " ").concat(this.method, "\r\n");
-      var _iteratorNormalCompletion10 = true;
-      var _didIteratorError10 = false;
-      var _iteratorError10 = undefined;
+
+      var _iterator10 = _createForOfIteratorHelper(extraHeaders),
+          _step10;
 
       try {
-        for (var _iterator10 = extraHeaders[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+        for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
           var _header2 = _step10.value;
           response += "".concat(_header2.trim(), "\r\n");
         } // Supported.
 
       } catch (err) {
-        _didIteratorError10 = true;
-        _iteratorError10 = err;
+        _iterator10.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
-            _iterator10.return();
-          }
-        } finally {
-          if (_didIteratorError10) {
-            throw _iteratorError10;
-          }
-        }
+        _iterator10.f();
       }
 
       switch (this.method) {
@@ -22296,28 +22200,19 @@ function (_IncomingMessage) {
 
       reason = reason || JsSIP_C.REASON_PHRASE[code] || '';
       var response = "SIP/2.0 ".concat(code, " ").concat(reason, "\r\n");
-      var _iteratorNormalCompletion11 = true;
-      var _didIteratorError11 = false;
-      var _iteratorError11 = undefined;
+
+      var _iterator11 = _createForOfIteratorHelper(vias),
+          _step11;
 
       try {
-        for (var _iterator11 = vias[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+        for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
           var via = _step11.value;
           response += "Via: ".concat(via, "\r\n");
         }
       } catch (err) {
-        _didIteratorError11 = true;
-        _iteratorError11 = err;
+        _iterator11.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion11 && _iterator11.return != null) {
-            _iterator11.return();
-          }
-        } finally {
-          if (_didIteratorError11) {
-            throw _iteratorError11;
-          }
-        }
+        _iterator11.f();
       }
 
       var to = this.getHeader('To');
@@ -22340,17 +22235,17 @@ function (_IncomingMessage) {
   return IncomingRequest;
 }(IncomingMessage);
 
-var IncomingResponse =
-/*#__PURE__*/
-function (_IncomingMessage2) {
+var IncomingResponse = /*#__PURE__*/function (_IncomingMessage2) {
   _inherits(IncomingResponse, _IncomingMessage2);
+
+  var _super3 = _createSuper(IncomingResponse);
 
   function IncomingResponse() {
     var _this3;
 
     _classCallCheck(this, IncomingResponse);
 
-    _this3 = _possibleConstructorReturn(this, _getPrototypeOf(IncomingResponse).call(this));
+    _this3 = _super3.call(this);
     _this3.headers = {};
     _this3.status_code = null;
     _this3.reason_phrase = null;
@@ -22377,7 +22272,7 @@ var debugerror = require('debug')('JsSIP:ERROR:Socket');
 
 debugerror.log = console.warn.bind(console);
 /**
- * Interface documentation: http://jssip.net/documentation/$last_version/api/socket/
+ * Interface documentation: https://jssip.net/documentation/$last_version/api/socket/
  *
  * interface Socket {
  *  attribute String via_transport
@@ -22465,7 +22360,7 @@ module.exports = {
 },{}],22:[function(require,module,exports){
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -22473,15 +22368,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 var EventEmitter = require('events').EventEmitter;
 
@@ -22517,17 +22416,17 @@ var C = {
   INVITE_SERVER: 'ist'
 };
 
-var NonInviteClientTransaction =
-/*#__PURE__*/
-function (_EventEmitter) {
+var NonInviteClientTransaction = /*#__PURE__*/function (_EventEmitter) {
   _inherits(NonInviteClientTransaction, _EventEmitter);
+
+  var _super = _createSuper(NonInviteClientTransaction);
 
   function NonInviteClientTransaction(ua, transport, request, eventHandlers) {
     var _this;
 
     _classCallCheck(this, NonInviteClientTransaction);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(NonInviteClientTransaction).call(this));
+    _this = _super.call(this);
     _this.type = C.NON_INVITE_CLIENT;
     _this.id = "z9hG4bK".concat(Math.floor(Math.random() * 10000000));
     _this.ua = ua;
@@ -22539,7 +22438,7 @@ function (_EventEmitter) {
 
     _this.request.setHeader('via', via);
 
-    _this.ua.newTransaction(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.ua.newTransaction(_assertThisInitialized(_this));
 
     return _this;
   }
@@ -22636,30 +22535,30 @@ function (_EventEmitter) {
   return NonInviteClientTransaction;
 }(EventEmitter);
 
-var InviteClientTransaction =
-/*#__PURE__*/
-function (_EventEmitter2) {
+var InviteClientTransaction = /*#__PURE__*/function (_EventEmitter2) {
   _inherits(InviteClientTransaction, _EventEmitter2);
+
+  var _super2 = _createSuper(InviteClientTransaction);
 
   function InviteClientTransaction(ua, transport, request, eventHandlers) {
     var _this4;
 
     _classCallCheck(this, InviteClientTransaction);
 
-    _this4 = _possibleConstructorReturn(this, _getPrototypeOf(InviteClientTransaction).call(this));
+    _this4 = _super2.call(this);
     _this4.type = C.INVITE_CLIENT;
     _this4.id = "z9hG4bK".concat(Math.floor(Math.random() * 10000000));
     _this4.ua = ua;
     _this4.transport = transport;
     _this4.request = request;
     _this4.eventHandlers = eventHandlers;
-    request.transaction = _assertThisInitialized(_assertThisInitialized(_this4));
+    request.transaction = _assertThisInitialized(_this4);
     var via = "SIP/2.0/".concat(transport.via_transport);
     via += " ".concat(ua.configuration.via_host, ";branch=").concat(_this4.id);
 
     _this4.request.setHeader('via', via);
 
-    _this4.ua.newTransaction(_assertThisInitialized(_assertThisInitialized(_this4)));
+    _this4.ua.newTransaction(_assertThisInitialized(_this4));
 
     return _this4;
   }
@@ -22737,7 +22636,7 @@ function (_EventEmitter2) {
       var _this6 = this;
 
       var ack = new SIPMessage.OutgoingRequest(JsSIP_C.ACK, this.request.ruri, this.ua, {
-        'route_set': this.request.getHeader('route'),
+        'route_set': this.request.getHeaders('route'),
         'call_id': this.request.getHeader('call-id'),
         'cseq': this.request.cseq
       });
@@ -22758,7 +22657,7 @@ function (_EventEmitter2) {
       }
 
       var cancel = new SIPMessage.OutgoingRequest(JsSIP_C.CANCEL, this.request.ruri, this.ua, {
-        'route_set': this.request.getHeader('route'),
+        'route_set': this.request.getHeaders('route'),
         'call_id': this.request.getHeader('call-id'),
         'cseq': this.request.cseq
       });
@@ -22830,17 +22729,17 @@ function (_EventEmitter2) {
   return InviteClientTransaction;
 }(EventEmitter);
 
-var AckClientTransaction =
-/*#__PURE__*/
-function (_EventEmitter3) {
+var AckClientTransaction = /*#__PURE__*/function (_EventEmitter3) {
   _inherits(AckClientTransaction, _EventEmitter3);
+
+  var _super3 = _createSuper(AckClientTransaction);
 
   function AckClientTransaction(ua, transport, request, eventHandlers) {
     var _this8;
 
     _classCallCheck(this, AckClientTransaction);
 
-    _this8 = _possibleConstructorReturn(this, _getPrototypeOf(AckClientTransaction).call(this));
+    _this8 = _super3.call(this);
     _this8.id = "z9hG4bK".concat(Math.floor(Math.random() * 10000000));
     _this8.transport = transport;
     _this8.request = request;
@@ -22876,26 +22775,26 @@ function (_EventEmitter3) {
   return AckClientTransaction;
 }(EventEmitter);
 
-var NonInviteServerTransaction =
-/*#__PURE__*/
-function (_EventEmitter4) {
+var NonInviteServerTransaction = /*#__PURE__*/function (_EventEmitter4) {
   _inherits(NonInviteServerTransaction, _EventEmitter4);
+
+  var _super4 = _createSuper(NonInviteServerTransaction);
 
   function NonInviteServerTransaction(ua, transport, request) {
     var _this9;
 
     _classCallCheck(this, NonInviteServerTransaction);
 
-    _this9 = _possibleConstructorReturn(this, _getPrototypeOf(NonInviteServerTransaction).call(this));
+    _this9 = _super4.call(this);
     _this9.type = C.NON_INVITE_SERVER;
     _this9.id = request.via_branch;
     _this9.ua = ua;
     _this9.transport = transport;
     _this9.request = request;
     _this9.last_response = '';
-    request.server_transaction = _assertThisInitialized(_assertThisInitialized(_this9));
+    request.server_transaction = _assertThisInitialized(_this9);
     _this9.state = C.STATUS_TRYING;
-    ua.newTransaction(_assertThisInitialized(_assertThisInitialized(_this9)));
+    ua.newTransaction(_assertThisInitialized(_this9));
     return _this9;
   }
 
@@ -22996,26 +22895,26 @@ function (_EventEmitter4) {
   return NonInviteServerTransaction;
 }(EventEmitter);
 
-var InviteServerTransaction =
-/*#__PURE__*/
-function (_EventEmitter5) {
+var InviteServerTransaction = /*#__PURE__*/function (_EventEmitter5) {
   _inherits(InviteServerTransaction, _EventEmitter5);
+
+  var _super5 = _createSuper(InviteServerTransaction);
 
   function InviteServerTransaction(ua, transport, request) {
     var _this11;
 
     _classCallCheck(this, InviteServerTransaction);
 
-    _this11 = _possibleConstructorReturn(this, _getPrototypeOf(InviteServerTransaction).call(this));
+    _this11 = _super5.call(this);
     _this11.type = C.INVITE_SERVER;
     _this11.id = request.via_branch;
     _this11.ua = ua;
     _this11.transport = transport;
     _this11.request = request;
     _this11.last_response = '';
-    request.server_transaction = _assertThisInitialized(_assertThisInitialized(_this11));
+    request.server_transaction = _assertThisInitialized(_this11);
     _this11.state = C.STATUS_PROCEEDING;
-    ua.newTransaction(_assertThisInitialized(_assertThisInitialized(_this11)));
+    ua.newTransaction(_assertThisInitialized(_this11));
     _this11.resendProvisionalTimer = null;
     request.reply(100);
     return _this11;
@@ -23043,6 +22942,7 @@ function (_EventEmitter5) {
     key: "timer_I",
     value: function timer_I() {
       this.stateChanged(C.STATUS_TERMINATED);
+      this.ua.destroyTransaction(this);
     } // RFC 6026 7.1.
 
   }, {
@@ -23301,6 +23201,8 @@ var debug = require('debug')('JsSIP:Transport');
 
 var debugerror = require('debug')('JsSIP:ERROR:Transport');
 
+var JsSIP_C = require('./Constants');
+
 debugerror.log = console.warn.bind(console);
 /**
  * Constants
@@ -23316,10 +23218,10 @@ var C = {
   SOCKET_STATUS_ERROR: 1,
   // Recovery options.
   recovery_options: {
-    min_interval: 2,
-    // minimum interval in seconds between recover attempts
-    max_interval: 30 // maximum interval in seconds between recover attempts
-
+    // minimum interval in seconds between recover attempts.
+    min_interval: JsSIP_C.CONNECTION_RECOVERY_MIN_INTERVAL,
+    // maximum interval in seconds between recover attempts.
+    max_interval: JsSIP_C.CONNECTION_RECOVERY_MAX_INTERVAL
   }
 };
 /*
@@ -23329,9 +23231,7 @@ var C = {
  * @socket JsSIP::Socket instance
  */
 
-module.exports =
-/*#__PURE__*/
-function () {
+module.exports = /*#__PURE__*/function () {
   function Transport(sockets) {
     var recovery_options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : C.recovery_options;
 
@@ -23611,26 +23511,30 @@ function () {
 
   return Transport;
 }();
-},{"./Socket":20,"debug":30}],24:[function(require,module,exports){
+},{"./Constants":2,"./Socket":20,"debug":30}],24:[function(require,module,exports){
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 var EventEmitter = require('events').EventEmitter;
 
@@ -23651,8 +23555,6 @@ var Utils = require('./Utils');
 var Exceptions = require('./Exceptions');
 
 var URI = require('./URI');
-
-var Grammar = require('./Grammar');
 
 var Parser = require('./Parser');
 
@@ -23685,10 +23587,10 @@ var C = {
  * @throws {TypeError} If no configuration is given.
  */
 
-module.exports =
-/*#__PURE__*/
-function (_EventEmitter) {
+module.exports = /*#__PURE__*/function (_EventEmitter) {
   _inherits(UA, _EventEmitter);
+
+  var _super = _createSuper(UA);
 
   _createClass(UA, null, [{
     key: "C",
@@ -23704,7 +23606,7 @@ function (_EventEmitter) {
     _classCallCheck(this, UA);
 
     debug('new() [configuration:%o]', configuration);
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(UA).call(this));
+    _this = _super.call(this);
     _this._cache = {
       credentials: {}
     };
@@ -23742,7 +23644,7 @@ function (_EventEmitter) {
     } // Initialize registrator.
 
 
-    _this._registrator = new Registrator(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this._registrator = new Registrator(_assertThisInitialized(_this));
     return _this;
   }
 
@@ -24003,11 +23905,6 @@ function (_EventEmitter) {
 
         case 'display_name':
           {
-            if (Grammar.parse("\"".concat(value, "\""), 'display_name') === -1) {
-              debugerror('set() | wrong "display_name"');
-              return false;
-            }
-
             this._configuration.display_name = value;
             break;
           }
@@ -24252,6 +24149,15 @@ function (_EventEmitter) {
              * ACK request without a corresponding Invite Transaction
              * and without To tag.
              */
+            break;
+
+          case JsSIP_C.NOTIFY:
+            // Receive new sip event.
+            this.emit('sipEvent', {
+              event: request.event,
+              request: request
+            });
+            request.reply(200);
             break;
 
           default:
@@ -24535,8 +24441,8 @@ function onTransportDisconnect(data) {
   // Run _onTransportError_ callback on every client transaction using _transport_.
   var client_transactions = ['nict', 'ict', 'nist', 'ist'];
 
-  for (var _i = 0; _i < client_transactions.length; _i++) {
-    var type = client_transactions[_i];
+  for (var _i = 0, _client_transactions = client_transactions; _i < _client_transactions.length; _i++) {
+    var type = _client_transactions[_i];
 
     for (var id in this._transactions[type]) {
       if (Object.prototype.hasOwnProperty.call(this._transactions[type], id)) {
@@ -24609,8 +24515,14 @@ function onTransportData(data) {
     }
   }
 }
-},{"./Config":1,"./Constants":2,"./Exceptions":6,"./Grammar":7,"./Message":9,"./Parser":11,"./RTCSession":12,"./Registrator":17,"./SIPMessage":19,"./Transactions":22,"./Transport":23,"./URI":25,"./Utils":26,"./sanityCheck":28,"debug":30,"events":29}],25:[function(require,module,exports){
+},{"./Config":1,"./Constants":2,"./Exceptions":6,"./Message":9,"./Parser":11,"./RTCSession":12,"./Registrator":17,"./SIPMessage":19,"./Transactions":22,"./Transport":23,"./URI":25,"./Utils":26,"./sanityCheck":28,"debug":30,"events":29}],25:[function(require,module,exports){
 "use strict";
+
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -24634,9 +24546,7 @@ var Grammar = require('./Grammar');
  */
 
 
-module.exports =
-/*#__PURE__*/
-function () {
+module.exports = /*#__PURE__*/function () {
   _createClass(URI, null, [{
     key: "parse",
 
@@ -24792,28 +24702,18 @@ function () {
 
       for (var header in this._headers) {
         if (Object.prototype.hasOwnProperty.call(this._headers, header)) {
-          var _iteratorNormalCompletion = true;
-          var _didIteratorError = false;
-          var _iteratorError = undefined;
+          var _iterator = _createForOfIteratorHelper(this._headers[header]),
+              _step;
 
           try {
-            for (var _iterator = this._headers[header][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            for (_iterator.s(); !(_step = _iterator.n()).done;) {
               var item = _step.value;
               headers.push("".concat(header, "=").concat(item));
             }
           } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
+            _iterator.e(err);
           } finally {
-            try {
-              if (!_iteratorNormalCompletion && _iterator.return != null) {
-                _iterator.return();
-              }
-            } finally {
-              if (_didIteratorError) {
-                throw _iteratorError;
-              }
-            }
+            _iterator.f();
           }
         }
       }
@@ -24880,7 +24780,13 @@ function () {
 },{"./Constants":2,"./Grammar":7,"./Utils":26}],26:[function(require,module,exports){
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var JsSIP_C = require('./Constants');
 
@@ -24922,8 +24828,8 @@ exports.hasMethods = function (obj) {
     methodNames[_key - 1] = arguments[_key];
   }
 
-  for (var _i = 0; _i < methodNames.length; _i++) {
-    var methodName = methodNames[_i];
+  for (var _i = 0, _methodNames = methodNames; _i < _methodNames.length; _i++) {
+    var methodName = _methodNames[_i];
 
     if (isFunction(obj[methodName])) {
       return false;
@@ -24950,7 +24856,7 @@ var createRandomToken = exports.createRandomToken = function (size) {
 
 exports.newTag = function () {
   return createRandomToken(10);
-}; // http://stackoverflow.com/users/109538/broofa.
+}; // https://stackoverflow.com/users/109538/broofa.
 
 
 exports.newUUID = function () {
@@ -25084,7 +24990,7 @@ exports.sipErrorCause = function (status_code) {
   return JsSIP_C.causes.SIP_FAILURE_CODE;
 };
 /**
-* Generate a random Test-Net IP (http://tools.ietf.org/html/rfc5735)
+* Generate a random Test-Net IP (https://tools.ietf.org/html/rfc5735)
 */
 
 
@@ -25094,7 +25000,7 @@ exports.getRandomTestNetIP = function () {
   }
 
   return "192.0.2.".concat(getOctet(1, 254));
-}; // MD5 (Message-Digest Algorithm) http://www.webtoolkit.info.
+}; // MD5 (Message-Digest Algorithm) https://www.webtoolkit.info.
 
 
 exports.calculateMD5 = function (string) {
@@ -25338,80 +25244,53 @@ exports.closeMediaStream = function (stream) {
 
     if (stream.getTracks) {
       tracks = stream.getTracks();
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
+
+      var _iterator = _createForOfIteratorHelper(tracks),
+          _step;
 
       try {
-        for (var _iterator = tracks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var track = _step.value;
           track.stop();
         }
       } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
+        _iterator.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return != null) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
+        _iterator.f();
       }
     } else {
       tracks = stream.getAudioTracks();
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
+
+      var _iterator2 = _createForOfIteratorHelper(tracks),
+          _step2;
 
       try {
-        for (var _iterator2 = tracks[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
           var _track = _step2.value;
 
           _track.stop();
         }
       } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
+        _iterator2.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-            _iterator2.return();
-          }
-        } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
-          }
-        }
+        _iterator2.f();
       }
 
       tracks = stream.getVideoTracks();
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+
+      var _iterator3 = _createForOfIteratorHelper(tracks),
+          _step3;
 
       try {
-        for (var _iterator3 = tracks[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
           var _track2 = _step3.value;
 
           _track2.stop();
         }
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _iterator3.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-            _iterator3.return();
-          }
-        } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
-          }
-        }
+        _iterator3.f();
       }
     }
   } catch (error) {
@@ -25425,6 +25304,11 @@ exports.closeMediaStream = function (stream) {
 
 exports.cloneArray = function (array) {
   return array && array.slice() || [];
+};
+
+exports.cloneObject = function (obj) {
+  var fallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return obj && Object.assign({}, obj) || fallback;
 };
 },{"./Constants":2,"./Grammar":7,"./URI":25}],27:[function(require,module,exports){
 (function (global){
@@ -25624,6 +25508,12 @@ function () {
 },{"./Grammar":7,"debug":30}],28:[function(require,module,exports){
 "use strict";
 
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 var JsSIP_C = require('./Constants');
 
 var SIPMessage = require('./SIPMessage');
@@ -25648,29 +25538,56 @@ module.exports = function (m, u, t) {
   ua = u;
   transport = t;
 
-  for (var _i = 0; _i < all.length; _i++) {
-    var _check2 = all[_i];
+  var _iterator = _createForOfIteratorHelper(all),
+      _step;
 
-    if (_check2() === false) {
-      return false;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var _check2 = _step.value;
+
+      if (_check2() === false) {
+        return false;
+      }
     }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
   }
 
   if (message instanceof SIPMessage.IncomingRequest) {
-    for (var _i2 = 0; _i2 < requests.length; _i2++) {
-      var check = requests[_i2];
+    var _iterator2 = _createForOfIteratorHelper(requests),
+        _step2;
 
-      if (check() === false) {
-        return false;
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var check = _step2.value;
+
+        if (check() === false) {
+          return false;
+        }
       }
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
     }
   } else if (message instanceof SIPMessage.IncomingResponse) {
-    for (var _i3 = 0; _i3 < responses.length; _i3++) {
-      var _check = responses[_i3];
+    var _iterator3 = _createForOfIteratorHelper(responses),
+        _step3;
 
-      if (_check() === false) {
-        return false;
+    try {
+      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+        var _check = _step3.value;
+
+        if (_check() === false) {
+          return false;
+        }
       }
+    } catch (err) {
+      _iterator3.e(err);
+    } finally {
+      _iterator3.f();
     }
   } // Everything is OK.
 
@@ -25797,8 +25714,8 @@ function rfc3261_18_3_response() {
 function minimumHeaders() {
   var mandatoryHeaders = ['from', 'to', 'call_id', 'cseq', 'via'];
 
-  for (var _i4 = 0; _i4 < mandatoryHeaders.length; _i4++) {
-    var header = mandatoryHeaders[_i4];
+  for (var _i = 0, _mandatoryHeaders = mandatoryHeaders; _i < _mandatoryHeaders.length; _i++) {
+    var header = _mandatoryHeaders[_i];
 
     if (!message.hasHeader(header)) {
       debug("missing mandatory header field : ".concat(header, ", dropping the response"));
@@ -25812,28 +25729,19 @@ function reply(status_code) {
   var vias = message.getHeaders('via');
   var to;
   var response = "SIP/2.0 ".concat(status_code, " ").concat(JsSIP_C.REASON_PHRASE[status_code], "\r\n");
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
+
+  var _iterator4 = _createForOfIteratorHelper(vias),
+      _step4;
 
   try {
-    for (var _iterator = vias[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var via = _step.value;
+    for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+      var via = _step4.value;
       response += "Via: ".concat(via, "\r\n");
     }
   } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
+    _iterator4.e(err);
   } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return != null) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
+    _iterator4.f();
   }
 
   to = message.getHeader('To');
@@ -26788,7 +26696,9 @@ function setup(env) {
 	}
 
 	function extend(namespace, delimiter) {
-		return createDebug(this.namespace + (typeof delimiter === 'undefined' ? ':' : delimiter) + namespace);
+		const newDebug = createDebug(this.namespace + (typeof delimiter === 'undefined' ? ':' : delimiter) + namespace);
+		newDebug.log = this.log;
+		return newDebug;
 	}
 
 	/**
@@ -26939,7 +26849,7 @@ module.exports = function(val, options) {
   var type = typeof val;
   if (type === 'string' && val.length > 0) {
     return parse(val);
-  } else if (type === 'number' && isNaN(val) === false) {
+  } else if (type === 'number' && isFinite(val)) {
     return options.long ? fmtLong(val) : fmtShort(val);
   }
   throw new Error(
@@ -26961,7 +26871,7 @@ function parse(str) {
   if (str.length > 100) {
     return;
   }
-  var match = /^((?:\d+)?\-?\d?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
+  var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
     str
   );
   if (!match) {
@@ -27890,13 +27800,13 @@ module.exports={
   "name": "jssip",
   "title": "JsSIP",
   "description": "the Javascript SIP library",
-  "version": "3.2.16",
-  "homepage": "http://jssip.net",
+  "version": "3.5.0",
+  "homepage": "https://jssip.net",
   "author": "José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)",
   "contributors": [
-    "Iñaki Baz Castillo <ibc@aliax.net> (https://github.com/ibc)",
-    "Saúl Ibarra Corretgé <saghul@gmail.com> (https://github.com/saghul)"
+    "Iñaki Baz Castillo <ibc@aliax.net> (https://github.com/ibc)"
   ],
+  "types": "lib/JsSIP.d.ts",
   "main": "lib-es5/JsSIP.js",
   "keywords": [
     "sip",
@@ -27915,22 +27825,24 @@ module.exports={
     "url": "https://github.com/versatica/JsSIP/issues"
   },
   "dependencies": {
-    "ansi-colors": "^3.2.1",
-    "debug": "^4.1.0",
-    "events": "^3.0.0",
-    "sdp-transform": "^2.4.1"
+    "@types/debug": "^4.1.5",
+    "@types/node": "^14.0.6",
+    "debug": "^4.1.1",
+    "events": "^3.1.0",
+    "sdp-transform": "^2.14.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.6",
-    "@babel/preset-env": "^7.1.6",
-    "browserify": "^16.2.3",
-    "eslint": "^5.9.0",
-    "fancy-log": "^1.3.2",
-    "gulp": "^4.0.0",
+    "@babel/core": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "ansi-colors": "^3.2.4",
+    "browserify": "^16.5.1",
+    "eslint": "^5.16.0",
+    "fancy-log": "^1.3.3",
+    "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-eslint": "^5.0.0",
-    "gulp-expect-file": "^1.0.0",
-    "gulp-header": "^2.0.5",
+    "gulp-expect-file": "^1.0.2",
+    "gulp-header": "^2.0.9",
     "gulp-nodeunit-runner": "^0.2.2",
     "gulp-plumber": "^1.2.1",
     "gulp-rename": "^1.4.0",
@@ -27940,6 +27852,7 @@ module.exports={
     "vinyl-source-stream": "^2.0.0"
   },
   "scripts": {
+    "lint": "gulp lint",
     "test": "gulp test",
     "prepublishOnly": "gulp babel"
   }
