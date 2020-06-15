@@ -1,12 +1,17 @@
 /*
+<<<<<<< HEAD
  * JsSIP v3.2.16.1
+=======
+ * JsSIP v3.5.0
+>>>>>>> master
  * the Javascript SIP library
- * Copyright: 2012-2019 José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)
- * Homepage: http://jssip.net
+ * Copyright: 2012-2020 José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)
+ * Homepage: https://jssip.net
  * License: MIT
  */
 
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.JsSIP = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+<<<<<<< HEAD
 const Utils = require('./Utils');
 const JsSIP_C = require('./Constants');
 const Grammar = require('./Grammar');
@@ -15,6 +20,29 @@ const Socket = require('./Socket');
 const Exceptions = require('./Exceptions');
 
 // Default settings.
+=======
+"use strict";
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+var Utils = require('./Utils');
+
+var JsSIP_C = require('./Constants');
+
+var Grammar = require('./Grammar');
+
+var URI = require('./URI');
+
+var Socket = require('./Socket');
+
+var Exceptions = require('./Exceptions'); // Default settings.
+
+
+>>>>>>> master
 exports.settings = {
   // SIP authentication.
   authorization_user : null,
@@ -44,9 +72,15 @@ exports.settings = {
   registrar_server : null,
 
   // Connection options.
+<<<<<<< HEAD
   sockets                          : null,
   connection_recovery_max_interval : null,
   connection_recovery_min_interval : null,
+=======
+  sockets: null,
+  connection_recovery_max_interval: JsSIP_C.CONNECTION_RECOVERY_MAX_INTERVAL,
+  connection_recovery_min_interval: JsSIP_C.CONNECTION_RECOVERY_MIN_INTERVAL,
+>>>>>>> master
 
   /*
    * Host address.
@@ -67,6 +101,7 @@ const checks = {
        *  Array of Objects: [{socket: socket1, weight:1}, {socket: Socket2, weight:0}]
        *  Array of Objects and Socket: [{socket: socket1}, socket2]
        */
+<<<<<<< HEAD
       const _sockets = [];
 
       if (Socket.isSocket(sockets))
@@ -86,6 +121,34 @@ const checks = {
           {
             _sockets.push({ socket: socket });
           }
+=======
+      var _sockets = [];
+
+      if (Socket.isSocket(_sockets2)) {
+        _sockets.push({
+          socket: _sockets2
+        });
+      } else if (Array.isArray(_sockets2) && _sockets2.length) {
+        var _iterator = _createForOfIteratorHelper(_sockets2),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var socket = _step.value;
+
+            if (Object.prototype.hasOwnProperty.call(socket, 'socket') && Socket.isSocket(socket.socket)) {
+              _sockets.push(socket);
+            } else if (Socket.isSocket(socket)) {
+              _sockets.push({
+                socket: socket
+              });
+            }
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+>>>>>>> master
         }
       }
       else
@@ -132,12 +195,23 @@ const checks = {
         return authorization_user;
       }
     },
+<<<<<<< HEAD
 
     user_agent(user_agent)
     {
       if (typeof user_agent === 'string')
       {
         return user_agent;
+=======
+    authorization_jwt: function authorization_jwt(_authorization_jwt) {
+      if (typeof _authorization_jwt === 'string') {
+        return _authorization_jwt;
+      }
+    },
+    user_agent: function user_agent(_user_agent) {
+      if (typeof _user_agent === 'string') {
+        return _user_agent;
+>>>>>>> master
       }
     },
 
@@ -179,6 +253,7 @@ const checks = {
         }
       }
     },
+<<<<<<< HEAD
 
     display_name(display_name)
     {
@@ -190,6 +265,10 @@ const checks = {
       {
         return display_name;
       }
+=======
+    display_name: function display_name(_display_name) {
+      return _display_name;
+>>>>>>> master
     },
 
     instance_id(instance_id)
@@ -420,6 +499,7 @@ module.exports = {
   },
 
   // SIP Methods.
+<<<<<<< HEAD
   ACK       : 'ACK',
   BYE       : 'BYE',
   CANCEL    : 'CANCEL',
@@ -432,9 +512,28 @@ module.exports = {
   REFER     : 'REFER',
   UPDATE    : 'UPDATE',
   SUBSCRIBE : 'SUBSCRIBE',
+=======
+  ACK: 'ACK',
+  BYE: 'BYE',
+  CANCEL: 'CANCEL',
+  INFO: 'INFO',
+  INVITE: 'INVITE',
+  MESSAGE: 'MESSAGE',
+  NOTIFY: 'NOTIFY',
+  OPTIONS: 'OPTIONS',
+  REGISTER: 'REGISTER',
+  REFER: 'REFER',
+  UPDATE: 'UPDATE',
+  SUBSCRIBE: 'SUBSCRIBE',
+  // DTMF transport methods.
+  DTMF_TRANSPORT: {
+    INFO: 'INFO',
+    RFC2833: 'RFC2833'
+  },
+>>>>>>> master
 
   /* SIP Response Reasons
-   * DOC: http://www.iana.org/assignments/sip-parameters
+   * DOC: https://www.iana.org/assignments/sip-parameters
    * Copied from https://github.com/versatica/OverSIP/blob/master/lib/oversip/sip/constants.rb#L7
    */
   REASON_PHRASE : {
@@ -511,6 +610,35 @@ module.exports = {
     604 : 'Does Not Exist Anywhere',
     606 : 'Not Acceptable'
   },
+<<<<<<< HEAD
+=======
+  ALLOWED_METHODS: 'INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY',
+  ACCEPTED_BODY_TYPES: 'application/sdp, application/dtmf-relay',
+  MAX_FORWARDS: 69,
+  SESSION_EXPIRES: 90,
+  MIN_SESSION_EXPIRES: 60,
+  CONNECTION_RECOVERY_MAX_INTERVAL: 30,
+  CONNECTION_RECOVERY_MIN_INTERVAL: 2
+};
+},{"../package.json":38}],3:[function(require,module,exports){
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var SIPMessage = require('./SIPMessage');
+
+var JsSIP_C = require('./Constants');
+
+var Transactions = require('./Transactions');
+
+var Dialog_RequestSender = require('./Dialog/RequestSender');
+
+var Utils = require('./Utils');
+>>>>>>> master
 
   ALLOWED_METHODS     : 'INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO',
   ACCEPTED_BODY_TYPES : 'application/sdp, application/dtmf-relay',
@@ -529,9 +657,27 @@ const debug = require('debug')('JsSIP:Dialog');
 
 const C = {
   // Dialog states.
+<<<<<<< HEAD
   STATUS_EARLY     : 1,
   STATUS_CONFIRMED : 2
 };
+=======
+  STATUS_EARLY: 1,
+  STATUS_CONFIRMED: 2
+}; // RFC 3261 12.1.
+
+module.exports = /*#__PURE__*/function () {
+  _createClass(Dialog, null, [{
+    key: "C",
+    // Expose C object.
+    get: function get() {
+      return C;
+    }
+  }]);
+
+  function Dialog(owner, message, type) {
+    var state = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : C.STATUS_CONFIRMED;
+>>>>>>> master
 
 // RFC 3261 12.1.
 module.exports = class Dialog
@@ -630,10 +776,17 @@ module.exports = class Dialog
     return this._owner;
   }
 
+<<<<<<< HEAD
   get uac_pending_reply()
   {
     return this._uac_pending_reply;
   }
+=======
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var extraHeaders = Utils.cloneArray(options.extraHeaders);
+      var eventHandlers = Utils.cloneObject(options.eventHandlers);
+      var body = options.body || null;
+>>>>>>> master
 
   set uac_pending_reply(pending)
   {
@@ -831,6 +984,7 @@ module.exports = class Dialog
   }
 };
 
+<<<<<<< HEAD
 },{"./Constants":2,"./Dialog/RequestSender":4,"./SIPMessage":19,"./Transactions":22,"./Utils":26,"debug":30}],4:[function(require,module,exports){
 const JsSIP_C = require('../Constants');
 const Transactions = require('../Transactions');
@@ -846,6 +1000,11 @@ const EventHandlers = {
   onAuthenticated   : () => {},
   onDialogError     : () => {}
 };
+=======
+module.exports = /*#__PURE__*/function () {
+  function DialogRequestSender(dialog, request, eventHandlers) {
+    _classCallCheck(this, DialogRequestSender);
+>>>>>>> master
 
 module.exports = class DialogRequestSender
 {
@@ -975,10 +1134,17 @@ const debugerror = require('debug')('JsSIP:ERROR:DigestAuthentication');
 
 debugerror.log = console.warn.bind(console);
 
+<<<<<<< HEAD
 module.exports = class DigestAuthentication
 {
   constructor(credentials)
   {
+=======
+module.exports = /*#__PURE__*/function () {
+  function DigestAuthentication(credentials) {
+    _classCallCheck(this, DigestAuthentication);
+
+>>>>>>> master
     this._credentials = credentials;
     this._cnonce = null;
     this._nc = 0;
@@ -1050,6 +1216,7 @@ module.exports = class DigestAuthentication
     {
       debugerror('authenticate() | challenge without Digest realm, authentication aborted');
 
+<<<<<<< HEAD
       return false;
     }
 
@@ -1068,6 +1235,30 @@ module.exports = class DigestAuthentication
       if (this._credentials.realm !== this._realm)
       {
         debugerror('authenticate() | no plain SIP password, and stored `realm` does not match the given `realm`, cannot authenticate [stored:"%s", given:"%s"]', this._credentials.realm, this._realm);
+=======
+      var a2;
+      var ha2;
+
+      if (this._qop === 'auth') {
+        // HA2 = MD5(A2) = MD5(method:digestURI).
+        a2 = "".concat(this._method, ":").concat(this._uri);
+        ha2 = Utils.calculateMD5(a2);
+        debug('authenticate() | using qop=auth [a2:"%s"]', a2); // Response = MD5(HA1:nonce:nonceCount:credentialsNonce:qop:HA2).
+
+        this._response = Utils.calculateMD5("".concat(this._ha1, ":").concat(this._nonce, ":").concat(this._ncHex, ":").concat(this._cnonce, ":auth:").concat(ha2));
+      } else if (this._qop === 'auth-int') {
+        // HA2 = MD5(A2) = MD5(method:digestURI:MD5(entityBody)).
+        a2 = "".concat(this._method, ":").concat(this._uri, ":").concat(Utils.calculateMD5(body ? body : ''));
+        ha2 = Utils.calculateMD5(a2);
+        debug('authenticate() | using qop=auth-int [a2:"%s"]', a2); // Response = MD5(HA1:nonce:nonceCount:credentialsNonce:qop:HA2).
+
+        this._response = Utils.calculateMD5("".concat(this._ha1, ":").concat(this._nonce, ":").concat(this._ncHex, ":").concat(this._cnonce, ":auth-int:").concat(ha2));
+      } else if (this._qop === null) {
+        // HA2 = MD5(A2) = MD5(method:digestURI).
+        a2 = "".concat(this._method, ":").concat(this._uri);
+        ha2 = Utils.calculateMD5(a2);
+        debug('authenticate() | using qop=null [a2:"%s"]', a2); // Response = MD5(HA1:nonce:HA2).
+>>>>>>> master
 
         return false;
       }
@@ -1092,13 +1283,33 @@ module.exports = class DigestAuthentication
         return false;
       }
     }
+<<<<<<< HEAD
     else
     {
       this._qop = null;
     }
+=======
+  }]);
+
+  return DigestAuthentication;
+}();
+},{"./Utils":26,"debug":30}],6:[function(require,module,exports){
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+>>>>>>> master
 
     // Fill other attributes.
 
+<<<<<<< HEAD
     this._method = method;
     this._uri = ruri;
     this._cnonce = cnonce || Utils.createRandomToken(12);
@@ -1115,6 +1326,13 @@ module.exports = class DigestAuthentication
     }
 
     // Calculate the Digest "response" value.
+=======
+function _wrapNativeSuper(Class) { var _cache = typeof Map === "function" ? new Map() : undefined; _wrapNativeSuper = function _wrapNativeSuper(Class) { if (Class === null || !_isNativeFunction(Class)) return Class; if (typeof Class !== "function") { throw new TypeError("Super expression must either be null or a function"); } if (typeof _cache !== "undefined") { if (_cache.has(Class)) return _cache.get(Class); _cache.set(Class, Wrapper); } function Wrapper() { return _construct(Class, arguments, _getPrototypeOf(this).constructor); } Wrapper.prototype = Object.create(Class.prototype, { constructor: { value: Wrapper, enumerable: false, writable: true, configurable: true } }); return _setPrototypeOf(Wrapper, Class); }; return _wrapNativeSuper(Class); }
+
+function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+>>>>>>> master
 
     // If we have plain SIP password then regenerate ha1.
     if (this._credentials.password)
@@ -1137,6 +1355,7 @@ module.exports = class DigestAuthentication
       // Response = MD5(HA1:nonce:nonceCount:credentialsNonce:qop:HA2).
       this._response = Utils.calculateMD5(`${this._ha1}:${this._nonce}:${this._ncHex}:${this._cnonce}:auth:${ha2}`);
 
+<<<<<<< HEAD
     }
     else if (this._qop === 'auth-int')
     {
@@ -1153,9 +1372,19 @@ module.exports = class DigestAuthentication
       // Response = MD5(HA1:nonce:HA2).
       this._response = Utils.calculateMD5(`${this._ha1}:${this._nonce}:${ha2}`);
     }
+=======
+var ConfigurationError = /*#__PURE__*/function (_Error) {
+  _inherits(ConfigurationError, _Error);
+
+  var _super = _createSuper(ConfigurationError);
+
+  function ConfigurationError(parameter, value) {
+    var _this;
+>>>>>>> master
 
     debug('authenticate() | response generated');
 
+<<<<<<< HEAD
     return true;
   }
 
@@ -1170,6 +1399,27 @@ module.exports = class DigestAuthentication
     {
       throw new Error('response field does not exist, cannot generate Authorization header');
     }
+=======
+    _this = _super.call(this);
+    _this.code = 1;
+    _this.name = 'CONFIGURATION_ERROR';
+    _this.parameter = parameter;
+    _this.value = value;
+    _this.message = !_this.value ? "Missing parameter: ".concat(_this.parameter) : "Invalid value ".concat(JSON.stringify(_this.value), " for parameter \"").concat(_this.parameter, "\"");
+    return _this;
+  }
+
+  return ConfigurationError;
+}( /*#__PURE__*/_wrapNativeSuper(Error));
+
+var InvalidStateError = /*#__PURE__*/function (_Error2) {
+  _inherits(InvalidStateError, _Error2);
+
+  var _super2 = _createSuper(InvalidStateError);
+
+  function InvalidStateError(status) {
+    var _this2;
+>>>>>>> master
 
     auth_params.push(`algorithm=${this._algorithm}`);
     auth_params.push(`username="${this._credentials.username}"`);
@@ -1188,10 +1438,20 @@ module.exports = class DigestAuthentication
       auth_params.push(`nc=${this._ncHex}`);
     }
 
+<<<<<<< HEAD
     return `Digest ${auth_params.join(', ')}`;
+=======
+    _this2 = _super2.call(this);
+    _this2.code = 2;
+    _this2.name = 'INVALID_STATE_ERROR';
+    _this2.status = status;
+    _this2.message = "Invalid status: ".concat(status);
+    return _this2;
+>>>>>>> master
   }
 };
 
+<<<<<<< HEAD
 },{"./Utils":26,"debug":30}],6:[function(require,module,exports){
 class ConfigurationError extends Error
 {
@@ -1208,6 +1468,18 @@ class ConfigurationError extends Error
       `Invalid value ${JSON.stringify(this.value)} for parameter "${this.parameter}"`;
   }
 }
+=======
+  return InvalidStateError;
+}( /*#__PURE__*/_wrapNativeSuper(Error));
+
+var NotSupportedError = /*#__PURE__*/function (_Error3) {
+  _inherits(NotSupportedError, _Error3);
+
+  var _super3 = _createSuper(NotSupportedError);
+
+  function NotSupportedError(message) {
+    var _this3;
+>>>>>>> master
 
 class InvalidStateError extends Error
 {
@@ -1215,13 +1487,22 @@ class InvalidStateError extends Error
   {
     super();
 
+<<<<<<< HEAD
     this.code = 2;
     this.name = 'INVALID_STATE_ERROR';
     this.status = status;
     this.message = `Invalid status: ${status}`;
+=======
+    _this3 = _super3.call(this);
+    _this3.code = 3;
+    _this3.name = 'NOT_SUPPORTED_ERROR';
+    _this3.message = message;
+    return _this3;
+>>>>>>> master
   }
 }
 
+<<<<<<< HEAD
 class NotSupportedError extends Error
 {
   constructor(message)
@@ -1233,6 +1514,18 @@ class NotSupportedError extends Error
     this.message = message;
   }
 }
+=======
+  return NotSupportedError;
+}( /*#__PURE__*/_wrapNativeSuper(Error));
+
+var NotReadyError = /*#__PURE__*/function (_Error4) {
+  _inherits(NotReadyError, _Error4);
+
+  var _super4 = _createSuper(NotReadyError);
+
+  function NotReadyError(message) {
+    var _this4;
+>>>>>>> master
 
 class NotReadyError extends Error
 {
@@ -1240,11 +1533,23 @@ class NotReadyError extends Error
   {
     super();
 
+<<<<<<< HEAD
     this.code = 4;
     this.name = 'NOT_READY_ERROR';
     this.message = message;
   }
 }
+=======
+    _this4 = _super4.call(this);
+    _this4.code = 4;
+    _this4.name = 'NOT_READY_ERROR';
+    _this4.message = message;
+    return _this4;
+  }
+
+  return NotReadyError;
+}( /*#__PURE__*/_wrapNativeSuper(Error));
+>>>>>>> master
 
 module.exports = {
   ConfigurationError,
@@ -3970,8 +4275,16 @@ module.exports = (function(){
           pos = pos1;
         }
         if (result0 !== null) {
+<<<<<<< HEAD
           result0 = (function(offset) {
                                 return input.substring(pos-1, offset+1); })(pos0);
+=======
+          result0 = function (offset) {
+            var trimmed = input.substring(pos, offset).trim();
+            return trimmed.substring(1, trimmed.length - 1) // remove outer quotes
+            .replace(/\\([\x00-\x09\x0b-\x0c\x0e-\x7f])/g, '$1');
+          }(pos0);
+>>>>>>> master
         }
         if (result0 === null) {
           pos = pos0;
@@ -9304,15 +9617,29 @@ module.exports = (function(){
           pos = pos1;
         }
         if (result0 === null) {
-          result0 = parse_quoted_string();
+          result0 = parse_quoted_string_clean();
         }
         if (result0 !== null) {
+<<<<<<< HEAD
           result0 = (function(offset, display_name) {
                                 display_name = input.substring(pos, offset).trim();
                                 if (display_name[0] === '\"') {
                                   display_name = display_name.substring(1, display_name.length-1);
                                 }
                                 data.display_name = display_name; })(pos0, result0);
+=======
+          result0 = function (offset, display_name) {
+            if (typeof display_name === 'string') {
+              // quoted_string_clean
+              data.display_name = display_name;
+            } else {
+              // token ( LWS token )*
+              data.display_name = display_name[1].reduce(function (acc, cur) {
+                return acc + cur[0] + cur[1];
+              }, display_name[0]);
+            }
+          }(pos0, result0);
+>>>>>>> master
         }
         if (result0 === null) {
           pos = pos0;
@@ -13518,6 +13845,7 @@ module.exports = {
   get name() { return pkg.title; },
   get version() { return pkg.version; }
 };
+<<<<<<< HEAD
 
 },{"../package.json":38,"./Constants":2,"./Exceptions":6,"./Grammar":7,"./NameAddrHeader":10,"./UA":24,"./URI":25,"./Utils":26,"./WebSocketInterface":27,"debug":30}],9:[function(require,module,exports){
 const EventEmitter = require('events').EventEmitter;
@@ -13533,11 +13861,32 @@ module.exports = class Message extends EventEmitter
   constructor(ua)
   {
     super();
+=======
+},{"../package.json":38,"./Constants":2,"./Exceptions":6,"./Grammar":7,"./NameAddrHeader":10,"./UA":24,"./URI":25,"./Utils":26,"./WebSocketInterface":27,"debug":30}],9:[function(require,module,exports){
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+>>>>>>> master
 
     this._ua = ua;
     this._request = null;
     this._closed = false;
 
+<<<<<<< HEAD
     this._direction = null;
     this._local_identity = null;
     this._remote_identity = null;
@@ -13548,6 +13897,11 @@ module.exports = class Message extends EventEmitter
     // Custom message empty object for high level use.
     this._data = {};
   }
+=======
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+>>>>>>> master
 
   get direction()
   {
@@ -13585,6 +13939,7 @@ module.exports = class Message extends EventEmitter
     const eventHandlers = options.eventHandlers || {};
     const contentType = options.contentType || 'text/plain';
 
+<<<<<<< HEAD
     // Set event handlers.
     for (const event in eventHandlers)
     {
@@ -13595,10 +13950,20 @@ module.exports = class Message extends EventEmitter
     }
 
     extraHeaders.push(`Content-Type: ${contentType}`);
+=======
+module.exports = /*#__PURE__*/function (_EventEmitter) {
+  _inherits(Message, _EventEmitter);
+
+  var _super = _createSuper(Message);
+
+  function Message(ua) {
+    var _this;
+>>>>>>> master
 
     this._request = new SIPMessage.OutgoingRequest(
       JsSIP_C.MESSAGE, target, this._ua, null, extraHeaders);
 
+<<<<<<< HEAD
     if (body)
     {
       this._request.body = body;
@@ -13618,6 +13983,15 @@ module.exports = class Message extends EventEmitter
         this._receiveResponse(response);
       }
     });
+=======
+    _this = _super.call(this);
+    _this._ua = ua;
+    _this._request = null;
+    _this._closed = false;
+    _this._direction = null;
+    _this._local_identity = null;
+    _this._remote_identity = null; // Whether an incoming message has been replied.
+>>>>>>> master
 
     this._newMessage('local', this._request);
 
@@ -13659,9 +14033,15 @@ module.exports = class Message extends EventEmitter
       throw new Error('incoming Message already replied');
     }
 
+<<<<<<< HEAD
     this._is_replied = true;
     this._request.reply(200, null, extraHeaders, body);
   }
+=======
+      var extraHeaders = Utils.cloneArray(options.extraHeaders);
+      var eventHandlers = Utils.cloneObject(options.eventHandlers);
+      var contentType = options.contentType || 'text/plain'; // Set event handlers.
+>>>>>>> master
 
   /**
    * Reject the incoming Message
@@ -13866,7 +14246,30 @@ module.exports = class NameAddrHeader
     {
       this._parameters[key.toLowerCase()] = (typeof value === 'undefined' || value === null) ? null : value.toString();
     }
+<<<<<<< HEAD
   }
+=======
+  }]);
+
+  return Message;
+}(EventEmitter);
+},{"./Constants":2,"./Exceptions":6,"./RequestSender":18,"./SIPMessage":19,"./Utils":26,"debug":30,"events":29}],10:[function(require,module,exports){
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var URI = require('./URI');
+
+var Grammar = require('./Grammar');
+
+module.exports = /*#__PURE__*/function () {
+  _createClass(NameAddrHeader, null, [{
+    key: "parse",
+>>>>>>> master
 
   getParam(key)
   {
@@ -13900,7 +14303,11 @@ module.exports = class NameAddrHeader
   clearParams()
   {
     this._parameters = {};
+<<<<<<< HEAD
   }
+=======
+    this.display_name = display_name;
+>>>>>>> master
 
   clone()
   {
@@ -13914,7 +14321,36 @@ module.exports = class NameAddrHeader
   {
     let body = (this._display_name || this._display_name === 0) ? `"${this._display_name}" ` : '';
 
+<<<<<<< HEAD
     body += `<${this._uri.toString()}>`;
+=======
+      if (this._parameters.hasOwnProperty(parameter)) {
+        var value = this._parameters[parameter];
+        delete this._parameters[parameter];
+        return value;
+      }
+    }
+  }, {
+    key: "clearParams",
+    value: function clearParams() {
+      this._parameters = {};
+    }
+  }, {
+    key: "clone",
+    value: function clone() {
+      return new NameAddrHeader(this._uri.clone(), this._display_name, JSON.parse(JSON.stringify(this._parameters)));
+    }
+  }, {
+    key: "_quote",
+    value: function _quote(str) {
+      return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    }
+  }, {
+    key: "toString",
+    value: function toString() {
+      var body = this._display_name ? "\"".concat(this._quote(this._display_name), "\" ") : '';
+      body += "<".concat(this._uri.toString(), ">");
+>>>>>>> master
 
     for (const parameter in this._parameters)
     {
@@ -13928,6 +14364,23 @@ module.exports = class NameAddrHeader
         }
       }
     }
+<<<<<<< HEAD
+=======
+  }]);
+
+  return NameAddrHeader;
+}();
+},{"./Grammar":7,"./URI":25}],11:[function(require,module,exports){
+"use strict";
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+var Grammar = require('./Grammar');
+>>>>>>> master
 
     return body;
   }
@@ -14129,6 +14582,7 @@ function parseHeader(message, data, headerStart, headerEnd)
       if (parsed === -1)
       {
         parsed = undefined;
+<<<<<<< HEAD
       }
       else
       {
@@ -14136,6 +14590,22 @@ function parseHeader(message, data, headerStart, headerEnd)
         {
           message.addHeader('record-route', headerValue.substring(header.possition, header.offset));
           message.headers['Record-Route'][message.getHeaders('record-route').length - 1].parsed = header.parsed;
+=======
+      } else {
+        var _iterator = _createForOfIteratorHelper(parsed),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var header = _step.value;
+            message.addHeader('record-route', headerValue.substring(header.possition, header.offset));
+            message.headers['Record-Route'][message.getHeaders('record-route').length - 1].parsed = header.parsed;
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+>>>>>>> master
         }
       }
       break;
@@ -14155,6 +14625,7 @@ function parseHeader(message, data, headerStart, headerEnd)
       if (parsed === -1)
       {
         parsed = undefined;
+<<<<<<< HEAD
       }
       else
       {
@@ -14162,6 +14633,22 @@ function parseHeader(message, data, headerStart, headerEnd)
         {
           message.addHeader('contact', headerValue.substring(header.possition, header.offset));
           message.headers.Contact[message.getHeaders('contact').length - 1].parsed = header.parsed;
+=======
+      } else {
+        var _iterator2 = _createForOfIteratorHelper(parsed),
+            _step2;
+
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var _header = _step2.value;
+            message.addHeader('contact', headerValue.substring(_header.possition, _header.offset));
+            message.headers.Contact[message.getHeaders('contact').length - 1].parsed = _header.parsed;
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+>>>>>>> master
         }
       }
       break;
@@ -14252,8 +14739,42 @@ function parseHeader(message, data, headerStart, headerEnd)
     return true;
   }
 }
+<<<<<<< HEAD
 
 },{"./Grammar":7,"./SIPMessage":19,"debug":30}],12:[function(require,module,exports){
+=======
+},{"./Grammar":7,"./SIPMessage":19,"debug":30}],12:[function(require,module,exports){
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+>>>>>>> master
 /* globals RTCPeerConnection: false, RTCSessionDescription: false */
 
 const EventEmitter = require('events').EventEmitter;
@@ -14322,8 +14843,14 @@ module.exports = class RTCSession extends EventEmitter
     // The RTCPeerConnection instance (public attribute).
     this._connection = null;
 
+<<<<<<< HEAD
     // Prevent races on serial PeerConnction operations.
     this._connectionPromiseQueue = Promise.resolve();
+=======
+var URI = require('./URI');
+
+var debug = require('debug')('JsSIP:RTCSession');
+>>>>>>> master
 
     // Incoming/Outgoing request being currently processed.
     this._request = null;
@@ -14335,12 +14862,22 @@ module.exports = class RTCSession extends EventEmitter
     // RTCSession confirmation flag.
     this._is_confirmed = false;
 
+<<<<<<< HEAD
     // Is late SDP being negotiated.
     this._late_sdp = false;
 
     // Default rtcOfferConstraints and rtcAnswerConstrainsts (passed in connect() or answer()).
     this._rtcOfferConstraints = null;
     this._rtcAnswerConstraints = null;
+=======
+module.exports = /*#__PURE__*/function (_EventEmitter) {
+  _inherits(RTCSession, _EventEmitter);
+
+  var _super = _createSuper(RTCSession);
+
+  _createClass(RTCSession, null, [{
+    key: "C",
+>>>>>>> master
 
     // Local MediaStream.
     this._localMediaStream = null;
@@ -14357,6 +14894,7 @@ module.exports = class RTCSession extends EventEmitter
       userNoAnswerTimer : null
     };
 
+<<<<<<< HEAD
     // Session info.
     this._direction = null;
     this._local_identity = null;
@@ -14381,6 +14919,18 @@ module.exports = class RTCSession extends EventEmitter
       refresher      : false,
       timer          : null // A setTimeout.
     };
+=======
+    debug('new');
+    _this = _super.call(this);
+    _this._id = null;
+    _this._ua = ua;
+    _this._status = C.STATUS_NULL;
+    _this._dialog = null;
+    _this._earlyDialogs = {};
+    _this._contact = null;
+    _this._from_tag = null;
+    _this._to_tag = null; // The RTCPeerConnection instance (public attribute).
+>>>>>>> master
 
     // Map of ReferSubscriber instances indexed by the REFER's CSeq number.
     this._referSubscribers = {};
@@ -14498,7 +15048,36 @@ module.exports = class RTCSession extends EventEmitter
       default:
         return false;
     }
+<<<<<<< HEAD
   }
+=======
+  }, {
+    key: "connect",
+    value: function connect(target) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var initCallback = arguments.length > 2 ? arguments[2] : undefined;
+      debug('connect()');
+      var originalTarget = target;
+      var eventHandlers = Utils.cloneObject(options.eventHandlers);
+      var extraHeaders = Utils.cloneArray(options.extraHeaders);
+      var mediaConstraints = Utils.cloneObject(options.mediaConstraints, {
+        audio: true,
+        video: true
+      });
+      var mediaStream = options.mediaStream || null;
+      var pcConfig = Utils.cloneObject(options.pcConfig, {
+        iceServers: []
+      });
+      var rtcConstraints = options.rtcConstraints || null;
+      var rtcOfferConstraints = options.rtcOfferConstraints || null;
+      this._rtcOfferConstraints = rtcOfferConstraints;
+      this._rtcAnswerConstraints = options.rtcAnswerConstraints || null;
+      this._data = options.data || this._data; // Check target.
+
+      if (target === undefined) {
+        throw new TypeError('Not enough arguments');
+      } // Check Session Status.
+>>>>>>> master
 
   isMuted()
   {
@@ -14572,6 +15151,28 @@ module.exports = class RTCSession extends EventEmitter
         {
           this._sessionTimers.defaultExpires = JsSIP_C.SESSION_EXPIRES;
         }
+<<<<<<< HEAD
+=======
+      } // Session parameter initialization.
+
+
+      this._from_tag = Utils.newTag(); // Set anonymous property.
+
+      var anonymous = options.anonymous || false;
+      var requestParams = {
+        from_tag: this._from_tag
+      };
+      this._contact = this._ua.contact.toString({
+        anonymous: anonymous,
+        outbound: true
+      });
+
+      if (anonymous) {
+        requestParams.from_display_name = 'Anonymous';
+        requestParams.from_uri = new URI('sip', 'anonymous', 'anonymous.invalid');
+        extraHeaders.push("P-Preferred-Identity: ".concat(this._ua.configuration.uri.toString()));
+        extraHeaders.push('Privacy: id');
+>>>>>>> master
       }
     }
 
@@ -14700,6 +15301,7 @@ module.exports = class RTCSession extends EventEmitter
     /* Set expiresTimer
      * RFC3261 13.3.1
      */
+<<<<<<< HEAD
     if (expires)
     {
       this._timers.expiresTimer = setTimeout(() =>
@@ -14708,6 +15310,52 @@ module.exports = class RTCSession extends EventEmitter
         {
           request.reply(487);
           this._failed('system', null, JsSIP_C.causes.EXPIRES);
+=======
+
+  }, {
+    key: "answer",
+    value: function answer() {
+      var _this3 = this;
+
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      debug('answer()');
+      var request = this._request;
+      var extraHeaders = Utils.cloneArray(options.extraHeaders);
+      var mediaConstraints = Utils.cloneObject(options.mediaConstraints);
+      var mediaStream = options.mediaStream || null;
+      var pcConfig = Utils.cloneObject(options.pcConfig, {
+        iceServers: []
+      });
+      var rtcConstraints = options.rtcConstraints || null;
+      var rtcAnswerConstraints = options.rtcAnswerConstraints || null;
+      var rtcOfferConstraints = Utils.cloneObject(options.rtcOfferConstraints);
+      var tracks;
+      var peerHasAudioLine = false;
+      var peerHasVideoLine = false;
+      var peerOffersFullAudio = false;
+      var peerOffersFullVideo = false;
+      this._rtcAnswerConstraints = rtcAnswerConstraints;
+      this._rtcOfferConstraints = options.rtcOfferConstraints || null;
+      this._data = options.data || this._data; // Check Session Direction and Status.
+
+      if (this._direction !== 'incoming') {
+        throw new Exceptions.NotSupportedError('"answer" not supported for outgoing RTCSession');
+      } // Check Session status.
+
+
+      if (this._status !== C.STATUS_WAITING_FOR_ANSWER) {
+        throw new Exceptions.InvalidStateError(this._status);
+      } // Session Timers.
+
+
+      if (this._sessionTimers.enabled) {
+        if (Utils.isDecimal(options.sessionTimersExpires)) {
+          if (options.sessionTimersExpires >= JsSIP_C.MIN_SESSION_EXPIRES) {
+            this._sessionTimers.defaultExpires = options.sessionTimersExpires;
+          } else {
+            this._sessionTimers.defaultExpires = JsSIP_C.SESSION_EXPIRES;
+          }
+>>>>>>> master
         }
       }, expires
       );
@@ -14741,6 +15389,7 @@ module.exports = class RTCSession extends EventEmitter
     this._progress('local', null);
   }
 
+<<<<<<< HEAD
   /**
    * Answer the call.
    */
@@ -14755,6 +15404,14 @@ module.exports = class RTCSession extends EventEmitter
     const pcConfig = options.pcConfig || { iceServers: [] };
     const rtcConstraints = options.rtcConstraints || null;
     const rtcAnswerConstraints = options.rtcAnswerConstraints || null;
+=======
+      var _iterator = _createForOfIteratorHelper(sdp.media),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var m = _step.value;
+>>>>>>> master
 
     let tracks;
     let peerHasAudioLine = false;
@@ -14773,6 +15430,7 @@ module.exports = class RTCSession extends EventEmitter
       throw new Exceptions.NotSupportedError('"answer" not supported for outgoing RTCSession');
     }
 
+<<<<<<< HEAD
     // Check Session status.
     if (this._status !== C.STATUS_WAITING_FOR_ANSWER)
     {
@@ -14792,22 +15450,68 @@ module.exports = class RTCSession extends EventEmitter
         {
           this._sessionTimers.defaultExpires = JsSIP_C.SESSION_EXPIRES;
         }
+=======
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+>>>>>>> master
       }
     }
 
+<<<<<<< HEAD
     this._status = C.STATUS_ANSWERED;
 
     // An error on dialog creation will fire 'failed' event.
     if (! this._createDialog(request, 'UAS'))
     {
       request.reply(500, 'Error creating dialog');
+=======
+      if (mediaStream && mediaConstraints.audio === false) {
+        tracks = mediaStream.getAudioTracks();
+
+        var _iterator2 = _createForOfIteratorHelper(tracks),
+            _step2;
+
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var track = _step2.value;
+            mediaStream.removeTrack(track);
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
+      } // Remove video from mediaStream if suggested by mediaConstraints.
+>>>>>>> master
 
       return;
     }
 
+<<<<<<< HEAD
     clearTimeout(this._timers.userNoAnswerTimer);
 
     extraHeaders.unshift(`Contact: ${this._contact}`);
+=======
+      if (mediaStream && mediaConstraints.video === false) {
+        tracks = mediaStream.getVideoTracks();
+
+        var _iterator3 = _createForOfIteratorHelper(tracks),
+            _step3;
+
+        try {
+          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+            var _track = _step3.value;
+            mediaStream.removeTrack(_track);
+          }
+        } catch (err) {
+          _iterator3.e(err);
+        } finally {
+          _iterator3.f();
+        }
+      } // Set audio constraints based on incoming stream if not supplied.
+>>>>>>> master
 
     // Determine incoming media from incoming SDP offer (if any).
     const sdp = request.parseSDP();
@@ -14859,11 +15563,17 @@ module.exports = class RTCSession extends EventEmitter
       }
     }
 
+<<<<<<< HEAD
     // Set audio constraints based on incoming stream if not supplied.
     if (!mediaStream && mediaConstraints.audio === undefined)
     {
       mediaConstraints.audio = peerOffersFullAudio;
     }
+=======
+      if (!mediaStream && !peerHasAudioLine && !rtcOfferConstraints.offerToReceiveAudio) {
+        mediaConstraints.audio = false;
+      } // Don't ask for video if the incoming offer has no video section.
+>>>>>>> master
 
     // Set video constraints based on incoming stream if not supplied.
     if (!mediaStream && mediaConstraints.video === undefined)
@@ -14871,11 +15581,18 @@ module.exports = class RTCSession extends EventEmitter
       mediaConstraints.video = peerOffersFullVideo;
     }
 
+<<<<<<< HEAD
     // Don't ask for audio if the incoming offer has no audio section.
     if (!mediaStream && !peerHasAudioLine)
     {
       mediaConstraints.audio = false;
     }
+=======
+      if (!mediaStream && !peerHasVideoLine && !rtcOfferConstraints.offerToReceiveVideo) {
+        mediaConstraints.video = false;
+      } // Create a new RTCPeerConnection instance.
+      // TODO: This may throw an error, should react.
+>>>>>>> master
 
     // Don't ask for video if the incoming offer has no video section.
     if (!mediaStream && !peerHasVideoLine)
@@ -14895,6 +15612,7 @@ module.exports = class RTCSession extends EventEmitter
         if (mediaStream)
         {
           return mediaStream;
+<<<<<<< HEAD
         }
 
         // Audio and/or video requested, prompt getUserMedia.
@@ -14907,6 +15625,13 @@ module.exports = class RTCSession extends EventEmitter
             {
               if (this._status === C.STATUS_TERMINATED)
               {
+=======
+        } // Audio and/or video requested, prompt getUserMedia.
+        else if (mediaConstraints.audio || mediaConstraints.video) {
+            _this3._localMediaStreamLocallyGenerated = true;
+            return navigator.mediaDevices.getUserMedia(mediaConstraints)["catch"](function (error) {
+              if (_this3._status === C.STATUS_TERMINATED) {
+>>>>>>> master
                 throw new Error('terminated');
               }
 
@@ -14929,10 +15654,19 @@ module.exports = class RTCSession extends EventEmitter
           throw new Error('terminated');
         }
 
+<<<<<<< HEAD
         this._localMediaStream = stream;
         if (stream)
         {
           this._connection.addStream(stream);
+=======
+        _this3._localMediaStream = stream;
+
+        if (stream) {
+          stream.getTracks().forEach(function (track) {
+            _this3._connection.addTrack(track, stream);
+          });
+>>>>>>> master
         }
       })
       // Set remote description.
@@ -14951,11 +15685,23 @@ module.exports = class RTCSession extends EventEmitter
         e.sdp = this.last_remote_sdp = fixupSDP(e.sdp, this.last_remote_sdp, this);
         const offer = new RTCSessionDescription({ type: 'offer', sdp: `${e.sdp}` });
 
+<<<<<<< HEAD
         this._connectionPromiseQueue = this._connectionPromiseQueue
           .then(() => this._connection.setRemoteDescription(offer))
           .catch((error) =>
           {
             request.reply(488);
+=======
+        e.sdp = _this3.last_remote_sdp = fixupSDP(e.sdp, _this3.last_remote_sdp, _this3);
+        var offer = new RTCSessionDescription({
+          type: 'offer',
+          sdp: "".concat(e.sdp)
+        });
+        _this3._connectionPromiseQueue = _this3._connectionPromiseQueue.then(function () {
+          return _this3._connection.setRemoteDescription(offer);
+        })["catch"](function (error) {
+          request.reply(488);
+>>>>>>> master
 
             this._failed('system', null, JsSIP_C.causes.WEBRTC_ERROR);
 
@@ -14986,6 +15732,7 @@ module.exports = class RTCSession extends EventEmitter
             {
               request.reply(500);
 
+<<<<<<< HEAD
               throw new Error('_createLocalDescription() failed');
             });
         }
@@ -14998,6 +15745,18 @@ module.exports = class RTCSession extends EventEmitter
 
               throw new Error('_createLocalDescription() failed');
             });
+=======
+        if (!_this3._late_sdp) {
+          return _this3._createLocalDescription('answer', rtcAnswerConstraints)["catch"](function () {
+            request.reply(500);
+            throw new Error('_createLocalDescription() failed');
+          });
+        } else {
+          return _this3._createLocalDescription('offer', _this3._rtcOfferConstraints)["catch"](function () {
+            request.reply(500);
+            throw new Error('_createLocalDescription() failed');
+          });
+>>>>>>> master
         }
       })
       // Send reply.
@@ -15016,6 +15775,7 @@ module.exports = class RTCSession extends EventEmitter
           {
             this._status = C.STATUS_WAITING_FOR_ACK;
 
+<<<<<<< HEAD
             this._setInvite2xxTimer(request, desc);
             this._setACKTimer();
             this._accepted('local');
@@ -15030,6 +15790,14 @@ module.exports = class RTCSession extends EventEmitter
       {
         if (this._status === C.STATUS_TERMINATED)
         {
+=======
+          _this3._accepted('local');
+        }, function () {
+          _this3._failed('system', null, JsSIP_C.causes.CONNECTION_ERROR);
+        });
+      })["catch"](function (error) {
+        if (_this3._status === C.STATUS_TERMINATED) {
+>>>>>>> master
           return;
         }
 
@@ -15214,6 +15982,18 @@ module.exports = class RTCSession extends EventEmitter
     {
       throw new TypeError(`Invalid tones: ${tones}`);
     }
+<<<<<<< HEAD
+=======
+  }, {
+    key: "sendDTMF",
+    value: function sendDTMF(tones) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      debug('sendDTMF() | tones: %s', tones);
+      var position = 0;
+      var duration = options.duration || null;
+      var interToneGap = options.interToneGap || null;
+      var transportType = options.transportType || JsSIP_C.DTMF_TRANSPORT.INFO;
+>>>>>>> master
 
     // Check duration.
     if (duration && !Utils.isDecimal(duration))
@@ -15324,12 +16104,50 @@ module.exports = class RTCSession extends EventEmitter
     info.send(contentType, body, options);
   }
 
+<<<<<<< HEAD
   /**
    * Mute
    */
   mute(options = { audio: true, video: false })
   {
     debug('mute()');
+=======
+        if (tone === ',') {
+          timeout = 2000;
+        } else {
+          if (transportType !== JsSIP_C.DTMF_TRANSPORT.INFO && transportType !== JsSIP_C.DTMF_TRANSPORT.RFC2833) {
+            throw new TypeError("invalid transportType: ".concat(transportType));
+          } // Send DTMF according to transport config.
+
+
+          switch (transportType) {
+            case JsSIP_C.DTMF_TRANSPORT.RFC2833:
+              {
+                // Send DTMF in current audio RTP stream.
+                var sender = this._getDTMFRTPSender();
+
+                if (sender) {
+                  sender.insertDTMF(tone, duration, interToneGap);
+                }
+
+                break;
+              }
+
+            case JsSIP_C.DTMF_TRANSPORT.INFO:
+              {
+                // Send DTMF via SIP INFO messages.
+                var dtmf = new RTCSession_DTMF(this);
+                options.eventHandlers = {
+                  onFailed: function onFailed() {
+                    _this5._tones = null;
+                  }
+                };
+                dtmf.send(tone, options);
+                timeout = duration + interToneGap;
+              }
+          }
+        } // Set timeout for the next tone.
+>>>>>>> master
 
     let audioMuted = false, videoMuted = false;
 
@@ -15370,9 +16188,13 @@ module.exports = class RTCSession extends EventEmitter
       audioUnMuted = true;
       this._audioMuted = false;
 
+<<<<<<< HEAD
       if (this._localHold === false)
       {
         this._toogleMuteAudio(false);
+=======
+        this._toggleMuteAudio(true);
+>>>>>>> master
       }
     }
 
@@ -15381,9 +16203,13 @@ module.exports = class RTCSession extends EventEmitter
       videoUnMuted = true;
       this._videoMuted = false;
 
+<<<<<<< HEAD
       if (this._localHold === false)
       {
         this._toogleMuteVideo(false);
+=======
+        this._toggleMuteVideo(true);
+>>>>>>> master
       }
     }
 
@@ -15408,18 +16234,32 @@ module.exports = class RTCSession extends EventEmitter
       return false;
     }
 
+<<<<<<< HEAD
     if (this._localHold === true)
     {
       return false;
     }
+=======
+        if (this._localHold === false) {
+          this._toggleMuteAudio(false);
+        }
+      }
+>>>>>>> master
 
     if (! this._isReadyToReOffer())
     {
       return false;
     }
 
+<<<<<<< HEAD
     this._localHold = true;
     this._onhold('local');
+=======
+        if (this._localHold === false) {
+          this._toggleMuteVideo(false);
+        }
+      }
+>>>>>>> master
 
     const eventHandlers = {
       succeeded : () =>
@@ -15694,12 +16534,19 @@ module.exports = class RTCSession extends EventEmitter
                 {
                   this._confirmed('remote', request);
                 }
+<<<<<<< HEAD
               })
               .catch((error) =>
               {
                 this.terminate({
                   cause       : JsSIP_C.causes.BAD_MEDIA_DESCRIPTION,
                   status_code : 488
+=======
+              })["catch"](function (error) {
+                _this10.terminate({
+                  cause: JsSIP_C.causes.BAD_MEDIA_DESCRIPTION,
+                  status_code: 488
+>>>>>>> master
                 });
 
                 debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
@@ -15810,9 +16657,15 @@ module.exports = class RTCSession extends EventEmitter
     }
   }
 
+<<<<<<< HEAD
   /**
    * Session Callbacks
    */
+=======
+          case JsSIP_C.BYE:
+            if (this._status === C.STATUS_CONFIRMED || this._status === C.STATUS_WAITING_FOR_ACK) {
+              request.reply(200);
+>>>>>>> master
 
   onTransportError()
   {
@@ -16107,6 +16960,7 @@ module.exports = class RTCSession extends EventEmitter
               return Promise.reject(error);
             });
         }
+<<<<<<< HEAD
       })
       // Set local description.
       .then((desc) =>
@@ -16117,11 +16971,53 @@ module.exports = class RTCSession extends EventEmitter
             this._rtcReady = true;
 
             debugerror('emit "peerconnection:setlocaldescriptionfailed" [error:%o]', error);
+=======
+      });
+
+      debug('emit "peerconnection"');
+      this.emit('peerconnection', {
+        peerconnection: this._connection
+      });
+    }
+  }, {
+    key: "_createLocalDescription",
+    value: function _createLocalDescription(type, constraints) {
+      var _this13 = this;
+
+      debug('createLocalDescription()');
+      if (type !== 'offer' && type !== 'answer') throw new Error("createLocalDescription() | invalid type \"".concat(type, "\""));
+      var connection = this._connection;
+      var restartIce = false;
+      this._rtcReady = false;
+
+      if (constraints && constraints.restartIce === true) {
+        restartIce = true;
+        delete constraints.restartIce;
+      }
+
+      return Promise.resolve() // Create Offer or Answer.
+      .then(function () {
+        if (type === 'offer') {
+          if (restartIce === true) connection.restartIce();
+          return connection.createOffer(constraints).then(function (offer) {
+            return fixupLocalSDP(offer);
+          })["catch"](function (error) {
+            debugerror('emit "peerconnection:createofferfailed" [error:%o]', error);
+
+            _this13.emit('peerconnection:createofferfailed', error);
+
+            return Promise.reject(error);
+          });
+        } else {
+          return connection.createAnswer(constraints)["catch"](function (error) {
+            debugerror('emit "peerconnection:createanswerfailed" [error:%o]', error);
+>>>>>>> master
 
             this.emit('peerconnection:setlocaldescriptionfailed', error);
 
             return Promise.reject(error);
           });
+<<<<<<< HEAD
       })
       .then(() =>
       {
@@ -16129,9 +17025,31 @@ module.exports = class RTCSession extends EventEmitter
         if (connection.iceGatheringState === 'complete')
         {
           this._rtcReady = true;
+=======
+        }
+      }) // Set local description.
+      .then(function (desc) {
+        return connection.setLocalDescription(desc)["catch"](function (error) {
+          _this13._rtcReady = true;
+          debugerror('emit "peerconnection:setlocaldescriptionfailed" [error:%o]', error);
+>>>>>>> master
 
           const e = { originator: 'local', type: type, sdp: this._addIceCandidates(connection.localDescription.sdp) };
 
+<<<<<<< HEAD
+=======
+          return Promise.reject(error);
+        });
+      }).then(function () {
+        // Resolve right away if 'pc.iceGatheringState' is 'complete'.
+        if (connection.iceGatheringState === 'complete' && restartIce === false) {
+          _this13._rtcReady = true;
+          var e = {
+            originator: 'local',
+            type: type,
+            sdp: connection.localDescription.sdp
+          };
+>>>>>>> master
           debug('emit "sdp"');
 
           this.emit('sdp', e);
@@ -16139,6 +17057,7 @@ module.exports = class RTCSession extends EventEmitter
           return Promise.resolve(e.sdp);
         }
 
+<<<<<<< HEAD
         // Add 'pc.onicencandidate' event handler to resolve on last candidate.
         return new Promise((resolve) =>
         {
@@ -16151,6 +17070,19 @@ module.exports = class RTCSession extends EventEmitter
             connection.removeEventListener('icecandidate', listener);
             if (timer)
             {
+=======
+        return new Promise(function (resolve) {
+          var finished = false;
+          var iceCandidateListener;
+          var iceGatheringStateListener;
+          var timer;
+
+          var ready = function ready() {
+            connection.removeEventListener('icecandidate', iceCandidateListener);
+            connection.removeEventListener('icegatheringstatechange', iceGatheringStateListener);
+
+            if (timer) {
+>>>>>>> master
               clearTimeout(timer);
               timer = null;
             }
@@ -16169,6 +17101,11 @@ module.exports = class RTCSession extends EventEmitter
 
           // after 2 seconds, we time-out
           timer = setTimeout(ready, 2000);
+<<<<<<< HEAD
+=======
+          connection.addEventListener('icecandidate', iceCandidateListener = function iceCandidateListener(event) {
+            var candidate = event.candidate;
+>>>>>>> master
 
           connection.addEventListener('icecandidate', listener = (event) =>
           {
@@ -16185,6 +17122,11 @@ module.exports = class RTCSession extends EventEmitter
 
             else if (! finished)
             {
+              ready();
+            }
+          });
+          connection.addEventListener('icegatheringstatechange', iceGatheringStateListener = function iceGatheringStateListener() {
+            if (connection.iceGatheringState === 'complete' && !finished) {
               ready();
             }
           });
@@ -16328,6 +17270,7 @@ module.exports = class RTCSession extends EventEmitter
       return;
     }
 
+<<<<<<< HEAD
     this._late_sdp = false;
 
     // Request without SDP.
@@ -16343,6 +17286,22 @@ module.exports = class RTCSession extends EventEmitter
         })
         .catch(() =>
         {
+=======
+      if (!request.body) {
+        this._late_sdp = true;
+
+        if (this._remoteHold) {
+          this._remoteHold = false;
+
+          this._onunhold('remote');
+        }
+
+        this._connectionPromiseQueue = this._connectionPromiseQueue.then(function () {
+          return _this14._createLocalDescription('offer', _this14._rtcOfferConstraints);
+        }).then(function (sdp) {
+          sendAnswer.call(_this14, sdp);
+        })["catch"](function () {
+>>>>>>> master
           request.reply(500);
         });
 
@@ -16367,10 +17326,15 @@ module.exports = class RTCSession extends EventEmitter
           return;
         }
 
+<<<<<<< HEAD
         sendAnswer.call(this, desc);
       })
       .catch((error) =>
       {
+=======
+        sendAnswer.call(_this14, desc);
+      })["catch"](function (error) {
+>>>>>>> master
         debugerror(error);
       });
 
@@ -16472,10 +17436,15 @@ module.exports = class RTCSession extends EventEmitter
           return;
         }
 
+<<<<<<< HEAD
         sendAnswer.call(this, desc);
       })
       .catch((error) =>
       {
+=======
+        sendAnswer.call(_this16, desc);
+      })["catch"](function (error) {
+>>>>>>> master
         debugerror(error);
       });
 
@@ -16495,11 +17464,24 @@ module.exports = class RTCSession extends EventEmitter
     }
   }
 
+<<<<<<< HEAD
   _processInDialogSdpOffer(request)
   {
     debug('_processInDialogSdpOffer()');
 
     const sdp = request.parseSDP();
+=======
+      debug('_processInDialogSdpOffer()');
+      var sdp = request.parseSDP();
+      var hold = false;
+
+      var _iterator4 = _createForOfIteratorHelper(sdp.media),
+          _step4;
+
+      try {
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var m = _step4.value;
+>>>>>>> master
 
     let hold = false;
 
@@ -16510,6 +17492,7 @@ module.exports = class RTCSession extends EventEmitter
         continue;
       }
 
+<<<<<<< HEAD
       const direction = m.direction || sdp.direction || 'sendrecv';
 
       if (direction === 'sendonly' || direction === 'inactive')
@@ -16521,13 +17504,33 @@ module.exports = class RTCSession extends EventEmitter
       {
         hold = false;
         break;
+=======
+          if (direction === 'sendonly' || direction === 'inactive') {
+            hold = true;
+          } // If at least one of the streams is active don't emit 'hold'.
+          else {
+              hold = false;
+              break;
+            }
+        }
+      } catch (err) {
+        _iterator4.e(err);
+      } finally {
+        _iterator4.f();
+>>>>>>> master
       }
     }
 
     const e = { originator: 'remote', type: 'offer', sdp: request.body };
 
+<<<<<<< HEAD
     debug('emit "sdp"');
     this.emit('sdp', e);
+=======
+        return _this17._connection.setRemoteDescription(offer)["catch"](function (error) {
+          request.reply(488);
+          debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
+>>>>>>> master
 
     e.sdp = this.last_remote_sdp = fixupSDP(e.sdp, this.last_remote_sdp, this);
     const offer = new RTCSessionDescription({ type: 'offer', sdp: `${e.sdp}` });
@@ -16578,10 +17581,23 @@ module.exports = class RTCSession extends EventEmitter
           throw new Error('terminated');
         }
 
+<<<<<<< HEAD
         return this._createLocalDescription('answer', this._rtcAnswerConstraints)
           .catch(() =>
           {
             request.reply(500);
+=======
+        return _this17._createLocalDescription('answer', _this17._rtcAnswerConstraints)["catch"](function () {
+          request.reply(500);
+          throw new Error('_createLocalDescription() failed');
+        });
+      });
+      return this._connectionPromiseQueue;
+    }
+    /**
+     * In dialog Refer Reception
+     */
+>>>>>>> master
 
             throw new Error('_createLocalDescription() failed');
           });
@@ -16618,7 +17634,22 @@ module.exports = class RTCSession extends EventEmitter
 
     const notifier = new RTCSession_ReferNotifier(this, request.cseq);
 
+<<<<<<< HEAD
     debug('emit "refer"');
+=======
+        var session = new RTCSession(this._ua);
+        session.on('progress', function (_ref2) {
+          var response = _ref2.response;
+          notifier.notify(response.status_code, response.reason_phrase);
+        });
+        session.on('accepted', function (_ref3) {
+          var response = _ref3.response;
+          notifier.notify(response.status_code, response.reason_phrase);
+        });
+        session.on('_failed', function (_ref4) {
+          var message = _ref4.message,
+              cause = _ref4.cause;
+>>>>>>> master
 
     // Emit 'refer'.
     this.emit('refer', {
@@ -16814,6 +17845,7 @@ module.exports = class RTCSession extends EventEmitter
         if (mediaStream)
         {
           return mediaStream;
+<<<<<<< HEAD
         }
         // Request for user media access.
         else if (mediaConstraints.audio || mediaConstraints.video)
@@ -16825,6 +17857,13 @@ module.exports = class RTCSession extends EventEmitter
             {
               if (this._status === C.STATUS_TERMINATED)
               {
+=======
+        } // Request for user media access.
+        else if (mediaConstraints.audio || mediaConstraints.video) {
+            _this21._localMediaStreamLocallyGenerated = true;
+            return navigator.mediaDevices.getUserMedia(mediaConstraints)["catch"](function (error) {
+              if (_this21._status === C.STATUS_TERMINATED) {
+>>>>>>> master
                 throw new Error('terminated');
               }
 
@@ -16845,7 +17884,17 @@ module.exports = class RTCSession extends EventEmitter
           throw new Error('terminated');
         }
 
+<<<<<<< HEAD
         this._localMediaStream = stream;
+=======
+        _this21._localMediaStream = stream;
+
+        if (stream) {
+          stream.getTracks().forEach(function (track) {
+            _this21._connection.addTrack(track, stream);
+          });
+        } // TODO: should this be triggered here?
+>>>>>>> master
 
         if (stream)
         {
@@ -16855,10 +17904,15 @@ module.exports = class RTCSession extends EventEmitter
         // TODO: should this be triggered here?
         this._connecting(this._request);
 
+<<<<<<< HEAD
         return this._createLocalDescription('offer', rtcOfferConstraints)
           .catch((error) =>
           {
             this._failed('local', null, JsSIP_C.causes.WEBRTC_ERROR);
+=======
+        return _this21._createLocalDescription('offer', rtcOfferConstraints)["catch"](function (error) {
+          _this21._failed('local', null, JsSIP_C.causes.WEBRTC_ERROR);
+>>>>>>> master
 
             throw error;
           });
@@ -16881,17 +17935,47 @@ module.exports = class RTCSession extends EventEmitter
         });
 
         request_sender.send();
+<<<<<<< HEAD
       })
       .catch((error) =>
       {
         if (this._status === C.STATUS_TERMINATED)
         {
+=======
+      })["catch"](function (error) {
+        if (_this21._status === C.STATUS_TERMINATED) {
+>>>>>>> master
           return;
         }
 
         debugerror(error);
       });
+<<<<<<< HEAD
   }
+=======
+    }
+    /**
+     * Get DTMF RTCRtpSender.
+     */
+
+  }, {
+    key: "_getDTMFRTPSender",
+    value: function _getDTMFRTPSender() {
+      var sender = this._connection.getSenders().find(function (rtpSender) {
+        return rtpSender.track && rtpSender.track.kind === 'audio';
+      });
+
+      if (!(sender && sender.dtmf)) {
+        debugerror('sendDTMF() | no local audio track to send DTMF with');
+        return;
+      }
+
+      return sender.dtmf;
+    }
+    /**
+     * Reception of Response for Initial INVITE
+     */
+>>>>>>> master
 
   /**
    * Reception of Response for Initial INVITE
@@ -16993,8 +18077,27 @@ module.exports = class RTCSession extends EventEmitter
 
         const e = { originator: 'remote', type: 'answer', sdp: response.body };
 
+<<<<<<< HEAD
         debug('emit "sdp"');
         this.emit('sdp', e);
+=======
+            var e = {
+              originator: 'remote',
+              type: 'answer',
+              sdp: response.body
+            };
+            debug('emit "sdp"');
+            this.emit('sdp', e);
+            e.sdp = this.last_remote_sdp = fixupSDP(e.sdp, this.last_remote_sdp, this);
+            var answer = new RTCSessionDescription({
+              type: 'answer',
+              sdp: "".concat(e.sdp)
+            });
+            this._connectionPromiseQueue = this._connectionPromiseQueue.then(function () {
+              return _this22._connection.setRemoteDescription(answer);
+            })["catch"](function (error) {
+              debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
+>>>>>>> master
 
         e.sdp = this.last_remote_sdp = fixupSDP(e.sdp, this.last_remote_sdp, this);
         const answer = new RTCSessionDescription({ type: 'answer', sdp: `${e.sdp}` });
@@ -17035,6 +18138,7 @@ module.exports = class RTCSession extends EventEmitter
         e.sdp = this.last_remote_sdp = fixupSDP(e.sdp, this.last_remote_sdp, this);
         const answer = new RTCSessionDescription({ type: 'answer', sdp: `${e.sdp}` });
 
+<<<<<<< HEAD
         this._connectionPromiseQueue = this._connectionPromiseQueue
           .then(() =>
           {
@@ -17049,6 +18153,20 @@ module.exports = class RTCSession extends EventEmitter
                 {
                   this._acceptAndTerminate(response, 500, error.toString());
                   this._failed('local', response, JsSIP_C.causes.WEBRTC_ERROR);
+=======
+            this._connectionPromiseQueue = this._connectionPromiseQueue.then(function () {
+              // Be ready for 200 with SDP after a 180/183 with SDP.
+              // We created a SDP 'answer' for it, so check the current signaling state.
+              if (_this22._connection.signalingState === 'stable') {
+                return _this22._connection.createOffer(_this22._rtcOfferConstraints).then(function (offer) {
+                  return fixupLocalSDP(offer);
+                }).then(function (offer) {
+                  return _this22._connection.setLocalDescription(offer);
+                })["catch"](function (error) {
+                  _this22._acceptAndTerminate(response, 500, error.toString());
+
+                  _this22._failed('local', response, JsSIP_C.causes.WEBRTC_ERROR);
+>>>>>>> master
                 });
             }
           })
@@ -17060,6 +18178,7 @@ module.exports = class RTCSession extends EventEmitter
                 // Handle Session Timers.
                 this._handleSessionTimersInIncomingResponse(response);
 
+<<<<<<< HEAD
                 this._accepted('remote', response);
                 this.sendRequest(JsSIP_C.ACK);
                 this._confirmed('local', null);
@@ -17068,6 +18187,17 @@ module.exports = class RTCSession extends EventEmitter
               {
                 this._acceptAndTerminate(response, 488, 'Not Acceptable Here');
                 this._failed('remote', response, JsSIP_C.causes.BAD_MEDIA_DESCRIPTION);
+=======
+                _this22._accepted('remote', response);
+
+                _this22.sendRequest(JsSIP_C.ACK);
+
+                _this22._confirmed('local', null);
+              })["catch"](function (error) {
+                _this22._acceptAndTerminate(response, 488, 'Not Acceptable Here');
+
+                _this22._failed('remote', response, JsSIP_C.causes.BAD_MEDIA_DESCRIPTION);
+>>>>>>> master
 
                 debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
 
@@ -17086,6 +18216,7 @@ module.exports = class RTCSession extends EventEmitter
     }
   }
 
+<<<<<<< HEAD
   /**
    * Send Re-INVITE
    */
@@ -17122,6 +18253,45 @@ module.exports = class RTCSession extends EventEmitter
             onSuccessResponse : (response) =>
             {
               onSucceeded.call(this, response);
+=======
+  }, {
+    key: "_sendReinvite",
+    value: function _sendReinvite() {
+      var _this23 = this;
+
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      debug('sendReinvite()');
+      var extraHeaders = Utils.cloneArray(options.extraHeaders);
+      var eventHandlers = Utils.cloneObject(options.eventHandlers);
+      var rtcOfferConstraints = options.rtcOfferConstraints || this._rtcOfferConstraints || null;
+      var succeeded = false;
+      extraHeaders.push("Contact: ".concat(this._contact));
+      extraHeaders.push('Content-Type: application/sdp'); // Session Timers.
+
+      if (this._sessionTimers.running) {
+        extraHeaders.push("Session-Expires: ".concat(this._sessionTimers.currentExpires, ";refresher=").concat(this._sessionTimers.refresher ? 'uac' : 'uas'));
+      }
+
+      this._connectionPromiseQueue = this._connectionPromiseQueue.then(function () {
+        return _this23._createLocalDescription('offer', rtcOfferConstraints);
+      }).then(function (sdp) {
+        sdp = _this23._mangleOffer(sdp);
+        var e = {
+          originator: 'local',
+          type: 'offer',
+          sdp: sdp
+        };
+        debug('emit "sdp"');
+
+        _this23.emit('sdp', e);
+
+        _this23.sendRequest(JsSIP_C.INVITE, {
+          extraHeaders: extraHeaders,
+          body: sdp,
+          eventHandlers: {
+            onSuccessResponse: function onSuccessResponse(response) {
+              onSucceeded.call(_this23, response);
+>>>>>>> master
               succeeded = true;
             },
             onErrorResponse : (response) =>
@@ -17142,9 +18312,13 @@ module.exports = class RTCSession extends EventEmitter
             }
           }
         });
+<<<<<<< HEAD
       })
       .catch(() =>
       {
+=======
+      })["catch"](function () {
+>>>>>>> master
         onFailed();
       });
 
@@ -17193,11 +18367,16 @@ module.exports = class RTCSession extends EventEmitter
           {
             eventHandlers.succeeded(response);
           }
+<<<<<<< HEAD
         })
         .catch((error) =>
         {
           onFailed.call(this);
 
+=======
+        })["catch"](function (error) {
+          onFailed.call(_this24);
+>>>>>>> master
           debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
 
           this.emit('peerconnection:setremotedescriptionfailed', error);
@@ -17213,12 +18392,61 @@ module.exports = class RTCSession extends EventEmitter
     }
   }
 
+<<<<<<< HEAD
   /**
    * Send UPDATE
    */
   _sendUpdate(options = {})
   {
     debug('sendUpdate()');
+=======
+  }, {
+    key: "_sendUpdate",
+    value: function _sendUpdate() {
+      var _this25 = this;
+
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      debug('sendUpdate()');
+      var extraHeaders = Utils.cloneArray(options.extraHeaders);
+      var eventHandlers = Utils.cloneObject(options.eventHandlers);
+      var rtcOfferConstraints = options.rtcOfferConstraints || this._rtcOfferConstraints || null;
+      var sdpOffer = options.sdpOffer || false;
+      var succeeded = false;
+      extraHeaders.push("Contact: ".concat(this._contact)); // Session Timers.
+
+      if (this._sessionTimers.running) {
+        extraHeaders.push("Session-Expires: ".concat(this._sessionTimers.currentExpires, ";refresher=").concat(this._sessionTimers.refresher ? 'uac' : 'uas'));
+      }
+
+      if (sdpOffer) {
+        extraHeaders.push('Content-Type: application/sdp');
+        this._connectionPromiseQueue = this._connectionPromiseQueue.then(function () {
+          return _this25._createLocalDescription('offer', rtcOfferConstraints);
+        }).then(function (sdp) {
+          sdp = _this25._mangleOffer(sdp);
+          var e = {
+            originator: 'local',
+            type: 'offer',
+            sdp: sdp
+          };
+          debug('emit "sdp"');
+
+          _this25.emit('sdp', e);
+
+          _this25.sendRequest(JsSIP_C.UPDATE, {
+            extraHeaders: extraHeaders,
+            body: sdp,
+            eventHandlers: {
+              onSuccessResponse: function onSuccessResponse(response) {
+                onSucceeded.call(_this25, response);
+                succeeded = true;
+              },
+              onErrorResponse: function onErrorResponse(response) {
+                onFailed.call(_this25, response);
+              },
+              onTransportError: function onTransportError() {
+                _this25.onTransportError(); // Do nothing because session ends.
+>>>>>>> master
 
     const extraHeaders = Utils.cloneArray(options.extraHeaders);
     const eventHandlers = options.eventHandlers || {};
@@ -17246,6 +18474,17 @@ module.exports = class RTCSession extends EventEmitter
         {
           sdp = this._mangleOffer(sdp);
 
+<<<<<<< HEAD
+=======
+              }
+            }
+          });
+        })["catch"](function () {
+          onFailed.call(_this25);
+        });
+      } // No SDP.
+      else {
+>>>>>>> master
           this.sendRequest(JsSIP_C.UPDATE, {
             extraHeaders,
             body          : sdp,
@@ -17355,11 +18594,16 @@ module.exports = class RTCSession extends EventEmitter
             {
               eventHandlers.succeeded(response);
             }
+<<<<<<< HEAD
           })
           .catch((error) =>
           {
             onFailed.call(this);
 
+=======
+          })["catch"](function (error) {
+            onFailed.call(_this26);
+>>>>>>> master
             debugerror('emit "peerconnection:setremotedescriptionfailed" [error:%o]', error);
 
             this.emit('peerconnection:setremotedescriptionfailed', error);
@@ -17404,6 +18648,7 @@ module.exports = class RTCSession extends EventEmitter
     this._status = C.STATUS_TERMINATED;
   }
 
+<<<<<<< HEAD
   _setDirection(sdp, m, direction)
   {
     if (!direction)
@@ -17426,6 +18671,17 @@ module.exports = class RTCSession extends EventEmitter
    */
   _mangleOffer(sdp)
   {
+=======
+      if (this._localHold && !this._remoteHold) {
+        debug('mangleOffer() | me on hold, mangling offer');
+
+        var _iterator5 = _createForOfIteratorHelper(sdp.media),
+            _step5;
+
+        try {
+          for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+            var m = _step5.value;
+>>>>>>> master
 
     let direction;
 
@@ -17436,6 +18692,7 @@ module.exports = class RTCSession extends EventEmitter
 
     sdp = sdp_transform.parse(sdp);
 
+<<<<<<< HEAD
     // Local hold.
     if (this._localHold && ! this._remoteHold)
     {
@@ -17502,6 +18759,25 @@ module.exports = class RTCSession extends EventEmitter
         this._setDirection(sdp, m, direction);
       }
     }
+=======
+            this._setDirection(sdp, m, direction);
+          }
+        } catch (err) {
+          _iterator5.e(err);
+        } finally {
+          _iterator5.f();
+        }
+      } // Local and remote hold.
+      else if (this._localHold && this._remoteHold) {
+          debug('mangleOffer() | both on hold, mangling offer');
+
+          var _iterator6 = _createForOfIteratorHelper(sdp.media),
+              _step6;
+
+          try {
+            for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+              var _m = _step6.value;
+>>>>>>> master
 
     return sdp_transform.write(sdp);
   }
@@ -17510,6 +18786,7 @@ module.exports = class RTCSession extends EventEmitter
   {
     let enableAudio = true, enableVideo = true;
 
+<<<<<<< HEAD
     if (this._localHold || this._remoteHold)
     {
       enableAudio = false;
@@ -17520,6 +18797,25 @@ module.exports = class RTCSession extends EventEmitter
     {
       enableAudio = false;
     }
+=======
+              this._setDirection(sdp, _m, direction);
+            }
+          } catch (err) {
+            _iterator6.e(err);
+          } finally {
+            _iterator6.f();
+          }
+        } // Remote hold.
+        else if (this._remoteHold) {
+            debug('mangleOffer() | remote on hold, mangling offer');
+
+            var _iterator7 = _createForOfIteratorHelper(sdp.media),
+                _step7;
+
+            try {
+              for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+                var _m2 = _step7.value;
+>>>>>>> master
 
     if (this._videoMuted)
     {
@@ -17539,7 +18835,18 @@ module.exports = class RTCSession extends EventEmitter
   {
     if (! this._sessionTimers.enabled) { return; }
 
+<<<<<<< HEAD
     let session_expires_refresher;
+=======
+                this._setDirection(sdp, _m2, direction);
+              }
+            } catch (err) {
+              _iterator7.e(err);
+            } finally {
+              _iterator7.f();
+            }
+          }
+>>>>>>> master
 
     if (request.session_expires && request.session_expires >= JsSIP_C.MIN_SESSION_EXPIRES)
     {
@@ -17566,6 +18873,7 @@ module.exports = class RTCSession extends EventEmitter
   {
     if (! this._sessionTimers.enabled) { return; }
 
+<<<<<<< HEAD
     let session_expires_refresher;
 
     if (response.session_expires &&
@@ -17578,6 +18886,11 @@ module.exports = class RTCSession extends EventEmitter
     {
       this._sessionTimers.currentExpires = this._sessionTimers.defaultExpires;
       session_expires_refresher = 'uac';
+=======
+      this._toggleMuteAudio(!enableAudio);
+
+      this._toggleMuteVideo(!enableVideo);
+>>>>>>> master
     }
 
     this._sessionTimers.refresher = (session_expires_refresher === 'uac');
@@ -17653,6 +18966,7 @@ module.exports = class RTCSession extends EventEmitter
     {
       const tracks = stream.getVideoTracks();
 
+<<<<<<< HEAD
       for (const track of tracks)
       {
         track.enabled = !mute;
@@ -17674,6 +18988,62 @@ module.exports = class RTCSession extends EventEmitter
   _connecting(request)
   {
     debug('session connecting');
+=======
+            _this27.terminate({
+              cause: JsSIP_C.causes.REQUEST_TIMEOUT,
+              status_code: 408,
+              reason_phrase: 'Session Timer Expired'
+            });
+          }, expires * 1100);
+        }
+    }
+  }, {
+    key: "_toggleMuteAudio",
+    value: function _toggleMuteAudio(mute) {
+      var senders = this._connection.getSenders().filter(function (sender) {
+        return sender.track && sender.track.kind === 'audio';
+      });
+
+      var _iterator8 = _createForOfIteratorHelper(senders),
+          _step8;
+
+      try {
+        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+          var sender = _step8.value;
+          sender.track.enabled = !mute;
+        }
+      } catch (err) {
+        _iterator8.e(err);
+      } finally {
+        _iterator8.f();
+      }
+    }
+  }, {
+    key: "_toggleMuteVideo",
+    value: function _toggleMuteVideo(mute) {
+      var senders = this._connection.getSenders().filter(function (sender) {
+        return sender.track && sender.track.kind === 'video';
+      });
+
+      var _iterator9 = _createForOfIteratorHelper(senders),
+          _step9;
+
+      try {
+        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+          var sender = _step9.value;
+          sender.track.enabled = !mute;
+        }
+      } catch (err) {
+        _iterator9.e(err);
+      } finally {
+        _iterator9.f();
+      }
+    }
+  }, {
+    key: "_newRTCSession",
+    value: function _newRTCSession(originator, request) {
+      debug('newRTCSession()');
+>>>>>>> master
 
     debug('emit "connecting"');
 
@@ -17682,9 +19052,30 @@ module.exports = class RTCSession extends EventEmitter
     });
   }
 
+<<<<<<< HEAD
   _trying(originator, response)
   {
     debug('session trying');
+=======
+      debug('emit "ended"');
+      this.emit('ended', {
+        originator: originator,
+        message: message || null,
+        cause: cause
+      });
+    }
+  }, {
+    key: "_failed",
+    value: function _failed(originator, message, cause) {
+      debug('session failed'); // Emit private '_failed' event first.
+
+      debug('emit "_failed"');
+      this.emit('_failed', {
+        originator: originator,
+        message: message || null,
+        cause: cause
+      });
+>>>>>>> master
 
     debug('emit "trying"');
 
@@ -17936,6 +19327,15 @@ function fixupSDP(sdp)
   //
   return sdp;
 }
+<<<<<<< HEAD
+=======
+},{"./Constants":2,"./Dialog":3,"./Exceptions":6,"./RTCSession/DTMF":13,"./RTCSession/Info":14,"./RTCSession/ReferNotifier":15,"./RTCSession/ReferSubscriber":16,"./RequestSender":18,"./SIPMessage":19,"./Timers":21,"./Transactions":22,"./URI":25,"./Utils":26,"debug":30,"events":29,"sdp-transform":35}],13:[function(require,module,exports){
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+>>>>>>> master
 
 },{"./Constants":2,"./Dialog":3,"./Exceptions":6,"./RTCSession/DTMF":13,"./RTCSession/Info":14,"./RTCSession/ReferNotifier":15,"./RTCSession/ReferSubscriber":16,"./RequestSender":18,"./SIPMessage":19,"./Timers":21,"./Transactions":22,"./Utils":26,"debug":30,"events":29,"sdp-transform":35}],13:[function(require,module,exports){
 const EventEmitter = require('events').EventEmitter;
@@ -17945,7 +19345,17 @@ const Utils = require('../Utils');
 const debug = require('debug')('JsSIP:RTCSession:DTMF');
 const debugerror = require('debug')('JsSIP:ERROR:RTCSession:DTMF');
 
+<<<<<<< HEAD
 debugerror.log = console.warn.bind(console);
+=======
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+>>>>>>> master
 
 const C = {
   MIN_DURATION           : 70,
@@ -17955,6 +19365,7 @@ const C = {
   DEFAULT_INTER_TONE_GAP : 500
 };
 
+<<<<<<< HEAD
 module.exports = class DTMF extends EventEmitter
 {
   constructor(session)
@@ -17972,6 +19383,11 @@ module.exports = class DTMF extends EventEmitter
   {
     return this._tone;
   }
+=======
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+>>>>>>> master
 
   get duration()
   {
@@ -18012,6 +19428,7 @@ module.exports = class DTMF extends EventEmitter
       throw new TypeError(`Invalid tone: ${tone}`);
     }
 
+<<<<<<< HEAD
     // Check tone value.
     if (!tone.match(/^[0-9A-DR#*]$/))
     {
@@ -18024,10 +19441,30 @@ module.exports = class DTMF extends EventEmitter
 
     // Duration is checked/corrected in RTCSession.
     this._duration = options.duration;
+=======
+module.exports = /*#__PURE__*/function (_EventEmitter) {
+  _inherits(DTMF, _EventEmitter);
+
+  var _super = _createSuper(DTMF);
+
+  function DTMF(session) {
+    var _this;
+>>>>>>> master
 
     extraHeaders.push('Content-Type: application/dtmf-relay');
 
+<<<<<<< HEAD
     let body = `Signal=${this._tone}\r\n`;
+=======
+    _this = _super.call(this);
+    _this._session = session;
+    _this._direction = null;
+    _this._tone = null;
+    _this._duration = null;
+    _this._request = null;
+    return _this;
+  }
+>>>>>>> master
 
     body += `Duration=${this._duration}`;
 
@@ -18054,6 +19491,7 @@ module.exports = class DTMF extends EventEmitter
             this.eventHandlers.onFailed();
           }
 
+<<<<<<< HEAD
           this.emit('failed', {
             originator : 'remote',
             response
@@ -18075,6 +19513,43 @@ module.exports = class DTMF extends EventEmitter
       body
     });
   }
+=======
+      this._direction = 'outgoing'; // Check RTCSession Status.
+
+      if (this._session.status !== this._session.C.STATUS_CONFIRMED && this._session.status !== this._session.C.STATUS_WAITING_FOR_ACK) {
+        throw new Exceptions.InvalidStateError(this._session.status);
+      }
+
+      var extraHeaders = Utils.cloneArray(options.extraHeaders);
+      this.eventHandlers = Utils.cloneObject(options.eventHandlers); // Check tone type.
+
+      if (typeof tone === 'string') {
+        tone = tone.toUpperCase();
+      } else if (typeof tone === 'number') {
+        tone = tone.toString();
+      } else {
+        throw new TypeError("Invalid tone: ".concat(tone));
+      } // Check tone value.
+
+
+      if (!tone.match(/^[0-9A-DR#*]$/)) {
+        throw new TypeError("Invalid tone: ".concat(tone));
+      } else {
+        this._tone = tone;
+      } // Duration is checked/corrected in RTCSession.
+
+
+      this._duration = options.duration;
+      extraHeaders.push('Content-Type: application/dtmf-relay');
+      var body = "Signal=".concat(this._tone, "\r\n");
+      body += "Duration=".concat(this._duration);
+
+      this._session.newDTMF({
+        originator: 'local',
+        dtmf: this,
+        request: this._request
+      });
+>>>>>>> master
 
   init_incoming(request)
   {
@@ -18130,16 +19605,48 @@ module.exports = class DTMF extends EventEmitter
  * Expose C object.
  */
 module.exports.C = C;
+<<<<<<< HEAD
 
 },{"../Constants":2,"../Exceptions":6,"../Utils":26,"debug":30,"events":29}],14:[function(require,module,exports){
 const EventEmitter = require('events').EventEmitter;
 const debugerror = require('debug')('JsSIP:ERROR:RTCSession:Info');
+=======
+},{"../Constants":2,"../Exceptions":6,"../Utils":26,"debug":30,"events":29}],14:[function(require,module,exports){
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var EventEmitter = require('events').EventEmitter;
+
+var debugerror = require('debug')('JsSIP:ERROR:RTCSession:Info');
+>>>>>>> master
 
 debugerror.log = console.warn.bind(console);
 const JsSIP_C = require('../Constants');
 const Exceptions = require('../Exceptions');
 const Utils = require('../Utils');
 
+<<<<<<< HEAD
 module.exports = class Info extends EventEmitter
 {
   constructor(session)
@@ -18151,15 +19658,39 @@ module.exports = class Info extends EventEmitter
     this._contentType = null;
     this._body = null;
   }
+=======
+var JsSIP_C = require('../Constants');
+
+var Exceptions = require('../Exceptions');
+
+var Utils = require('../Utils');
+
+module.exports = /*#__PURE__*/function (_EventEmitter) {
+  _inherits(Info, _EventEmitter);
+
+  var _super = _createSuper(Info);
+
+  function Info(session) {
+    var _this;
+>>>>>>> master
 
   get contentType()
   {
     return this._contentType;
   }
 
+<<<<<<< HEAD
   get body()
   {
     return this._body;
+=======
+    _this = _super.call(this);
+    _this._session = session;
+    _this._direction = null;
+    _this._contentType = null;
+    _this._body = null;
+    return _this;
+>>>>>>> master
   }
 
   send(contentType, body, options = {})
@@ -18253,10 +19784,17 @@ const C = {
   expires    : 300
 };
 
+<<<<<<< HEAD
 module.exports = class ReferNotifier
 {
   constructor(session, id, expires)
   {
+=======
+module.exports = /*#__PURE__*/function () {
+  function ReferNotifier(session, id, expires) {
+    _classCallCheck(this, ReferNotifier);
+
+>>>>>>> master
     this._session = session;
     this._id = id;
     this._expires = expires || C.expires;
@@ -18275,10 +19813,15 @@ module.exports = class ReferNotifier
       return;
     }
 
+<<<<<<< HEAD
     reason = reason || JsSIP_C.REASON_PHRASE[code] || '';
+=======
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+>>>>>>> master
 
     let state;
 
+<<<<<<< HEAD
     if (code >= 200)
     {
       state = 'terminated;reason=noresource';
@@ -18316,6 +19859,25 @@ module.exports = class ReferSubscriber extends EventEmitter
   constructor(session)
   {
     super();
+=======
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+>>>>>>> master
 
     this._id = null;
     this._session = session;
@@ -18342,6 +19904,7 @@ module.exports = class ReferSubscriber extends EventEmitter
       }
     }
 
+<<<<<<< HEAD
     // Replaces URI header field.
     let replaces = null;
 
@@ -18350,16 +19913,40 @@ module.exports = class ReferSubscriber extends EventEmitter
       replaces = options.replaces._request.call_id;
       replaces += `;to-tag=${options.replaces._to_tag}`;
       replaces += `;from-tag=${options.replaces._from_tag}`;
+=======
+module.exports = /*#__PURE__*/function (_EventEmitter) {
+  _inherits(ReferSubscriber, _EventEmitter);
+
+  var _super = _createSuper(ReferSubscriber);
+
+  function ReferSubscriber(session) {
+    var _this;
+>>>>>>> master
 
       replaces = encodeURIComponent(replaces);
     }
 
+<<<<<<< HEAD
     // Refer-To header field.
     const referTo = `Refer-To: <${target}${replaces?`?Replaces=${replaces}`:''}>`;
+=======
+    _this = _super.call(this);
+    _this._id = null;
+    _this._session = session;
+    return _this;
+  }
+>>>>>>> master
 
     extraHeaders.push(referTo);
 
+<<<<<<< HEAD
     extraHeaders.push(`Contact: ${this._session.contact}`);
+=======
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      debug('sendRefer()');
+      var extraHeaders = Utils.cloneArray(options.extraHeaders);
+      var eventHandlers = Utils.cloneObject(options.eventHandlers); // Set event handlers.
+>>>>>>> master
 
     const request = this._session.sendRequest(JsSIP_C.REFER, {
       extraHeaders,
@@ -18387,8 +19974,17 @@ module.exports = class ReferSubscriber extends EventEmitter
       }
     });
 
+<<<<<<< HEAD
     this._id = request.cseq;
   }
+=======
+      var referTo = "Refer-To: <".concat(target).concat(replaces ? "?Replaces=".concat(replaces) : '', ">");
+      extraHeaders.push(referTo); // Referred-By header field.
+
+      var referredBy = "Referred-By: <".concat(this._session._ua._configuration.uri._scheme, ":").concat(this._session._ua._configuration.uri._user, "@").concat(this._session._ua._configuration.uri._host, ">");
+      extraHeaders.push(referredBy);
+      extraHeaders.push("Contact: ".concat(this._session.contact));
+>>>>>>> master
 
   receiveNotify(request)
   {
@@ -18471,7 +20067,13 @@ const SIPMessage = require('./SIPMessage');
 const RequestSender = require('./RequestSender');
 const debug = require('debug')('JsSIP:Registrator');
 
+<<<<<<< HEAD
 const MIN_REGISTER_EXPIRES = 10; // In seconds.
+=======
+module.exports = /*#__PURE__*/function () {
+  function Registrator(ua, transport) {
+    _classCallCheck(this, Registrator);
+>>>>>>> master
 
 module.exports = class Registrator
 {
@@ -18579,6 +20181,7 @@ ${this._contact};expires=${this._expires}${this._extraContactParams}`);
         'call_id' : this._call_id,
         'cseq'    : (this._cseq += 1)
       }, extraHeaders);
+<<<<<<< HEAD
 
     const request_sender = new RequestSender(this._ua, request, {
       onRequestTimeout : () =>
@@ -18605,6 +20208,24 @@ ${this._contact};expires=${this._expires}${this._extraContactParams}`);
         {
           return;
         }
+=======
+      var request_sender = new RequestSender(this._ua, request, {
+        onRequestTimeout: function onRequestTimeout() {
+          _this._registrationFailure(null, JsSIP_C.causes.REQUEST_TIMEOUT);
+        },
+        onTransportError: function onTransportError() {
+          _this._registrationFailure(null, JsSIP_C.causes.CONNECTION_ERROR);
+        },
+        // Increase the CSeq on authentication.
+        onAuthenticated: function onAuthenticated() {
+          _this._cseq += 1;
+        },
+        onReceiveResponse: function onReceiveResponse(response) {
+          // Discard responses to older REGISTER/un-REGISTER requests.
+          if (response.cseq !== _this._cseq) {
+            return;
+          } // Clear registration timer.
+>>>>>>> master
 
         // Clear registration timer.
         if (this._registrationTimer !== null)
@@ -18621,6 +20242,7 @@ ${this._contact};expires=${this._expires}${this._extraContactParams}`);
           case /^2[0-9]{2}$/.test(response.status_code):
             this._registering = false;
 
+<<<<<<< HEAD
             // Search the Contact pointing to us and update the expires value accordingly.
             if (!numContacts)
             {
@@ -18708,6 +20330,99 @@ ${this._contact};expires=${this._expires}${this._extraContactParams}`);
 
               if (this._expires < MIN_REGISTER_EXPIRES)
                 this._expires = MIN_REGISTER_EXPIRES;
+=======
+          switch (true) {
+            case /^1[0-9]{2}$/.test(response.status_code):
+              {
+                // Ignore provisional responses.
+                break;
+              }
+
+            case /^2[0-9]{2}$/.test(response.status_code):
+              {
+                _this._registering = false;
+
+                if (!response.hasHeader('Contact')) {
+                  debug('no Contact header in response to REGISTER, response ignored');
+                  break;
+                }
+
+                var contacts = response.headers['Contact'].reduce(function (a, b) {
+                  return a.concat(b.parsed);
+                }, []); // Get the Contact pointing to us and update the expires value accordingly.
+
+                var contact = contacts.find(function (element) {
+                  return element.uri.user === _this._ua.contact.uri.user;
+                });
+
+                if (!contact) {
+                  debug('no Contact header pointing to us, response ignored');
+                  break;
+                }
+
+                var expires = contact.getParam('expires');
+
+                if (!expires && response.hasHeader('expires')) {
+                  expires = response.getHeader('expires');
+                }
+
+                if (!expires) {
+                  expires = _this._expires;
+                }
+
+                expires = Number(expires);
+                if (expires < MIN_REGISTER_EXPIRES) expires = MIN_REGISTER_EXPIRES; // Re-Register or emit an event before the expiration interval has elapsed.
+                // For that, decrease the expires value. ie: 3 seconds.
+
+                _this._registrationTimer = setTimeout(function () {
+                  _this._registrationTimer = null; // If there are no listeners for registrationExpiring, renew registration.
+                  // If there are listeners, let the function listening do the register call.
+
+                  if (_this._ua.listeners('registrationExpiring').length === 0) {
+                    _this.register();
+                  } else {
+                    _this._ua.emit('registrationExpiring');
+                  }
+                }, expires * 1000 - 5000); // Save gruu values.
+
+                if (contact.hasParam('temp-gruu')) {
+                  _this._ua.contact.temp_gruu = contact.getParam('temp-gruu').replace(/"/g, '');
+                }
+
+                if (contact.hasParam('pub-gruu')) {
+                  _this._ua.contact.pub_gruu = contact.getParam('pub-gruu').replace(/"/g, '');
+                }
+
+                if (!_this._registered) {
+                  _this._registered = true;
+
+                  _this._ua.registered({
+                    response: response
+                  });
+                }
+
+                break;
+              }
+            // Interval too brief RFC3261 10.2.8.
+
+            case /^423$/.test(response.status_code):
+              {
+                if (response.hasHeader('min-expires')) {
+                  // Increase our registration interval to the suggested minimum.
+                  _this._expires = Number(response.getHeader('min-expires'));
+                  if (_this._expires < MIN_REGISTER_EXPIRES) _this._expires = MIN_REGISTER_EXPIRES; // Attempt the registration again immediately.
+
+                  _this.register();
+                } else {
+                  // This response MUST contain a Min-Expires header field.
+                  debug('423 response received for REGISTER without Min-Expires');
+
+                  _this._registrationFailure(response, JsSIP_C.causes.SIP_FAILURE_CODE);
+                }
+
+                break;
+              }
+>>>>>>> master
 
               // Attempt the registration again immediately.
               this.register();
@@ -18861,6 +20576,7 @@ ${this._contact};expires=${this._expires}${this._extraContactParams}`);
   }
 };
 
+<<<<<<< HEAD
 },{"./Constants":2,"./RequestSender":18,"./SIPMessage":19,"./Utils":26,"debug":30}],18:[function(require,module,exports){
 const JsSIP_C = require('./Constants');
 const DigestAuthentication = require('./DigestAuthentication');
@@ -18874,6 +20590,11 @@ const EventHandlers = {
   onReceiveResponse : () => {},
   onAuthenticated   : () => {}
 };
+=======
+module.exports = /*#__PURE__*/function () {
+  function RequestSender(ua, request, eventHandlers) {
+    _classCallCheck(this, RequestSender);
+>>>>>>> master
 
 module.exports = class RequestSender
 {
@@ -18936,6 +20657,7 @@ module.exports = class RequestSender
     this.clientTransaction.send();
   }
 
+<<<<<<< HEAD
   /**
   * Called from client transaction when receiving a correct response to the request.
   * Authenticate request if needed or pass the response back to the applicant.
@@ -18945,6 +20667,16 @@ module.exports = class RequestSender
     let challenge;
     let authorization_header_name;
     const status_code = response.status_code;
+=======
+        default:
+          this.clientTransaction = new Transactions.NonInviteClientTransaction(this._ua, this._ua.transport, this._request, eventHandlers);
+      } // If authorization JWT is present, use it.
+
+
+      if (this._ua._configuration.authorization_jwt) {
+        this._request.setHeader('Authorization', this._ua._configuration.authorization_jwt);
+      }
+>>>>>>> master
 
     /*
     * Authentication
@@ -19033,6 +20765,48 @@ const NameAddrHeader = require('./NameAddrHeader');
 const Grammar = require('./Grammar');
 const debug = require('debug')('JsSIP:SIPMessage');
 
+<<<<<<< HEAD
+=======
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var sdp_transform = require('sdp-transform');
+
+var JsSIP_C = require('./Constants');
+
+var Utils = require('./Utils');
+
+var NameAddrHeader = require('./NameAddrHeader');
+
+var Grammar = require('./Grammar');
+
+var debug = require('debug')('JsSIP:SIPMessage');
+>>>>>>> master
 /**
  * -param {String} method request method
  * -param {String} ruri request uri
@@ -19043,10 +20817,19 @@ const debug = require('debug')('JsSIP:SIPMessage');
  * -param {Object} [headers] extra headers
  * -param {String} [body]
  */
+<<<<<<< HEAD
 class OutgoingRequest
 {
   constructor(method, ruri, ua, params, extraHeaders, body)
   {
+=======
+
+
+var OutgoingRequest = /*#__PURE__*/function () {
+  function OutgoingRequest(method, ruri, ua, params, extraHeaders, body) {
+    _classCallCheck(this, OutgoingRequest);
+
+>>>>>>> master
     // Mandatory parameters check.
     if (!method || !ruri || !ua)
     {
@@ -19084,6 +20867,7 @@ class OutgoingRequest
     // To
     let to = (params.to_display_name || params.to_display_name === 0) ? `"${params.to_display_name}" ` : '';
 
+<<<<<<< HEAD
     to += `<${params.to_uri || ruri}>`;
     to += params.to_tag ? `;tag=${params.to_tag}` : '';
     this.to = NameAddrHeader.parse(to);
@@ -19112,6 +20896,32 @@ class OutgoingRequest
     // Call-ID.
     const call_id = params.call_id ||
       (ua.configuration.jssip_id + Utils.createRandomToken(15));
+=======
+    var to_uri = params.to_uri || ruri;
+    var to_params = params.to_tag ? {
+      tag: params.to_tag
+    } : null;
+    var to_display_name = typeof params.to_display_name !== 'undefined' ? params.to_display_name : null;
+    this.to = new NameAddrHeader(to_uri, to_display_name, to_params);
+    this.setHeader('to', this.to.toString()); // From.
+
+    var from_uri = params.from_uri || ua.configuration.uri;
+    var from_params = {
+      tag: params.from_tag || Utils.newTag()
+    };
+    var display_name;
+
+    if (typeof params.from_display_name !== 'undefined') {
+      display_name = params.from_display_name;
+    } else if (ua.configuration.display_name) {
+      display_name = ua.configuration.display_name;
+    } else {
+      display_name = null;
+    }
+
+    this.from = new NameAddrHeader(from_uri, display_name, from_params);
+    this.setHeader('from', this.from.toString()); // Call-ID.
+>>>>>>> master
 
     this.call_id = call_id;
     this.setHeader('call-id', call_id);
@@ -19144,6 +20954,7 @@ class OutgoingRequest
     this.headers[Utils.headerize(name)] = (Array.isArray(value)) ? value : [ value ];
   }
 
+<<<<<<< HEAD
   /**
    * Get the value of the given header name at the given position.
    * -param {String} name header name
@@ -19169,6 +20980,30 @@ class OutgoingRequest
         if (regexp.test(header))
         {
           return header.substring(header.indexOf(':')+1).trim();
+=======
+      if (headers) {
+        if (headers[0]) {
+          return headers[0];
+        }
+      } else {
+        var regexp = new RegExp("^\\s*".concat(name, "\\s*:"), 'i');
+
+        var _iterator = _createForOfIteratorHelper(this.extraHeaders),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var header = _step.value;
+
+            if (regexp.test(header)) {
+              return header.substring(header.indexOf(':') + 1).trim();
+            }
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+>>>>>>> master
         }
       }
     }
@@ -19186,6 +21021,7 @@ class OutgoingRequest
     const headers = this.headers[Utils.headerize(name)];
     const result = [];
 
+<<<<<<< HEAD
     if (headers)
     {
       for (const header of headers)
@@ -19204,9 +21040,25 @@ class OutgoingRequest
         if (regexp.test(header))
         {
           result.push(header.substring(header.indexOf(':')+1).trim());
+=======
+      if (headers) {
+        var _iterator2 = _createForOfIteratorHelper(headers),
+            _step2;
+
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var header = _step2.value;
+            result.push(header);
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+>>>>>>> master
         }
       }
 
+<<<<<<< HEAD
       return result;
     }
   }
@@ -19231,10 +21083,32 @@ class OutgoingRequest
         if (regexp.test(header))
         {
           return true;
+=======
+        return result;
+      } else {
+        var regexp = new RegExp("^\\s*".concat(name, "\\s*:"), 'i');
+
+        var _iterator3 = _createForOfIteratorHelper(this.extraHeaders),
+            _step3;
+
+        try {
+          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+            var _header = _step3.value;
+
+            if (regexp.test(_header)) {
+              result.push(_header.substring(_header.indexOf(':') + 1).trim());
+            }
+          }
+        } catch (err) {
+          _iterator3.e(err);
+        } finally {
+          _iterator3.f();
+>>>>>>> master
         }
       }
     }
 
+<<<<<<< HEAD
     return false;
   }
 
@@ -19254,11 +21128,39 @@ class OutgoingRequest
     else
     {
       this.sdp = sdp_transform.parse(this.body || '');
+=======
+  }, {
+    key: "hasHeader",
+    value: function hasHeader(name) {
+      if (this.headers[Utils.headerize(name)]) {
+        return true;
+      } else {
+        var regexp = new RegExp("^\\s*".concat(name, "\\s*:"), 'i');
+
+        var _iterator4 = _createForOfIteratorHelper(this.extraHeaders),
+            _step4;
+
+        try {
+          for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+            var header = _step4.value;
+
+            if (regexp.test(header)) {
+              return true;
+            }
+          }
+        } catch (err) {
+          _iterator4.e(err);
+        } finally {
+          _iterator4.f();
+        }
+      }
+>>>>>>> master
 
       return this.sdp;
     }
   }
 
+<<<<<<< HEAD
   toString()
   {
     let msg = `${this.method} ${this.ruri} SIP/2.0\r\n`;
@@ -19270,10 +21172,43 @@ class OutgoingRequest
         for (const headerValue of this.headers[headerName])
         {
           msg += `${headerName}: ${headerValue}\r\n`;
+=======
+  }, {
+    key: "parseSDP",
+    value: function parseSDP(force) {
+      if (!force && this.sdp) {
+        return this.sdp;
+      } else {
+        this.sdp = sdp_transform.parse(this.body || '');
+        return this.sdp;
+      }
+    }
+  }, {
+    key: "toString",
+    value: function toString() {
+      var msg = "".concat(this.method, " ").concat(this.ruri, " SIP/2.0\r\n");
+
+      for (var headerName in this.headers) {
+        if (Object.prototype.hasOwnProperty.call(this.headers, headerName)) {
+          var _iterator5 = _createForOfIteratorHelper(this.headers[headerName]),
+              _step5;
+
+          try {
+            for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+              var headerValue = _step5.value;
+              msg += "".concat(headerName, ": ").concat(headerValue, "\r\n");
+            }
+          } catch (err) {
+            _iterator5.e(err);
+          } finally {
+            _iterator5.f();
+          }
+>>>>>>> master
         }
       }
     }
 
+<<<<<<< HEAD
     for (const header of this.extraHeaders)
     {
       msg += `${header.trim()}\r\n`;
@@ -19306,6 +21241,22 @@ class OutgoingRequest
         supported.push('ice');
         break;
     }
+=======
+      var _iterator6 = _createForOfIteratorHelper(this.extraHeaders),
+          _step6;
+
+      try {
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+          var header = _step6.value;
+          msg += "".concat(header.trim(), "\r\n");
+        } // Supported.
+
+      } catch (err) {
+        _iterator6.e(err);
+      } finally {
+        _iterator6.f();
+      }
+>>>>>>> master
 
     supported.push('outbound');
 
@@ -19369,6 +21320,7 @@ class InitialOutgoingInviteRequest extends OutgoingRequest
   {
     const request = new InitialOutgoingInviteRequest(this.ruri, this.ua);
 
+<<<<<<< HEAD
     Object.keys(this.headers).forEach(function(name)
     {
       request.headers[name] = this.headers[name].slice();
@@ -19380,17 +21332,65 @@ class InitialOutgoingInviteRequest extends OutgoingRequest
     request.from = this.from;
     request.call_id = this.call_id;
     request.cseq = this.cseq;
+=======
+var InitialOutgoingInviteRequest = /*#__PURE__*/function (_OutgoingRequest) {
+  _inherits(InitialOutgoingInviteRequest, _OutgoingRequest);
+
+  var _super = _createSuper(InitialOutgoingInviteRequest);
+
+  function InitialOutgoingInviteRequest(ruri, ua, params, extraHeaders, body) {
+    var _this;
+>>>>>>> master
 
     request.transaction = this.transaction;
 
+<<<<<<< HEAD
     return request;
+=======
+    _this = _super.call(this, JsSIP_C.INVITE, ruri, ua, params, extraHeaders, body);
+    _this.transaction = null;
+    return _this;
+>>>>>>> master
   }
 }
 
+<<<<<<< HEAD
 class IncomingMessage
 {
   constructor()
   {
+=======
+  _createClass(InitialOutgoingInviteRequest, [{
+    key: "cancel",
+    value: function cancel(reason) {
+      this.transaction.cancel(reason);
+    }
+  }, {
+    key: "clone",
+    value: function clone() {
+      var request = new InitialOutgoingInviteRequest(this.ruri, this.ua);
+      Object.keys(this.headers).forEach(function (name) {
+        request.headers[name] = this.headers[name].slice();
+      }, this);
+      request.body = this.body;
+      request.extraHeaders = Utils.cloneArray(this.extraHeaders);
+      request.to = this.to;
+      request.from = this.from;
+      request.call_id = this.call_id;
+      request.cseq = this.cseq;
+      request.transaction = this.transaction;
+      return request;
+    }
+  }]);
+
+  return InitialOutgoingInviteRequest;
+}(OutgoingRequest);
+
+var IncomingMessage = /*#__PURE__*/function () {
+  function IncomingMessage() {
+    _classCallCheck(this, IncomingMessage);
+
+>>>>>>> master
     this.data = null;
     this.headers = null;
     this.method = null;
@@ -19459,6 +21459,7 @@ class IncomingMessage
       return [];
     }
 
+<<<<<<< HEAD
     for (const header of headers)
     {
       result.push(header.raw);
@@ -19466,6 +21467,21 @@ class IncomingMessage
 
     return result;
   }
+=======
+      var _iterator7 = _createForOfIteratorHelper(headers),
+          _step7;
+
+      try {
+        for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+          var header = _step7.value;
+          result.push(header.raw);
+        }
+      } catch (err) {
+        _iterator7.e(err);
+      } finally {
+        _iterator7.f();
+      }
+>>>>>>> master
 
   /**
    * Verify the existence of the given header.
@@ -19569,6 +21585,7 @@ class IncomingMessage
     {
       this.sdp = sdp_transform.parse(this.body || '');
 
+<<<<<<< HEAD
       return this.sdp;
     }
   }
@@ -19578,6 +21595,15 @@ class IncomingMessage
     return this.data;
   }
 }
+=======
+var IncomingRequest = /*#__PURE__*/function (_IncomingMessage) {
+  _inherits(IncomingRequest, _IncomingMessage);
+
+  var _super2 = _createSuper(IncomingRequest);
+
+  function IncomingRequest(ua) {
+    var _this2;
+>>>>>>> master
 
 class IncomingRequest extends IncomingMessage
 {
@@ -19585,11 +21611,21 @@ class IncomingRequest extends IncomingMessage
   {
     super();
 
+<<<<<<< HEAD
     this.ua = ua;
     this.headers = {};
     this.ruri = null;
     this.transport = null;
     this.server_transaction = null;
+=======
+    _this2 = _super2.call(this);
+    _this2.ua = ua;
+    _this2.headers = {};
+    _this2.ruri = null;
+    _this2.transport = null;
+    _this2.server_transaction = null;
+    return _this2;
+>>>>>>> master
   }
 
   /**
@@ -19624,6 +21660,7 @@ class IncomingRequest extends IncomingMessage
 
     let response = `SIP/2.0 ${code} ${reason}\r\n`;
 
+<<<<<<< HEAD
     if (this.method === JsSIP_C.INVITE && code > 100 && code <= 200)
     {
       const headers = this.getHeaders('record-route');
@@ -19631,15 +21668,51 @@ class IncomingRequest extends IncomingMessage
       for (const header of headers)
       {
         response += `Record-Route: ${header}\r\n`;
+=======
+      if (this.method === JsSIP_C.INVITE && code > 100 && code <= 200) {
+        var headers = this.getHeaders('record-route');
+
+        var _iterator8 = _createForOfIteratorHelper(headers),
+            _step8;
+
+        try {
+          for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+            var header = _step8.value;
+            response += "Record-Route: ".concat(header, "\r\n");
+          }
+        } catch (err) {
+          _iterator8.e(err);
+        } finally {
+          _iterator8.f();
+        }
+>>>>>>> master
       }
     }
 
+<<<<<<< HEAD
     const vias = this.getHeaders('via');
 
     for (const via of vias)
     {
       response += `Via: ${via}\r\n`;
     }
+=======
+      var vias = this.getHeaders('via');
+
+      var _iterator9 = _createForOfIteratorHelper(vias),
+          _step9;
+
+      try {
+        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+          var via = _step9.value;
+          response += "Via: ".concat(via, "\r\n");
+        }
+      } catch (err) {
+        _iterator9.e(err);
+      } finally {
+        _iterator9.f();
+      }
+>>>>>>> master
 
     if (!this.to_tag && code > 100)
     {
@@ -19650,6 +21723,7 @@ class IncomingRequest extends IncomingMessage
       to += `;tag=${this.to_tag}`;
     }
 
+<<<<<<< HEAD
     response += `To: ${to}\r\n`;
     response += `From: ${this.getHeader('From')}\r\n`;
     response += `Call-ID: ${this.call_id}\r\n`;
@@ -19685,6 +21759,27 @@ class IncomingRequest extends IncomingMessage
         }
         supported.push('replaces');
     }
+=======
+      response += "To: ".concat(to, "\r\n");
+      response += "From: ".concat(this.getHeader('From'), "\r\n");
+      response += "Call-ID: ".concat(this.call_id, "\r\n");
+      response += "CSeq: ".concat(this.cseq, " ").concat(this.method, "\r\n");
+
+      var _iterator10 = _createForOfIteratorHelper(extraHeaders),
+          _step10;
+
+      try {
+        for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+          var _header2 = _step10.value;
+          response += "".concat(_header2.trim(), "\r\n");
+        } // Supported.
+
+      } catch (err) {
+        _iterator10.e(err);
+      } finally {
+        _iterator10.f();
+      }
+>>>>>>> master
 
     supported.push('outbound');
 
@@ -19748,6 +21843,44 @@ class IncomingRequest extends IncomingMessage
     {
       response += `Via: ${via}\r\n`;
     }
+<<<<<<< HEAD
+=======
+    /**
+    * Stateless reply.
+    * -param {Number} code status code
+    * -param {String} reason reason phrase
+    */
+
+  }, {
+    key: "reply_sl",
+    value: function reply_sl() {
+      var code = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      var reason = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+      var vias = this.getHeaders('via'); // Validate code and reason values.
+
+      if (!code || code < 100 || code > 699) {
+        throw new TypeError("Invalid status_code: ".concat(code));
+      } else if (reason && typeof reason !== 'string' && !(reason instanceof String)) {
+        throw new TypeError("Invalid reason_phrase: ".concat(reason));
+      }
+
+      reason = reason || JsSIP_C.REASON_PHRASE[code] || '';
+      var response = "SIP/2.0 ".concat(code, " ").concat(reason, "\r\n");
+
+      var _iterator11 = _createForOfIteratorHelper(vias),
+          _step11;
+
+      try {
+        for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+          var via = _step11.value;
+          response += "Via: ".concat(via, "\r\n");
+        }
+      } catch (err) {
+        _iterator11.e(err);
+      } finally {
+        _iterator11.f();
+      }
+>>>>>>> master
 
     let to = this.getHeader('To');
 
@@ -19760,6 +21893,7 @@ class IncomingRequest extends IncomingMessage
       to += `;tag=${this.to_tag}`;
     }
 
+<<<<<<< HEAD
     response += `To: ${to}\r\n`;
     response += `From: ${this.getHeader('From')}\r\n`;
     response += `Call-ID: ${this.call_id}\r\n`;
@@ -19769,6 +21903,15 @@ class IncomingRequest extends IncomingMessage
     this.transport.send(response);
   }
 }
+=======
+var IncomingResponse = /*#__PURE__*/function (_IncomingMessage2) {
+  _inherits(IncomingResponse, _IncomingMessage2);
+
+  var _super3 = _createSuper(IncomingResponse);
+
+  function IncomingResponse() {
+    var _this3;
+>>>>>>> master
 
 class IncomingResponse extends IncomingMessage
 {
@@ -19776,9 +21919,17 @@ class IncomingResponse extends IncomingMessage
   {
     super();
 
+<<<<<<< HEAD
     this.headers = {};
     this.status_code = null;
     this.reason_phrase = null;
+=======
+    _this3 = _super3.call(this);
+    _this3.headers = {};
+    _this3.status_code = null;
+    _this3.reason_phrase = null;
+    return _this3;
+>>>>>>> master
   }
 }
 
@@ -19798,7 +21949,7 @@ const debugerror = require('debug')('JsSIP:ERROR:Socket');
 debugerror.log = console.warn.bind(console);
 
 /**
- * Interface documentation: http://jssip.net/documentation/$last_version/api/socket/
+ * Interface documentation: https://jssip.net/documentation/$last_version/api/socket/
  *
  * interface Socket {
  *  attribute String via_transport
@@ -19896,6 +22047,7 @@ module.exports = {
   PROVISIONAL_RESPONSE_INTERVAL : 60000 // See RFC 3261 Section 13.3.1.1
 };
 
+<<<<<<< HEAD
 },{}],22:[function(require,module,exports){
 const EventEmitter = require('events').EventEmitter;
 const JsSIP_C = require('./Constants');
@@ -19916,6 +22068,9 @@ const C = {
   STATUS_COMPLETED  : 5,
   STATUS_TERMINATED : 6,
   STATUS_CONFIRMED  : 7,
+=======
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+>>>>>>> master
 
   // Transaction types.
   NON_INVITE_CLIENT : 'nict',
@@ -19937,15 +22092,20 @@ class NonInviteClientTransaction extends EventEmitter
     this.request = request;
     this.eventHandlers = eventHandlers;
 
+<<<<<<< HEAD
     let via = `SIP/2.0/${transport.via_transport}`;
 
     via += ` ${ua.configuration.via_host};branch=${this.id}`;
 
     this.request.setHeader('via', via);
+=======
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+>>>>>>> master
 
     this.ua.newTransaction(this);
   }
 
+<<<<<<< HEAD
   get C()
   {
     return C;
@@ -19956,6 +22116,19 @@ class NonInviteClientTransaction extends EventEmitter
     this.state = state;
     this.emit('stateChanged');
   }
+=======
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var EventEmitter = require('events').EventEmitter;
+>>>>>>> master
 
   send()
   {
@@ -20040,6 +22213,7 @@ class InviteClientTransaction extends EventEmitter
   {
     super();
 
+<<<<<<< HEAD
     this.type = C.INVITE_CLIENT;
     this.id = `z9hG4bK${Math.floor(Math.random() * 10000000)}`;
     this.ua = ua;
@@ -20049,18 +22223,43 @@ class InviteClientTransaction extends EventEmitter
     request.transaction = this;
 
     let via = `SIP/2.0/${transport.via_transport}`;
+=======
+var NonInviteClientTransaction = /*#__PURE__*/function (_EventEmitter) {
+  _inherits(NonInviteClientTransaction, _EventEmitter);
+
+  var _super = _createSuper(NonInviteClientTransaction);
+
+  function NonInviteClientTransaction(ua, transport, request, eventHandlers) {
+    var _this;
+>>>>>>> master
 
     via += ` ${ua.configuration.via_host};branch=${this.id}`;
 
+<<<<<<< HEAD
     this.request.setHeader('via', via);
+=======
+    _this = _super.call(this);
+    _this.type = C.NON_INVITE_CLIENT;
+    _this.id = "z9hG4bK".concat(Math.floor(Math.random() * 10000000));
+    _this.ua = ua;
+    _this.transport = transport;
+    _this.request = request;
+    _this.eventHandlers = eventHandlers;
+    var via = "SIP/2.0/".concat(transport.via_transport);
+    via += " ".concat(ua.configuration.via_host, ";branch=").concat(_this.id);
+>>>>>>> master
 
     this.ua.newTransaction(this);
   }
 
+<<<<<<< HEAD
   get C()
   {
     return C;
   }
+=======
+    _this.ua.newTransaction(_assertThisInitialized(_this));
+>>>>>>> master
 
   stateChanged(state)
   {
@@ -20235,23 +22434,47 @@ class AckClientTransaction extends EventEmitter
   {
     super();
 
+<<<<<<< HEAD
     this.id = `z9hG4bK${Math.floor(Math.random() * 10000000)}`;
     this.transport = transport;
     this.request = request;
     this.eventHandlers = eventHandlers;
 
     let via = `SIP/2.0/${transport.via_transport}`;
+=======
+var InviteClientTransaction = /*#__PURE__*/function (_EventEmitter2) {
+  _inherits(InviteClientTransaction, _EventEmitter2);
+
+  var _super2 = _createSuper(InviteClientTransaction);
+
+  function InviteClientTransaction(ua, transport, request, eventHandlers) {
+    var _this4;
+>>>>>>> master
 
     via += ` ${ua.configuration.via_host};branch=${this.id}`;
 
+<<<<<<< HEAD
     this.request.setHeader('via', via);
   }
+=======
+    _this4 = _super2.call(this);
+    _this4.type = C.INVITE_CLIENT;
+    _this4.id = "z9hG4bK".concat(Math.floor(Math.random() * 10000000));
+    _this4.ua = ua;
+    _this4.transport = transport;
+    _this4.request = request;
+    _this4.eventHandlers = eventHandlers;
+    request.transaction = _assertThisInitialized(_this4);
+    var via = "SIP/2.0/".concat(transport.via_transport);
+    via += " ".concat(ua.configuration.via_host, ";branch=").concat(_this4.id);
+>>>>>>> master
 
   get C()
   {
     return C;
   }
 
+<<<<<<< HEAD
   send()
   {
     if (!this.transport.send(this.request))
@@ -20259,6 +22482,9 @@ class AckClientTransaction extends EventEmitter
       this.onTransportError();
     }
   }
+=======
+    _this4.ua.newTransaction(_assertThisInitialized(_this4));
+>>>>>>> master
 
   onTransportError()
   {
@@ -20316,6 +22542,7 @@ class NonInviteServerTransaction extends EventEmitter
       this.stateChanged(C.STATUS_TERMINATED);
       this.ua.destroyTransaction(this);
     }
+<<<<<<< HEAD
   }
 
   receiveResponse(status_code, response, onSuccess, onFailure)
@@ -20351,6 +22578,45 @@ class NonInviteServerTransaction extends EventEmitter
             onSuccess();
           }
           break;
+=======
+  }, {
+    key: "sendACK",
+    value: function sendACK(response) {
+      var _this6 = this;
+
+      var ack = new SIPMessage.OutgoingRequest(JsSIP_C.ACK, this.request.ruri, this.ua, {
+        'route_set': this.request.getHeaders('route'),
+        'call_id': this.request.getHeader('call-id'),
+        'cseq': this.request.cseq
+      });
+      ack.setHeader('from', this.request.getHeader('from'));
+      ack.setHeader('via', this.request.getHeader('via'));
+      ack.setHeader('to', response.getHeader('to'));
+      this.D = setTimeout(function () {
+        _this6.timer_D();
+      }, Timers.TIMER_D);
+      this.transport.send(ack);
+    }
+  }, {
+    key: "cancel",
+    value: function cancel(reason) {
+      // Send only if a provisional response (>100) has been received.
+      if (this.state !== C.STATUS_PROCEEDING) {
+        return;
+      }
+
+      var cancel = new SIPMessage.OutgoingRequest(JsSIP_C.CANCEL, this.request.ruri, this.ua, {
+        'route_set': this.request.getHeaders('route'),
+        'call_id': this.request.getHeader('call-id'),
+        'cseq': this.request.cseq
+      });
+      cancel.setHeader('from', this.request.getHeader('from'));
+      cancel.setHeader('via', this.request.getHeader('via'));
+      cancel.setHeader('to', this.request.getHeader('to'));
+
+      if (reason) {
+        cancel.setHeader('reason', reason);
+>>>>>>> master
       }
     }
     else if (status_code >= 200 && status_code <= 699)
@@ -20382,14 +22648,139 @@ class NonInviteServerTransaction extends EventEmitter
           break;
       }
     }
+<<<<<<< HEAD
+=======
+  }, {
+    key: "C",
+    get: function get() {
+      return C;
+    }
+  }]);
+
+  return InviteClientTransaction;
+}(EventEmitter);
+
+var AckClientTransaction = /*#__PURE__*/function (_EventEmitter3) {
+  _inherits(AckClientTransaction, _EventEmitter3);
+
+  var _super3 = _createSuper(AckClientTransaction);
+
+  function AckClientTransaction(ua, transport, request, eventHandlers) {
+    var _this8;
+
+    _classCallCheck(this, AckClientTransaction);
+
+    _this8 = _super3.call(this);
+    _this8.id = "z9hG4bK".concat(Math.floor(Math.random() * 10000000));
+    _this8.transport = transport;
+    _this8.request = request;
+    _this8.eventHandlers = eventHandlers;
+    var via = "SIP/2.0/".concat(transport.via_transport);
+    via += " ".concat(ua.configuration.via_host, ";branch=").concat(_this8.id);
+
+    _this8.request.setHeader('via', via);
+
+    return _this8;
+>>>>>>> master
   }
 }
 
+<<<<<<< HEAD
 class InviteServerTransaction extends EventEmitter
 {
   constructor(ua, transport, request)
   {
     super();
+=======
+  _createClass(AckClientTransaction, [{
+    key: "send",
+    value: function send() {
+      if (!this.transport.send(this.request)) {
+        this.onTransportError();
+      }
+    }
+  }, {
+    key: "onTransportError",
+    value: function onTransportError() {
+      debugact("transport error occurred for transaction ".concat(this.id));
+      this.eventHandlers.onTransportError();
+    }
+  }, {
+    key: "C",
+    get: function get() {
+      return C;
+    }
+  }]);
+
+  return AckClientTransaction;
+}(EventEmitter);
+
+var NonInviteServerTransaction = /*#__PURE__*/function (_EventEmitter4) {
+  _inherits(NonInviteServerTransaction, _EventEmitter4);
+
+  var _super4 = _createSuper(NonInviteServerTransaction);
+
+  function NonInviteServerTransaction(ua, transport, request) {
+    var _this9;
+
+    _classCallCheck(this, NonInviteServerTransaction);
+
+    _this9 = _super4.call(this);
+    _this9.type = C.NON_INVITE_SERVER;
+    _this9.id = request.via_branch;
+    _this9.ua = ua;
+    _this9.transport = transport;
+    _this9.request = request;
+    _this9.last_response = '';
+    request.server_transaction = _assertThisInitialized(_this9);
+    _this9.state = C.STATUS_TRYING;
+    ua.newTransaction(_assertThisInitialized(_this9));
+    return _this9;
+  }
+
+  _createClass(NonInviteServerTransaction, [{
+    key: "stateChanged",
+    value: function stateChanged(state) {
+      this.state = state;
+      this.emit('stateChanged');
+    }
+  }, {
+    key: "timer_J",
+    value: function timer_J() {
+      debugnist("Timer J expired for transaction ".concat(this.id));
+      this.stateChanged(C.STATUS_TERMINATED);
+      this.ua.destroyTransaction(this);
+    }
+  }, {
+    key: "onTransportError",
+    value: function onTransportError() {
+      if (!this.transportError) {
+        this.transportError = true;
+        debugnist("transport error occurred, deleting transaction ".concat(this.id));
+        clearTimeout(this.J);
+        this.stateChanged(C.STATUS_TERMINATED);
+        this.ua.destroyTransaction(this);
+      }
+    }
+  }, {
+    key: "receiveResponse",
+    value: function receiveResponse(status_code, response, onSuccess, onFailure) {
+      var _this10 = this;
+
+      if (status_code === 100) {
+        /* RFC 4320 4.1
+         * 'A SIP element MUST NOT
+         * send any provisional response with a
+         * Status-Code other than 100 to a non-INVITE request.'
+         */
+        switch (this.state) {
+          case C.STATUS_TRYING:
+            this.stateChanged(C.STATUS_PROCEEDING);
+
+            if (!this.transport.send(response)) {
+              this.onTransportError();
+            }
+>>>>>>> master
 
     this.type = C.INVITE_SERVER;
     this.id = request.via_branch;
@@ -20428,6 +22819,7 @@ class InviteServerTransaction extends EventEmitter
       debugist('ACK not received, dialog will be terminated');
     }
 
+<<<<<<< HEAD
     this.stateChanged(C.STATUS_TERMINATED);
     this.ua.destroyTransaction(this);
   }
@@ -20436,17 +22828,42 @@ class InviteServerTransaction extends EventEmitter
   {
     this.stateChanged(C.STATUS_TERMINATED);
   }
+=======
+var InviteServerTransaction = /*#__PURE__*/function (_EventEmitter5) {
+  _inherits(InviteServerTransaction, _EventEmitter5);
+
+  var _super5 = _createSuper(InviteServerTransaction);
+
+  function InviteServerTransaction(ua, transport, request) {
+    var _this11;
+>>>>>>> master
 
   // RFC 6026 7.1.
   timer_L()
   {
     debugist(`Timer L expired for transaction ${this.id}`);
 
+<<<<<<< HEAD
     if (this.state === C.STATUS_ACCEPTED)
     {
       this.stateChanged(C.STATUS_TERMINATED);
       this.ua.destroyTransaction(this);
     }
+=======
+    _this11 = _super5.call(this);
+    _this11.type = C.INVITE_SERVER;
+    _this11.id = request.via_branch;
+    _this11.ua = ua;
+    _this11.transport = transport;
+    _this11.request = request;
+    _this11.last_response = '';
+    request.server_transaction = _assertThisInitialized(_this11);
+    _this11.state = C.STATUS_PROCEEDING;
+    ua.newTransaction(_assertThisInitialized(_this11));
+    _this11.resendProvisionalTimer = null;
+    request.reply(100);
+    return _this11;
+>>>>>>> master
   }
 
   onTransportError()
@@ -20470,7 +22887,16 @@ class InviteServerTransaction extends EventEmitter
       this.stateChanged(C.STATUS_TERMINATED);
       this.ua.destroyTransaction(this);
     }
+<<<<<<< HEAD
   }
+=======
+  }, {
+    key: "timer_I",
+    value: function timer_I() {
+      this.stateChanged(C.STATUS_TERMINATED);
+      this.ua.destroyTransaction(this);
+    } // RFC 6026 7.1.
+>>>>>>> master
 
   resend_provisional()
   {
@@ -20705,6 +23131,8 @@ const Socket = require('./Socket');
 const debug = require('debug')('JsSIP:Transport');
 const debugerror = require('debug')('JsSIP:ERROR:Transport');
 
+var JsSIP_C = require('./Constants');
+
 debugerror.log = console.warn.bind(console);
 
 /**
@@ -20717,6 +23145,7 @@ const C = {
   STATUS_DISCONNECTED : 2,
 
   // Socket status.
+<<<<<<< HEAD
   SOCKET_STATUS_READY : 0,
   SOCKET_STATUS_ERROR : 1,
 
@@ -20724,6 +23153,16 @@ const C = {
   recovery_options : {
     min_interval : 2, // minimum interval in seconds between recover attempts
     max_interval : 30 // maximum interval in seconds between recover attempts
+=======
+  SOCKET_STATUS_READY: 0,
+  SOCKET_STATUS_ERROR: 1,
+  // Recovery options.
+  recovery_options: {
+    // minimum interval in seconds between recover attempts.
+    min_interval: JsSIP_C.CONNECTION_RECOVERY_MIN_INTERVAL,
+    // maximum interval in seconds between recover attempts.
+    max_interval: JsSIP_C.CONNECTION_RECOVERY_MAX_INTERVAL
+>>>>>>> master
   }
 };
 
@@ -20733,10 +23172,20 @@ const C = {
  *
  * @socket JsSIP::Socket instance
  */
+<<<<<<< HEAD
 module.exports = class Transport
 {
   constructor(sockets, recovery_options = C.recovery_options)
   {
+=======
+
+module.exports = /*#__PURE__*/function () {
+  function Transport(sockets) {
+    var recovery_options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : C.recovery_options;
+
+    _classCallCheck(this, Transport);
+
+>>>>>>> master
     debug('new()');
 
     this.status = C.STATUS_DISCONNECTED;
@@ -20917,6 +23366,7 @@ module.exports = class Transport
       k = this.recovery_options.max_interval;
     }
 
+<<<<<<< HEAD
     debug(`reconnection attempt: ${this.recover_attempts}. next connection attempt in ${k} seconds`);
 
     this.recovery_timer = setTimeout(() =>
@@ -20925,6 +23375,14 @@ module.exports = class Transport
       {
         // Get the next available socket with higher weight.
         this._getSocket();
+=======
+  return Transport;
+}();
+},{"./Constants":2,"./Socket":20,"debug":30}],24:[function(require,module,exports){
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+>>>>>>> master
 
         // Connect the socket.
         this.connect();
@@ -20932,6 +23390,7 @@ module.exports = class Transport
     }, k * 1000);
   }
 
+<<<<<<< HEAD
   /**
    * get the next available socket with higher weight
    */
@@ -20959,6 +23418,9 @@ module.exports = class Transport
         candidates.push(socket);
       }
     });
+=======
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+>>>>>>> master
 
     if (candidates.length === 0)
     {
@@ -20974,10 +23436,24 @@ module.exports = class Transport
       return;
     }
 
+<<<<<<< HEAD
     const idx = Math.floor((Math.random()* candidates.length));
 
     this.socket = candidates[idx].socket;
   }
+=======
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var EventEmitter = require('events').EventEmitter;
+>>>>>>> master
 
   /**
    * Socket Event Handlers
@@ -21035,6 +23511,7 @@ module.exports = class Transport
     {
       debug('received message with CRLF Keep Alive response');
 
+<<<<<<< HEAD
       return;
     }
 
@@ -21049,6 +23526,9 @@ module.exports = class Transport
       {
         debug('received binary message failed to be converted into string,' +
               ' message discarded');
+=======
+var Parser = require('./Parser');
+>>>>>>> master
 
         return;
       }
@@ -21114,14 +23594,39 @@ module.exports = class UA extends EventEmitter
     return C;
   }
 
+<<<<<<< HEAD
   constructor(configuration)
   {
     debug('new() [configuration:%o]', configuration);
+=======
+module.exports = /*#__PURE__*/function (_EventEmitter) {
+  _inherits(UA, _EventEmitter);
+
+  var _super = _createSuper(UA);
+
+  _createClass(UA, null, [{
+    key: "C",
+    // Expose C object.
+    get: function get() {
+      return C;
+    }
+  }]);
+
+  function UA(configuration) {
+    var _this;
+>>>>>>> master
 
     super();
 
+<<<<<<< HEAD
     this._cache = {
       credentials : {}
+=======
+    debug('new() [configuration:%o]', configuration);
+    _this = _super.call(this);
+    _this._cache = {
+      credentials: {}
+>>>>>>> master
     };
 
     this._configuration = Object.assign({}, config.settings);
@@ -21148,11 +23653,17 @@ module.exports = class UA extends EventEmitter
 
     this._closeTimer = null;
 
+<<<<<<< HEAD
     // Check configuration argument.
     if (configuration === undefined)
     {
       throw new TypeError('Not enough arguments');
     }
+=======
+    _this._registrator = new Registrator(_assertThisInitialized(_this));
+    return _this;
+  }
+>>>>>>> master
 
     // Load configuration.
     try
@@ -21408,6 +23919,7 @@ module.exports = class UA extends EventEmitter
     }
   }
 
+<<<<<<< HEAD
   /**
    * Normalice a string into a valid SIP request URI
    * -param {String} target
@@ -21417,6 +23929,18 @@ module.exports = class UA extends EventEmitter
   {
     return Utils.normalizeTarget(target, this._configuration.hostport_params);
   }
+=======
+        case 'display_name':
+          {
+            this._configuration.display_name = value;
+            break;
+          }
+
+        default:
+          debugerror('set() | cannot set "%s" parameter in runtime', parameter);
+          return false;
+      }
+>>>>>>> master
 
   /**
    * Allow retrieving configuration and autogenerated fields in runtime.
@@ -21663,9 +24187,28 @@ module.exports = class UA extends EventEmitter
       {
         request.reply(405);
 
+<<<<<<< HEAD
         return;
       }
     }
+=======
+          case JsSIP_C.NOTIFY:
+            // Receive new sip event.
+            this.emit('sipEvent', {
+              event: request.event,
+              request: request
+            });
+            request.reply(200);
+            break;
+
+          default:
+            request.reply(405);
+            break;
+        }
+      } // In-dialog request.
+      else {
+          dialog = this._findDialog(request.call_id, request.from_tag, request.to_tag);
+>>>>>>> master
 
     let dialog;
     let session;
@@ -22038,7 +24581,14 @@ function onTransportConnect(data)
 function onTransportDisconnect(data)
 {
   // Run _onTransportError_ callback on every client transaction using _transport_.
+<<<<<<< HEAD
   const client_transactions = [ 'nict', 'ict', 'nist', 'ist' ];
+=======
+  var client_transactions = ['nict', 'ict', 'nist', 'ist'];
+
+  for (var _i = 0, _client_transactions = client_transactions; _i < _client_transactions.length; _i++) {
+    var type = _client_transactions[_i];
+>>>>>>> master
 
   for (const type of client_transactions)
   {
@@ -22124,6 +24674,23 @@ function onTransportData(data)
     }
   }
 }
+<<<<<<< HEAD
+=======
+},{"./Config":1,"./Constants":2,"./Exceptions":6,"./Message":9,"./Parser":11,"./RTCSession":12,"./Registrator":17,"./SIPMessage":19,"./Transactions":22,"./Transport":23,"./URI":25,"./Utils":26,"./sanityCheck":28,"debug":30,"events":29}],25:[function(require,module,exports){
+"use strict";
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+>>>>>>> master
 
 },{"./Config":1,"./Constants":2,"./Exceptions":6,"./Grammar":7,"./Message":9,"./Parser":11,"./RTCSession":12,"./Registrator":17,"./SIPMessage":19,"./Transactions":22,"./Transport":23,"./URI":25,"./Utils":26,"./sanityCheck":28,"debug":30,"events":29}],25:[function(require,module,exports){
 const JsSIP_C = require('./Constants');
@@ -22149,9 +24716,29 @@ module.exports = class URI
   {
     uri = Grammar.parse(uri, 'SIP_URI');
 
+<<<<<<< HEAD
     if (uri !== -1)
     {
       return uri;
+=======
+
+module.exports = /*#__PURE__*/function () {
+  _createClass(URI, null, [{
+    key: "parse",
+
+    /**
+      * Parse the given string and returns a JsSIP.URI instance or undefined if
+      * it is an invalid URI.
+      */
+    value: function parse(uri) {
+      uri = Grammar.parse(uri, 'SIP_URI');
+
+      if (uri !== -1) {
+        return uri;
+      } else {
+        return undefined;
+      }
+>>>>>>> master
     }
     else
     {
@@ -22280,6 +24867,7 @@ module.exports = class URI
     this._headers[Utils.headerize(name)] = (Array.isArray(value)) ? value : [ value ];
   }
 
+<<<<<<< HEAD
   getHeader(name)
   {
     if (name)
@@ -22295,6 +24883,25 @@ module.exports = class URI
       return (this._headers.hasOwnProperty(Utils.headerize(name)) && true) || false;
     }
   }
+=======
+      for (var header in this._headers) {
+        if (Object.prototype.hasOwnProperty.call(this._headers, header)) {
+          var _iterator = _createForOfIteratorHelper(this._headers[header]),
+              _step;
+
+          try {
+            for (_iterator.s(); !(_step = _iterator.n()).done;) {
+              var item = _step.value;
+              headers.push("".concat(header, "=").concat(item));
+            }
+          } catch (err) {
+            _iterator.e(err);
+          } finally {
+            _iterator.f();
+          }
+        }
+      }
+>>>>>>> master
 
   deleteHeader(header)
   {
@@ -22370,8 +24977,18 @@ module.exports = class URI
       uri += `?${headers.join('&')}`;
     }
 
+<<<<<<< HEAD
     return uri;
   }
+=======
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+>>>>>>> master
 
   toAor(show_port)
   {
@@ -22434,12 +25051,24 @@ exports.isEmpty = (value) =>
       (typeof(value) === 'number' && isNaN(value)));
 };
 
+<<<<<<< HEAD
 exports.hasMethods = function(obj, ...methodNames)
 {
   for (const methodName of methodNames)
   {
     if (isFunction(obj[methodName]))
     {
+=======
+exports.hasMethods = function (obj) {
+  for (var _len = arguments.length, methodNames = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    methodNames[_key - 1] = arguments[_key];
+  }
+
+  for (var _i = 0, _methodNames = methodNames; _i < _methodNames.length; _i++) {
+    var methodName = _methodNames[_i];
+
+    if (isFunction(obj[methodName])) {
+>>>>>>> master
       return false;
     }
   }
@@ -22461,6 +25090,7 @@ const createRandomToken = exports.createRandomToken = (size, base = 32) =>
   return token;
 };
 
+<<<<<<< HEAD
 exports.newTag = () => createRandomToken(10);
 
 // http://stackoverflow.com/users/109538/broofa.
@@ -22469,6 +25099,11 @@ exports.newUUID = () =>
   const UUID = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) =>
   {
     const r = Math.random()*16|0, v = c === 'x' ? r : ((r&0x3)|0x8);
+=======
+exports.newTag = function () {
+  return createRandomToken(10);
+}; // https://stackoverflow.com/users/109538/broofa.
+>>>>>>> master
 
 
     return v.toString(16);
@@ -22629,7 +25264,7 @@ exports.sipErrorCause = (status_code) =>
 };
 
 /**
-* Generate a random Test-Net IP (http://tools.ietf.org/html/rfc5735)
+* Generate a random Test-Net IP (https://tools.ietf.org/html/rfc5735)
 */
 exports.getRandomTestNetIP = () =>
 {
@@ -22638,8 +25273,14 @@ exports.getRandomTestNetIP = () =>
     return Math.floor((Math.random() * (to-from+1)) + from);
   }
 
+<<<<<<< HEAD
   return `192.0.2.${getOctet(1, 254)}`;
 };
+=======
+  return "192.0.2.".concat(getOctet(1, 254));
+}; // MD5 (Message-Digest Algorithm) https://www.webtoolkit.info.
+
+>>>>>>> master
 
 // MD5 (Message-Digest Algorithm) http://www.webtoolkit.info.
 exports.calculateMD5 = (string) =>
@@ -22905,22 +25546,72 @@ exports.closeMediaStream = (stream) =>
     if (stream.getTracks)
     {
       tracks = stream.getTracks();
+<<<<<<< HEAD
       for (const track of tracks)
       {
         track.stop();
+=======
+
+      var _iterator = _createForOfIteratorHelper(tracks),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var track = _step.value;
+          track.stop();
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+>>>>>>> master
       }
     }
     else
     {
       tracks = stream.getAudioTracks();
+<<<<<<< HEAD
       for (const track of tracks)
       {
         track.stop();
+=======
+
+      var _iterator2 = _createForOfIteratorHelper(tracks),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var _track = _step2.value;
+
+          _track.stop();
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+>>>>>>> master
       }
       tracks = stream.getVideoTracks();
+<<<<<<< HEAD
       for (const track of tracks)
       {
         track.stop();
+=======
+
+      var _iterator3 = _createForOfIteratorHelper(tracks),
+          _step3;
+
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var _track2 = _step3.value;
+
+          _track2.stop();
+        }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
+>>>>>>> master
       }
     }
   }
@@ -22940,6 +25631,13 @@ exports.cloneArray = (array) =>
   return (array && array.slice()) || [];
 };
 
+<<<<<<< HEAD
+=======
+exports.cloneObject = function (obj) {
+  var fallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return obj && Object.assign({}, obj) || fallback;
+};
+>>>>>>> master
 },{"./Constants":2,"./Grammar":7,"./URI":25}],27:[function(require,module,exports){
 (function (global){
 const Grammar = require('./Grammar');
@@ -22952,10 +25650,17 @@ if (typeof global.keevioWebSocket !== 'undefined')
   global.WebSocket = global.keevioWebSocket;
 }
 
+<<<<<<< HEAD
 module.exports = class WebSocketInterface
 {
   constructor(url)
   {
+=======
+module.exports = /*#__PURE__*/function () {
+  function WebSocketInterface(url) {
+    _classCallCheck(this, WebSocketInterface);
+
+>>>>>>> master
     debug('new() [url:"%s"]', url);
 
     this._url = url;
@@ -23099,6 +25804,7 @@ module.exports = class WebSocketInterface
    * WebSocket Event Handlers
    */
 
+<<<<<<< HEAD
   _onOpen()
   {
     debug(`WebSocket ${this._url} connected`);
@@ -23114,6 +25820,15 @@ module.exports = class WebSocketInterface
     {
       debug('WebSocket abrupt disconnection');
     }
+=======
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+var JsSIP_C = require('./Constants');
+>>>>>>> master
 
     const data = {
       socket : this,
@@ -23173,14 +25888,32 @@ module.exports = (m, u, t) =>
   ua = u;
   transport = t;
 
+<<<<<<< HEAD
   for (const check of all)
   {
     if (check() === false)
     {
       return false;
+=======
+  var _iterator = _createForOfIteratorHelper(all),
+      _step;
+
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var _check2 = _step.value;
+
+      if (_check2() === false) {
+        return false;
+      }
+>>>>>>> master
     }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
   }
 
+<<<<<<< HEAD
   if (message instanceof SIPMessage.IncomingRequest)
   {
     for (const check of requests)
@@ -23188,8 +25921,26 @@ module.exports = (m, u, t) =>
       if (check() === false)
       {
         return false;
+=======
+  if (message instanceof SIPMessage.IncomingRequest) {
+    var _iterator2 = _createForOfIteratorHelper(requests),
+        _step2;
+
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var check = _step2.value;
+
+        if (check() === false) {
+          return false;
+        }
+>>>>>>> master
       }
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
     }
+<<<<<<< HEAD
   }
 
   else if (message instanceof SIPMessage.IncomingResponse)
@@ -23199,7 +25950,24 @@ module.exports = (m, u, t) =>
       if (check() === false)
       {
         return false;
+=======
+  } else if (message instanceof SIPMessage.IncomingResponse) {
+    var _iterator3 = _createForOfIteratorHelper(responses),
+        _step3;
+
+    try {
+      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+        var _check = _step3.value;
+
+        if (_check() === false) {
+          return false;
+        }
+>>>>>>> master
       }
+    } catch (err) {
+      _iterator3.e(err);
+    } finally {
+      _iterator3.f();
     }
   }
 
@@ -23367,11 +26135,16 @@ function minimumHeaders()
 {
   const mandatoryHeaders = [ 'from', 'to', 'call_id', 'cseq', 'via' ];
 
+<<<<<<< HEAD
   for (const header of mandatoryHeaders)
   {
     if (!message.hasHeader(header))
     {
       debug(`missing mandatory header field : ${header}, dropping the response`);
+=======
+  for (var _i = 0, _mandatoryHeaders = mandatoryHeaders; _i < _mandatoryHeaders.length; _i++) {
+    var header = _mandatoryHeaders[_i];
+>>>>>>> master
 
       return false;
     }
@@ -23383,12 +26156,32 @@ function reply(status_code)
 {
   const vias = message.getHeaders('via');
 
+<<<<<<< HEAD
   let to;
   let response = `SIP/2.0 ${status_code} ${JsSIP_C.REASON_PHRASE[status_code]}\r\n`;
 
   for (const via of vias)
   {
     response += `Via: ${via}\r\n`;
+=======
+function reply(status_code) {
+  var vias = message.getHeaders('via');
+  var to;
+  var response = "SIP/2.0 ".concat(status_code, " ").concat(JsSIP_C.REASON_PHRASE[status_code], "\r\n");
+
+  var _iterator4 = _createForOfIteratorHelper(vias),
+      _step4;
+
+  try {
+    for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+      var via = _step4.value;
+      response += "Via: ".concat(via, "\r\n");
+    }
+  } catch (err) {
+    _iterator4.e(err);
+  } finally {
+    _iterator4.f();
+>>>>>>> master
   }
 
   to = message.getHeader('To');
@@ -24346,7 +27139,9 @@ function setup(env) {
 	}
 
 	function extend(namespace, delimiter) {
-		return createDebug(this.namespace + (typeof delimiter === 'undefined' ? ':' : delimiter) + namespace);
+		const newDebug = createDebug(this.namespace + (typeof delimiter === 'undefined' ? ':' : delimiter) + namespace);
+		newDebug.log = this.log;
+		return newDebug;
 	}
 
 	/**
@@ -24497,7 +27292,7 @@ module.exports = function(val, options) {
   var type = typeof val;
   if (type === 'string' && val.length > 0) {
     return parse(val);
-  } else if (type === 'number' && isNaN(val) === false) {
+  } else if (type === 'number' && isFinite(val)) {
     return options.long ? fmtLong(val) : fmtShort(val);
   }
   throw new Error(
@@ -24519,7 +27314,7 @@ function parse(str) {
   if (str.length > 100) {
     return;
   }
-  var match = /^((?:\d+)?\-?\d?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
+  var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
     str
   );
   if (!match) {
@@ -24822,7 +27617,8 @@ var grammar = module.exports = {
     name: 'version',
     reg: /^(\d*)$/
   }],
-  o: [{ //o=- 20518 0 IN IP4 203.0.113.1
+  o: [{
+    // o=- 20518 0 IN IP4 203.0.113.1
     // NB: sessionId will be a String in most cases because it is huge
     name: 'origin',
     reg: /^(\S*) (\d*) (\d*) (\S*) IP(\d) (\S*)/,
@@ -24835,158 +27631,199 @@ var grammar = module.exports = {
   u: [{ name: 'uri' }],
   e: [{ name: 'email' }],
   p: [{ name: 'phone' }],
-  z: [{ name: 'timezones' }], // TODO: this one can actually be parsed properly..
+  z: [{ name: 'timezones' }], // TODO: this one can actually be parsed properly...
   r: [{ name: 'repeats' }],   // TODO: this one can also be parsed properly
-  //k: [{}], // outdated thing ignored
-  t: [{ //t=0 0
+  // k: [{}], // outdated thing ignored
+  t: [{
+    // t=0 0
     name: 'timing',
     reg: /^(\d*) (\d*)/,
     names: ['start', 'stop'],
     format: '%d %d'
   }],
-  c: [{ //c=IN IP4 10.47.197.26
+  c: [{
+    // c=IN IP4 10.47.197.26
     name: 'connection',
     reg: /^IN IP(\d) (\S*)/,
     names: ['version', 'ip'],
     format: 'IN IP%d %s'
   }],
-  b: [{ //b=AS:4000
+  b: [{
+    // b=AS:4000
     push: 'bandwidth',
     reg: /^(TIAS|AS|CT|RR|RS):(\d*)/,
     names: ['type', 'limit'],
     format: '%s:%s'
   }],
-  m: [{ //m=video 51744 RTP/AVP 126 97 98 34 31
+  m: [{
+    // m=video 51744 RTP/AVP 126 97 98 34 31
     // NB: special - pushes to session
     // TODO: rtp/fmtp should be filtered by the payloads found here?
-    reg: /^(\w*) (\d*) ([\w\/]*)(?: (.*))?/,
+    reg: /^(\w*) (\d*) ([\w/]*)(?: (.*))?/,
     names: ['type', 'port', 'protocol', 'payloads'],
     format: '%s %d %s %s'
   }],
   a: [
-    { //a=rtpmap:110 opus/48000/2
+    {
+      // a=rtpmap:110 opus/48000/2
       push: 'rtp',
-      reg: /^rtpmap:(\d*) ([\w\-\.]*)(?:\s*\/(\d*)(?:\s*\/(\S*))?)?/,
+      reg: /^rtpmap:(\d*) ([\w\-.]*)(?:\s*\/(\d*)(?:\s*\/(\S*))?)?/,
       names: ['payload', 'codec', 'rate', 'encoding'],
       format: function (o) {
-        return (o.encoding) ?
-          'rtpmap:%d %s/%s/%s':
-          o.rate ?
-          'rtpmap:%d %s/%s':
-          'rtpmap:%d %s';
+        return (o.encoding)
+          ? 'rtpmap:%d %s/%s/%s'
+          : o.rate
+            ? 'rtpmap:%d %s/%s'
+            : 'rtpmap:%d %s';
       }
     },
-    { //a=fmtp:108 profile-level-id=24;object=23;bitrate=64000
-      //a=fmtp:111 minptime=10; useinbandfec=1
+    {
+      // a=fmtp:108 profile-level-id=24;object=23;bitrate=64000
+      // a=fmtp:111 minptime=10; useinbandfec=1
       push: 'fmtp',
       reg: /^fmtp:(\d*) ([\S| ]*)/,
       names: ['payload', 'config'],
       format: 'fmtp:%d %s'
     },
-    { //a=control:streamid=0
+    {
+      // a=control:streamid=0
       name: 'control',
       reg: /^control:(.*)/,
       format: 'control:%s'
     },
-    { //a=rtcp:65179 IN IP4 193.84.77.194
+    {
+      // a=rtcp:65179 IN IP4 193.84.77.194
       name: 'rtcp',
       reg: /^rtcp:(\d*)(?: (\S*) IP(\d) (\S*))?/,
       names: ['port', 'netType', 'ipVer', 'address'],
       format: function (o) {
-        return (o.address != null) ?
-          'rtcp:%d %s IP%d %s':
-          'rtcp:%d';
+        return (o.address != null)
+          ? 'rtcp:%d %s IP%d %s'
+          : 'rtcp:%d';
       }
     },
-    { //a=rtcp-fb:98 trr-int 100
+    {
+      // a=rtcp-fb:98 trr-int 100
       push: 'rtcpFbTrrInt',
       reg: /^rtcp-fb:(\*|\d*) trr-int (\d*)/,
       names: ['payload', 'value'],
       format: 'rtcp-fb:%d trr-int %d'
     },
-    { //a=rtcp-fb:98 nack rpsi
+    {
+      // a=rtcp-fb:98 nack rpsi
       push: 'rtcpFb',
       reg: /^rtcp-fb:(\*|\d*) ([\w-_]*)(?: ([\w-_]*))?/,
       names: ['payload', 'type', 'subtype'],
       format: function (o) {
-        return (o.subtype != null) ?
-          'rtcp-fb:%s %s %s':
-          'rtcp-fb:%s %s';
+        return (o.subtype != null)
+          ? 'rtcp-fb:%s %s %s'
+          : 'rtcp-fb:%s %s';
       }
     },
-    { //a=extmap:2 urn:ietf:params:rtp-hdrext:toffset
-      //a=extmap:1/recvonly URI-gps-string
+    {
+      // a=extmap:2 urn:ietf:params:rtp-hdrext:toffset
+      // a=extmap:1/recvonly URI-gps-string
+      // a=extmap:3 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:smpte-tc 25@600/24
       push: 'ext',
-      reg: /^extmap:(\d+)(?:\/(\w+))? (\S*)(?: (\S*))?/,
-      names: ['value', 'direction', 'uri', 'config'],
+      reg: /^extmap:(\d+)(?:\/(\w+))?(?: (urn:ietf:params:rtp-hdrext:encrypt))? (\S*)(?: (\S*))?/,
+      names: ['value', 'direction', 'encrypt-uri', 'uri', 'config'],
       format: function (o) {
-        return 'extmap:%d' + (o.direction ? '/%s' : '%v') + ' %s' + (o.config ? ' %s' : '');
+        return (
+          'extmap:%d' +
+          (o.direction ? '/%s' : '%v') +
+          (o['encrypt-uri'] ? ' %s' : '%v') +
+          ' %s' +
+          (o.config ? ' %s' : '')
+        );
       }
     },
-    { //a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:PS1uQCVeeCFCanVmcjkpPywjNWhcYD0mXXtxaVBR|2^20|1:32
+    {
+      // a=extmap-allow-mixed
+      name: 'extmapAllowMixed',
+      reg: /^(extmap-allow-mixed)/
+    },
+    {
+      // a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:PS1uQCVeeCFCanVmcjkpPywjNWhcYD0mXXtxaVBR|2^20|1:32
       push: 'crypto',
       reg: /^crypto:(\d*) ([\w_]*) (\S*)(?: (\S*))?/,
       names: ['id', 'suite', 'config', 'sessionConfig'],
       format: function (o) {
-        return (o.sessionConfig != null) ?
-          'crypto:%d %s %s %s':
-          'crypto:%d %s %s';
+        return (o.sessionConfig != null)
+          ? 'crypto:%d %s %s %s'
+          : 'crypto:%d %s %s';
       }
     },
-    { //a=setup:actpass
+    {
+      // a=setup:actpass
       name: 'setup',
       reg: /^setup:(\w*)/,
       format: 'setup:%s'
     },
-    { //a=mid:1
+    {
+      // a=connection:new
+      name: 'connectionType',
+      reg: /^connection:(new|existing)/,
+      format: 'connection:%s'
+    },
+    {
+      // a=mid:1
       name: 'mid',
       reg: /^mid:([^\s]*)/,
       format: 'mid:%s'
     },
-    { //a=msid:0c8b064d-d807-43b4-b434-f92a889d8587 98178685-d409-46e0-8e16-7ef0db0db64a
+    {
+      // a=msid:0c8b064d-d807-43b4-b434-f92a889d8587 98178685-d409-46e0-8e16-7ef0db0db64a
       name: 'msid',
       reg: /^msid:(.*)/,
       format: 'msid:%s'
     },
-    { //a=ptime:20
+    {
+      // a=ptime:20
       name: 'ptime',
-      reg: /^ptime:(\d*)/,
+      reg: /^ptime:(\d*(?:\.\d*)*)/,
       format: 'ptime:%d'
     },
-    { //a=maxptime:60
+    {
+      // a=maxptime:60
       name: 'maxptime',
-      reg: /^maxptime:(\d*)/,
+      reg: /^maxptime:(\d*(?:\.\d*)*)/,
       format: 'maxptime:%d'
     },
-    { //a=sendrecv
+    {
+      // a=sendrecv
       name: 'direction',
       reg: /^(sendrecv|recvonly|sendonly|inactive)/
     },
-    { //a=ice-lite
+    {
+      // a=ice-lite
       name: 'icelite',
       reg: /^(ice-lite)/
     },
-    { //a=ice-ufrag:F7gI
+    {
+      // a=ice-ufrag:F7gI
       name: 'iceUfrag',
       reg: /^ice-ufrag:(\S*)/,
       format: 'ice-ufrag:%s'
     },
-    { //a=ice-pwd:x9cml/YzichV2+XlhiMu8g
+    {
+      // a=ice-pwd:x9cml/YzichV2+XlhiMu8g
       name: 'icePwd',
       reg: /^ice-pwd:(\S*)/,
       format: 'ice-pwd:%s'
     },
-    { //a=fingerprint:SHA-1 00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33
+    {
+      // a=fingerprint:SHA-1 00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33
       name: 'fingerprint',
       reg: /^fingerprint:(\S*) (\S*)/,
       names: ['type', 'hash'],
       format: 'fingerprint:%s %s'
     },
-    { //a=candidate:0 1 UDP 2113667327 203.0.113.1 54400 typ host
-      //a=candidate:1162875081 1 udp 2113937151 192.168.34.75 60017 typ host generation 0 network-id 3 network-cost 10
-      //a=candidate:3289912957 2 udp 1845501695 193.84.77.194 60017 typ srflx raddr 192.168.34.75 rport 60017 generation 0 network-id 3 network-cost 10
-      //a=candidate:229815620 1 tcp 1518280447 192.168.150.19 60017 typ host tcptype active generation 0 network-id 3 network-cost 10
-      //a=candidate:3289912957 2 tcp 1845501695 193.84.77.194 60017 typ srflx raddr 192.168.34.75 rport 60017 tcptype passive generation 0 network-id 3 network-cost 10
+    {
+      // a=candidate:0 1 UDP 2113667327 203.0.113.1 54400 typ host
+      // a=candidate:1162875081 1 udp 2113937151 192.168.34.75 60017 typ host generation 0 network-id 3 network-cost 10
+      // a=candidate:3289912957 2 udp 1845501695 193.84.77.194 60017 typ srflx raddr 192.168.34.75 rport 60017 generation 0 network-id 3 network-cost 10
+      // a=candidate:229815620 1 tcp 1518280447 192.168.150.19 60017 typ host tcptype active generation 0 network-id 3 network-cost 10
+      // a=candidate:3289912957 2 tcp 1845501695 193.84.77.194 60017 typ srflx raddr 192.168.34.75 rport 60017 tcptype passive generation 0 network-id 3 network-cost 10
       push:'candidates',
       reg: /^candidate:(\S*) (\d*) (\S*) (\d*) (\S*) (\d*) typ (\S*)(?: raddr (\S*) rport (\d*))?(?: tcptype (\S*))?(?: generation (\d*))?(?: network-id (\d*))?(?: network-cost (\d*))?/,
       names: ['foundation', 'component', 'transport', 'priority', 'ip', 'port', 'type', 'raddr', 'rport', 'tcptype', 'generation', 'network-id', 'network-cost'],
@@ -25007,21 +27844,25 @@ var grammar = module.exports = {
         return str;
       }
     },
-    { //a=end-of-candidates (keep after the candidates line for readability)
+    {
+      // a=end-of-candidates (keep after the candidates line for readability)
       name: 'endOfCandidates',
       reg: /^(end-of-candidates)/
     },
-    { //a=remote-candidates:1 203.0.113.1 54400 2 203.0.113.1 54401 ...
+    {
+      // a=remote-candidates:1 203.0.113.1 54400 2 203.0.113.1 54401 ...
       name: 'remoteCandidates',
       reg: /^remote-candidates:(.*)/,
       format: 'remote-candidates:%s'
     },
-    { //a=ice-options:google-ice
+    {
+      // a=ice-options:google-ice
       name: 'iceOptions',
       reg: /^ice-options:(\S*)/,
       format: 'ice-options:%s'
     },
-    { //a=ssrc:2566107569 cname:t9YU8M1UxTF8Y1A1
+    {
+      // a=ssrc:2566107569 cname:t9YU8M1UxTF8Y1A1
       push: 'ssrcs',
       reg: /^ssrc:(\d*) ([\w_-]*)(?::(.*))?/,
       names: ['id', 'attribute', 'value'],
@@ -25036,50 +27877,58 @@ var grammar = module.exports = {
         return str;
       }
     },
-    { //a=ssrc-group:FEC 1 2
-      //a=ssrc-group:FEC-FR 3004364195 1080772241
+    {
+      // a=ssrc-group:FEC 1 2
+      // a=ssrc-group:FEC-FR 3004364195 1080772241
       push: 'ssrcGroups',
       // token-char = %x21 / %x23-27 / %x2A-2B / %x2D-2E / %x30-39 / %x41-5A / %x5E-7E
       reg: /^ssrc-group:([\x21\x23\x24\x25\x26\x27\x2A\x2B\x2D\x2E\w]*) (.*)/,
       names: ['semantics', 'ssrcs'],
       format: 'ssrc-group:%s %s'
     },
-    { //a=msid-semantic: WMS Jvlam5X3SX1OP6pn20zWogvaKJz5Hjf9OnlV
+    {
+      // a=msid-semantic: WMS Jvlam5X3SX1OP6pn20zWogvaKJz5Hjf9OnlV
       name: 'msidSemantic',
       reg: /^msid-semantic:\s?(\w*) (\S*)/,
       names: ['semantic', 'token'],
       format: 'msid-semantic: %s %s' // space after ':' is not accidental
     },
-    { //a=group:BUNDLE audio video
+    {
+      // a=group:BUNDLE audio video
       push: 'groups',
       reg: /^group:(\w*) (.*)/,
       names: ['type', 'mids'],
       format: 'group:%s %s'
     },
-    { //a=rtcp-mux
+    {
+      // a=rtcp-mux
       name: 'rtcpMux',
       reg: /^(rtcp-mux)/
     },
-    { //a=rtcp-rsize
+    {
+      // a=rtcp-rsize
       name: 'rtcpRsize',
       reg: /^(rtcp-rsize)/
     },
-    { //a=sctpmap:5000 webrtc-datachannel 1024
+    {
+      // a=sctpmap:5000 webrtc-datachannel 1024
       name: 'sctpmap',
-      reg: /^sctpmap:([\w_\/]*) (\S*)(?: (\S*))?/,
+      reg: /^sctpmap:([\w_/]*) (\S*)(?: (\S*))?/,
       names: ['sctpmapNumber', 'app', 'maxMessageSize'],
       format: function (o) {
-        return (o.maxMessageSize != null) ?
-          'sctpmap:%s %s %s' :
-          'sctpmap:%s %s';
+        return (o.maxMessageSize != null)
+          ? 'sctpmap:%s %s %s'
+          : 'sctpmap:%s %s';
       }
     },
-    { //a=x-google-flag:conference
+    {
+      // a=x-google-flag:conference
       name: 'xGoogleFlag',
       reg: /^x-google-flag:([^\s]*)/,
       format: 'x-google-flag:%s'
     },
-    { //a=rid:1 send max-width=1280;max-height=720;max-fps=30;depend=0
+    {
+      // a=rid:1 send max-width=1280;max-height=720;max-fps=30;depend=0
       push: 'rids',
       reg: /^rid:([\d\w]+) (\w+)(?: ([\S| ]*))?/,
       names: ['id', 'direction', 'params'],
@@ -25087,16 +27936,17 @@ var grammar = module.exports = {
         return (o.params) ? 'rid:%s %s %s' : 'rid:%s %s';
       }
     },
-    { //a=imageattr:97 send [x=800,y=640,sar=1.1,q=0.6] [x=480,y=320] recv [x=330,y=250]
-      //a=imageattr:* send [x=800,y=640] recv *
-      //a=imageattr:100 recv [x=320,y=240]
+    {
+      // a=imageattr:97 send [x=800,y=640,sar=1.1,q=0.6] [x=480,y=320] recv [x=330,y=250]
+      // a=imageattr:* send [x=800,y=640] recv *
+      // a=imageattr:100 recv [x=320,y=240]
       push: 'imageattrs',
       reg: new RegExp(
-        //a=imageattr:97
+        // a=imageattr:97
         '^imageattr:(\\d+|\\*)' +
-        //send [x=800,y=640,sar=1.1,q=0.6] [x=480,y=320]
+        // send [x=800,y=640,sar=1.1,q=0.6] [x=480,y=320]
         '[\\s\\t]+(send|recv)[\\s\\t]+(\\*|\\[\\S+\\](?:[\\s\\t]+\\[\\S+\\])*)' +
-        //recv [x=330,y=250]
+        // recv [x=330,y=250]
         '(?:[\\s\\t]+(recv|send)[\\s\\t]+(\\*|\\[\\S+\\](?:[\\s\\t]+\\[\\S+\\])*))?'
       ),
       names: ['pt', 'dir1', 'attrs1', 'dir2', 'attrs2'],
@@ -25104,17 +27954,18 @@ var grammar = module.exports = {
         return 'imageattr:%s %s %s' + (o.dir2 ? ' %s %s' : '');
       }
     },
-    { //a=simulcast:send 1,2,3;~4,~5 recv 6;~7,~8
-      //a=simulcast:recv 1;4,5 send 6;7
+    {
+      // a=simulcast:send 1,2,3;~4,~5 recv 6;~7,~8
+      // a=simulcast:recv 1;4,5 send 6;7
       name: 'simulcast',
       reg: new RegExp(
-        //a=simulcast:
+        // a=simulcast:
         '^simulcast:' +
-        //send 1,2,3;~4,~5
+        // send 1,2,3;~4,~5
         '(send|recv) ([a-zA-Z0-9\\-_~;,]+)' +
-        //space + recv 6;~7,~8
+        // space + recv 6;~7,~8
         '(?:\\s?(send|recv) ([a-zA-Z0-9\\-_~;,]+))?' +
-        //end
+        // end
         '$'
       ),
       names: ['dir1', 'list1', 'dir2', 'list2'],
@@ -25122,34 +27973,38 @@ var grammar = module.exports = {
         return 'simulcast:%s %s' + (o.dir2 ? ' %s %s' : '');
       }
     },
-    { //Old simulcast draft 03 (implemented by Firefox)
-      //  https://tools.ietf.org/html/draft-ietf-mmusic-sdp-simulcast-03
-      //a=simulcast: recv pt=97;98 send pt=97
-      //a=simulcast: send rid=5;6;7 paused=6,7
+    {
+      // old simulcast draft 03 (implemented by Firefox)
+      //   https://tools.ietf.org/html/draft-ietf-mmusic-sdp-simulcast-03
+      // a=simulcast: recv pt=97;98 send pt=97
+      // a=simulcast: send rid=5;6;7 paused=6,7
       name: 'simulcast_03',
       reg: /^simulcast:[\s\t]+([\S+\s\t]+)$/,
       names: ['value'],
       format: 'simulcast: %s'
     },
     {
-      //a=framerate:25
-      //a=framerate:29.97
+      // a=framerate:25
+      // a=framerate:29.97
       name: 'framerate',
       reg: /^framerate:(\d+(?:$|\.\d+))/,
       format: 'framerate:%s'
     },
-    { // RFC4570
-      //a=source-filter: incl IN IP4 239.5.2.31 10.1.15.5
+    {
+      // RFC4570
+      // a=source-filter: incl IN IP4 239.5.2.31 10.1.15.5
       name: 'sourceFilter',
       reg: /^source-filter: *(excl|incl) (\S*) (IP4|IP6|\*) (\S*) (.*)/,
       names: ['filterMode', 'netType', 'addressTypes', 'destAddress', 'srcList'],
       format: 'source-filter: %s %s %s %s %s'
     },
-    { //a=bundle-only
+    {
+      // a=bundle-only
       name: 'bundleOnly',
       reg: /^(bundle-only)/
     },
-    { //a=label:1
+    {
+      // a=label:1
       name: 'label',
       reg: /^label:(.+)/,
       format: 'label:%s'
@@ -25157,18 +28012,82 @@ var grammar = module.exports = {
     {
       // RFC version 26 for SCTP over DTLS
       // https://tools.ietf.org/html/draft-ietf-mmusic-sctp-sdp-26#section-5
-      name:'sctpPort',
+      name: 'sctpPort',
       reg: /^sctp-port:(\d+)$/,
       format: 'sctp-port:%s'
     },
     {
       // RFC version 26 for SCTP over DTLS
       // https://tools.ietf.org/html/draft-ietf-mmusic-sctp-sdp-26#section-6
-      name:'maxMessageSize',
+      name: 'maxMessageSize',
       reg: /^max-message-size:(\d+)$/,
       format: 'max-message-size:%s'
     },
-    { // any a= that we don't understand is kepts verbatim on media.invalid
+    {
+      // RFC7273
+      // a=ts-refclk:ptp=IEEE1588-2008:39-A7-94-FF-FE-07-CB-D0:37
+      push:'tsRefClocks',
+      reg: /^ts-refclk:([^\s=]*)(?:=(\S*))?/,
+      names: ['clksrc', 'clksrcExt'],
+      format: function (o) {
+        return 'ts-refclk:%s' + (o.clksrcExt != null ? '=%s' : '');
+      }
+    },
+    {
+      // RFC7273
+      // a=mediaclk:direct=963214424
+      name:'mediaClk',
+      reg: /^mediaclk:(?:id=(\S*))? *([^\s=]*)(?:=(\S*))?(?: *rate=(\d+)\/(\d+))?/,
+      names: ['id', 'mediaClockName', 'mediaClockValue', 'rateNumerator', 'rateDenominator'],
+      format: function (o) {
+        var str = 'mediaclk:';
+        str += (o.id != null ? 'id=%s %s' : '%v%s');
+        str += (o.mediaClockValue != null ? '=%s' : '');
+        str += (o.rateNumerator != null ? ' rate=%s' : '');
+        str += (o.rateDenominator != null ? '/%s' : '');
+        return str;
+      }
+    },
+    {
+      // a=keywds:keywords
+      name: 'keywords',
+      reg: /^keywds:(.+)$/,
+      format: 'keywds:%s'
+    },
+    {
+      // a=content:main
+      name: 'content',
+      reg: /^content:(.+)/,
+      format: 'content:%s'
+    },
+    // BFCP https://tools.ietf.org/html/rfc4583
+    {
+      // a=floorctrl:c-s
+      name: 'bfcpFloorCtrl',
+      reg: /^floorctrl:(c-only|s-only|c-s)/,
+      format: 'floorctrl:%s'
+    },
+    {
+      // a=confid:1
+      name: 'bfcpConfId',
+      reg: /^confid:(\d+)/,
+      format: 'confid:%s'
+    },
+    {
+      // a=userid:1
+      name: 'bfcpUserId',
+      reg: /^userid:(\d+)/,
+      format: 'userid:%s'
+    },
+    {
+      // a=floorid:1
+      name: 'bfcpFloorId',
+      reg: /^floorid:(.+) (?:m-stream|mstrm):(.+)/,
+      names: ['id', 'mStream'],
+      format: 'floorid:%s mstrm:%s'
+    },
+    {
+      // any a= that we don't understand is kept verbatim on media.invalid
       push: 'invalid',
       names: ['value']
     }
@@ -25194,8 +28113,8 @@ var writer = require('./writer');
 
 exports.write = writer;
 exports.parse = parser.parse;
-exports.parseFmtpConfig = parser.parseFmtpConfig;
 exports.parseParams = parser.parseParams;
+exports.parseFmtpConfig = parser.parseFmtpConfig; // Alias of parseParams().
 exports.parsePayloads = parser.parsePayloads;
 exports.parseRemoteCandidates = parser.parseRemoteCandidates;
 exports.parseImageAttributes = parser.parseImageAttributes;
@@ -25278,14 +28197,14 @@ var paramReducer = function (acc, expr) {
 };
 
 exports.parseParams = function (str) {
-  return str.split(/\;\s?/).reduce(paramReducer, {});
+  return str.split(/;\s?/).reduce(paramReducer, {});
 };
 
 // For backward compatibility - alias will be removed in 3.0.0
 exports.parseFmtpConfig = exports.parseParams;
 
 exports.parsePayloads = function (str) {
-  return str.split(' ').map(Number);
+  return str.toString().split(' ').map(Number);
 };
 
 exports.parseRemoteCandidates = function (str) {
@@ -25448,14 +28367,23 @@ module.exports={
   "name": "jssip",
   "title": "JsSIP",
   "description": "the Javascript SIP library",
+<<<<<<< HEAD
   "version": "3.2.16.1",
   "homepage": "http://jssip.net",
+=======
+  "version": "3.5.0",
+  "homepage": "https://jssip.net",
+>>>>>>> master
   "author": "José Luis Millán <jmillan@aliax.net> (https://github.com/jmillan)",
   "contributors": [
-    "Iñaki Baz Castillo <ibc@aliax.net> (https://github.com/ibc)",
-    "Saúl Ibarra Corretgé <saghul@gmail.com> (https://github.com/saghul)"
+    "Iñaki Baz Castillo <ibc@aliax.net> (https://github.com/ibc)"
   ],
+<<<<<<< HEAD
   "main": "lib/JsSIP.js",
+=======
+  "types": "lib/JsSIP.d.ts",
+  "main": "lib-es5/JsSIP.js",
+>>>>>>> master
   "keywords": [
     "sip",
     "websocket",
@@ -25473,22 +28401,24 @@ module.exports={
     "url": "https://github.com/versatica/JsSIP/issues"
   },
   "dependencies": {
-    "ansi-colors": "^3.2.1",
-    "debug": "^4.1.0",
-    "events": "^3.0.0",
-    "sdp-transform": "^2.4.1"
+    "@types/debug": "^4.1.5",
+    "@types/node": "^14.0.6",
+    "debug": "^4.1.1",
+    "events": "^3.1.0",
+    "sdp-transform": "^2.14.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.6",
-    "@babel/preset-env": "^7.1.6",
-    "browserify": "^16.2.3",
-    "eslint": "^5.9.0",
-    "fancy-log": "^1.3.2",
-    "gulp": "^4.0.0",
+    "@babel/core": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "ansi-colors": "^3.2.4",
+    "browserify": "^16.5.1",
+    "eslint": "^5.16.0",
+    "fancy-log": "^1.3.3",
+    "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-eslint": "^5.0.0",
-    "gulp-expect-file": "^1.0.0",
-    "gulp-header": "^2.0.5",
+    "gulp-expect-file": "^1.0.2",
+    "gulp-header": "^2.0.9",
     "gulp-nodeunit-runner": "^0.2.2",
     "gulp-plumber": "^1.2.1",
     "gulp-rename": "^1.4.0",
@@ -25498,6 +28428,7 @@ module.exports={
     "vinyl-source-stream": "^2.0.0"
   },
   "scripts": {
+    "lint": "gulp lint",
     "test": "gulp test",
     "prepublishOnly": "gulp babel"
   }
