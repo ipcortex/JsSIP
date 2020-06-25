@@ -16153,7 +16153,7 @@ module.exports = class RTCSession extends EventEmitter
 
     if (constraints && constraints.restartIce === true)
     {
-      restartIce = true;
+      restartIce = typeof connection.restartIce === 'function';
       delete constraints.restartIce;
     }
 
@@ -16189,7 +16189,6 @@ module.exports = class RTCSession extends EventEmitter
               return Promise.reject(error);
             });
         }
-<<<<<<< HEAD
       })
       // Set local description.
       .then((desc) =>
@@ -16198,30 +16197,6 @@ module.exports = class RTCSession extends EventEmitter
           .catch((error) =>
           {
             this._rtcReady = true;
-=======
-      });
-
-      debug('emit "peerconnection"');
-      this.emit('peerconnection', {
-        peerconnection: this._connection
-      });
-    }
-  }, {
-    key: "_createLocalDescription",
-    value: function _createLocalDescription(type, constraints) {
-      var _this13 = this;
-
-      debug('createLocalDescription()');
-      if (type !== 'offer' && type !== 'answer') throw new Error("createLocalDescription() | invalid type \"".concat(type, "\""));
-      var connection = this._connection;
-      var restartIce = false;
-      this._rtcReady = false;
-
-      if (constraints && constraints.restartIce === true) {
-        restartIce = typeof connection.restartIce === 'function';
-        delete constraints.restartIce;
-      }
->>>>>>> master
 
             debugerror('emit "peerconnection:setlocaldescriptionfailed" [error:%o]', error);
 
