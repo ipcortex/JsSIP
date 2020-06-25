@@ -18529,7 +18529,7 @@ module.exports = /*#__PURE__*/function (_EventEmitter) {
       this._rtcReady = false;
 
       if (constraints && constraints.restartIce === true) {
-        restartIce = true;
+        restartIce = typeof connection.restartIce === 'function';
         delete constraints.restartIce;
       }
 
