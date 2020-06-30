@@ -18529,14 +18529,15 @@ module.exports = /*#__PURE__*/function (_EventEmitter) {
       this._rtcReady = false;
 
       if (constraints && constraints.restartIce === true) {
-        restartIce = typeof connection.restartIce === 'function';
+        if (typeof connection.restartIce !== 'function') constraints.iceRestart = true;
         delete constraints.restartIce;
+        restartIce = true;
       }
 
       return Promise.resolve() // Create Offer or Answer.
       .then(function () {
         if (type === 'offer') {
-          if (restartIce === true) connection.restartIce();
+          if (restartIce === true && typeof connection.restartIce === 'function') connection.restartIce();
           return connection.createOffer(constraints).then(function (offer) {
             return fixupLocalSDP(offer);
           })["catch"](function (error) {
