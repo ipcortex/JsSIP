@@ -18500,8 +18500,19 @@ module.exports = /*#__PURE__*/function (_EventEmitter) {
 
       this._connection = new RTCPeerConnection(pcConfig, rtcConstraints);
 
+      this._connection.addEventListener('connectionstatechange', function () {
+        var state = _this12._connection.connectionState;
+        console.log('Connection state =', state);
+      });
+
+      this._connection.addEventListener('icegatheringstatechange', function () {
+        var state = _this12._connection.iceGatheringState;
+        console.log('ICE gather state =', state);
+      });
+
       this._connection.addEventListener('iceconnectionstatechange', function () {
-        var state = _this12._connection.iceConnectionState; // TODO: Do more with different states.
+        var state = _this12._connection.iceConnectionState;
+        console.log('ICE state =', state); // TODO: Do more with different states.
 
         if (state === 'failed') {
           _this12.terminate({
@@ -18509,6 +18520,12 @@ module.exports = /*#__PURE__*/function (_EventEmitter) {
             status_code: 408,
             reason_phrase: JsSIP_C.causes.RTP_TIMEOUT
           });
+        }
+
+        if (state === 'disconnected' && typeof _this12._connection.restartIce === 'function') {
+          console.log('connection.restartIce()');
+
+          _this12._connection.restartIce();
         }
       });
 
@@ -18529,15 +18546,22 @@ module.exports = /*#__PURE__*/function (_EventEmitter) {
       this._rtcReady = false;
 
       if (constraints && constraints.restartIce === true) {
+        console.log('have constraints.restartIce');
+        console.log('typeof connection.restartIce', _typeof(connection.restartIce));
         if (typeof connection.restartIce !== 'function') constraints.iceRestart = true;
         delete constraints.restartIce;
+        console.log('constraints.iceRestart', constraints.iceRestart);
         restartIce = true;
       }
 
       return Promise.resolve() // Create Offer or Answer.
       .then(function () {
         if (type === 'offer') {
-          if (restartIce === true && typeof connection.restartIce === 'function') connection.restartIce();
+          if (restartIce === true && typeof connection.restartIce === 'function') {
+            console.log('connection.restartIce()');
+            connection.restartIce();
+          }
+
           return connection.createOffer(constraints).then(function (offer) {
             return fixupLocalSDP(offer);
           })["catch"](function (error) {
@@ -20213,22 +20237,18 @@ module.exports = /*#__PURE__*/function (_EventEmitter) {
 
 
 function fixupLocalSDP(offer) {
-  /*
-  let sdp = offer.sdp;
-  if (sdp.indexOf('a=extmap') !== -1)
-  {
-    const lines = sdp.split('\r\n');
-    let l, r = [];
-    while (lines.length)
-    {
-      l = lines.shift();
-      if ( l.substr(0, 9) !== 'a=extmap:' )
-        r.push(l)
-    }
-    sdp = r.join('\r\n');
-    offer.sdp = sdp;
+  var sdp = offer.sdp;
+  var lines = sdp.split('\r\n');
+  var r = [];
+  var l;
+
+  while (lines.length) {
+    l = lines.shift();
+    if (l.substr(0, 9) !== 'a=ice-options:trickle') r.push(l);
   }
-  */
+
+  sdp = r.join('\r\n');
+  offer.sdp = sdp;
   return Promise.resolve(offer);
 }
 
