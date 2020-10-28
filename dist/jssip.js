@@ -20265,30 +20265,31 @@ module.exports = /*#__PURE__*/function (_EventEmitter) {
 }(EventEmitter);
 
 function fixupLocalSDP(offer) {
-  var sdp = offer.sdp;
-  var lines = sdp.split('\r\n');
-  var r = [];
-  var l;
-
-  while (lines.length) {
+  /* Not the real problem
+  let sdp = offer.sdp;
+  const lines = sdp.split('\r\n');
+  const r = [];
+  let l;
+   while (lines.length)
+  {
     l = lines.shift();
-    if (l.substr(0, 9) !== 'a=ice-options:trickle') r.push(l);
+    if (l.substr(0, 9) !== 'a=ice-options:trickle')
+      r.push(l);
   }
-
   sdp = r.join('\r\n');
   offer.sdp = sdp;
+  */
   return Promise.resolve(offer);
 }
 
 function fixupSDP(sdp) {
-  debug('fixupRemoteSDP in:', sdp);
-
+  // debug('fixupRemoteSDP in:', sdp);
   if (sdp.indexOf('a=end-of-candidates') === -1) {
     sdp += 'a=end-of-candidates\r\n';
-  }
+  } // Cleaner SDP from Firefox... Chrome does not care.
 
-  sdp = sdp_transform.parse(sdp); //  if (sdp.direction)
-  //  {
+
+  sdp = sdp_transform.parse(sdp);
 
   var _iterator10 = _createForOfIteratorHelper(sdp.media),
       _step10;
@@ -20301,16 +20302,15 @@ function fixupSDP(sdp) {
         sdp.direction = m.direction;
         break;
       }
-    } //  }
-
+    }
   } catch (err) {
     _iterator10.e(err);
   } finally {
     _iterator10.f();
   }
 
-  sdp = sdp_transform.write(sdp);
-  debug('fixupRemoteSDP out:', sdp);
+  sdp = sdp_transform.write(sdp); // debug('fixupRemoteSDP out:', sdp);
+
   return sdp;
 }
 },{"./Constants":2,"./Dialog":3,"./Exceptions":6,"./RTCSession/DTMF":13,"./RTCSession/Info":14,"./RTCSession/ReferNotifier":15,"./RTCSession/ReferSubscriber":16,"./RequestSender":18,"./SIPMessage":19,"./Timers":21,"./Transactions":22,"./URI":25,"./Utils":26,"debug":30,"events":29,"sdp-transform":35}],13:[function(require,module,exports){
